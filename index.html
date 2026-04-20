@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kota Studio</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./script.js" defer></script>
+  </head>
+  <body>
+    <main class="landing">
+      <button class="shop-button text-reveal-mask text-line-1" type="button">
+        <span class="text-reveal-value">Shop</span>
+      </button>
+
+      <section class="intro meta-block" aria-label="Presentation">
+        <div class="text-reveal-mask text-line-1">
+          <h1 class="meta-title text-reveal-value" data-i18n="name">
+            Jérémy "Kota" Delobel
+          </h1>
+        </div>
+        <div class="text-reveal-mask text-line-2">
+          <p class="meta-subtitle text-reveal-value" data-i18n="roles">
+            Monteur Vidéo, Motion Designer &amp; Photographe
+          </p>
+        </div>
+      </section>
+
+      <section class="location meta-block" aria-label="Localisation">
+        <div class="text-reveal-mask text-line-1">
+          <p class="meta-title text-reveal-value" data-i18n="locationLine1">
+            Basé en France,
+          </p>
+        </div>
+        <div class="text-reveal-mask text-line-2">
+          <p class="meta-subtitle text-reveal-value" data-i18n="locationLine2">
+            à Angoulême
+          </p>
+        </div>
+      </section>
+
+      <div
+        class="language-switch meta-block"
+        aria-label="Choix de langue"
+        data-active="fr"
+      >
+        <button
+          class="language-option is-active"
+          type="button"
+          data-lang="fr"
+          aria-pressed="true"
+        >
+          FR
+        </button>
+        <span class="language-separator" aria-hidden="true">|</span>
+        <button
+          class="language-option"
+          type="button"
+          data-lang="en"
+          aria-pressed="false"
+        >
+          EN
+        </button>
+      </div>
+
+      <section class="categories" aria-label="Categories">
+        <article class="category-card">
+          <div class="category-inner">
+            <div class="category-frame">
+              <div class="category-visual">
+                <video
+                  class="category-video"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                >
+                  <source
+                    src="./rsrc/Thumbnail - VIDEO EDITING.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+              </div>
+            </div>
+            <div class="category-label-mask">
+              <p><span class="category-label-value" data-i18n="cardVideo">MONTAGE VIDÉO</span></p>
+            </div>
+          </div>
+        </article>
+
+        <article class="category-card">
+          <div class="category-inner">
+            <div class="category-frame">
+              <div class="category-visual">
+                <video
+                  class="category-video"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                >
+                  <source
+                    src="./rsrc/Thumbnail - PHOTOGRAPHY.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+              </div>
+            </div>
+            <div class="category-label-mask">
+              <p><span class="category-label-value" data-i18n="cardPhotography">PHOTOGRAPHIE</span></p>
+            </div>
+          </div>
+        </article>
+
+        <article class="category-card">
+          <div class="category-inner">
+            <div class="category-frame">
+              <div class="category-visual">
+                <video
+                  class="category-video"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                >
+                  <source
+                    src="./rsrc/Thumbnail - MOTION DESIGN.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+              </div>
+            </div>
+            <div class="category-label-mask">
+              <p><span class="category-label-value" data-i18n="cardMotion">MOTION DESIGN</span></p>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

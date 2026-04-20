@@ -4,6 +4,8 @@ const translations = {
     roles: "Monteur Vidéo, Motion Designer & Photographe",
     locationLine1: "Basé en France,",
     locationLine2: "à Angoulême",
+    comingSoon: "Bientôt",
+    backButton: "Retour",
     photoPageTitle: "Photographie",
     cardVideo: "MONTAGE VIDÉO",
     cardPhotography: "PHOTOGRAPHIE",
@@ -14,6 +16,8 @@ const translations = {
     roles: "Video Editor, Motion Designer & Photographer",
     locationLine1: "Based in France,",
     locationLine2: "in Angoulême",
+    comingSoon: "Coming soon",
+    backButton: "Back",
     photoPageTitle: "Photography",
     cardVideo: "VIDEO EDITING",
     cardPhotography: "PHOTOGRAPHY",
@@ -156,6 +160,10 @@ const categoryCards = document.querySelectorAll(".category-card");
 const canHover =
   window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 const isMobileLayout = window.matchMedia("(max-width: 640px)");
+const landing = document.querySelector(".landing");
+const intro = document.querySelector(".intro");
+const locationBlock = document.querySelector(".location");
+const shopButton = document.querySelector(".shop-button");
 
 if (categorySection && categoryCards.length) {
   const pointer = { x: 0, y: 0, active: false };
@@ -169,6 +177,45 @@ if (categorySection && categoryCards.length) {
   }));
 
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+  const updateMobileLandingLayout = () => {
+    if (!landing || !isMobileLayout.matches) {
+      if (landing) {
+        landing.style.removeProperty("--mobile-card-width");
+        landing.style.removeProperty("--mobile-card-gap");
+        landing.style.removeProperty("--mobile-side-padding");
+      }
+      return;
+    }
+
+    const sidePadding = Math.max(window.innerWidth * 0.15, 20);
+    const introHeight = intro ? intro.offsetHeight : 0;
+    const shopHeight = shopButton ? shopButton.offsetHeight : 0;
+    const footerHeight = Math.max(
+      languageSwitch ? languageSwitch.offsetHeight : 0,
+      locationBlock ? locationBlock.offsetHeight : 0
+    );
+
+    const topZone = Math.max(introHeight, shopHeight) + 36;
+    const bottomZone = footerHeight + 36;
+    const availableHeight = window.innerHeight - topZone - bottomZone - 28;
+    const mobileGap = clamp(availableHeight * 0.055, 12, 22);
+    const labelAllowance = 28;
+    const widthFromHeight = Math.max(
+      (availableHeight - labelAllowance * 3 - mobileGap * 2) / 2,
+      190
+    );
+    const widthFromViewport = window.innerWidth - sidePadding * 2;
+    const mobileWidth = clamp(
+      Math.min(widthFromHeight, widthFromViewport),
+      190,
+      widthFromViewport
+    );
+
+    landing.style.setProperty("--mobile-side-padding", `${sidePadding.toFixed(1)}px`);
+    landing.style.setProperty("--mobile-card-gap", `${mobileGap.toFixed(1)}px`);
+    landing.style.setProperty("--mobile-card-width", `${mobileWidth.toFixed(1)}px`);
+  };
 
   const updateGroupScale = () => {
     if (isMobileLayout.matches) {
@@ -266,6 +313,7 @@ if (categorySection && categoryCards.length) {
   };
 
   const syncLayout = () => {
+    updateMobileLandingLayout();
     updateGroupScale();
     centerGroup();
     updateTargets();

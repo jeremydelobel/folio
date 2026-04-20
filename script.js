@@ -4,6 +4,7 @@ const translations = {
     roles: "Monteur Vidéo, Motion Designer & Photographe",
     locationLine1: "Basé en France,",
     locationLine2: "à Angoulême",
+    photoPageTitle: "Photographie",
     cardVideo: "MONTAGE VIDÉO",
     cardPhotography: "PHOTOGRAPHIE",
     cardMotion: "MOTION DESIGN",
@@ -13,6 +14,7 @@ const translations = {
     roles: "Video Editor, Motion Designer & Photographer",
     locationLine1: "Based in France,",
     locationLine2: "in Angoulême",
+    photoPageTitle: "Photography",
     cardVideo: "VIDEO EDITING",
     cardPhotography: "PHOTOGRAPHY",
     cardMotion: "MOTION DESIGN",
@@ -21,6 +23,11 @@ const translations = {
 
 const languageSwitch = document.querySelector(".language-switch");
 const languageOptions = document.querySelectorAll(".language-option");
+const pageTransition = document.querySelector(".page-transition");
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const backButton = document.querySelector(".back-button");
+const navigationEntry = performance.getEntriesByType("navigation")[0];
+const isBackForwardLoad = navigationEntry?.type === "back_forward";
 
 const setLanguage = (lang) => {
   const copy = translations[lang];
@@ -64,6 +71,85 @@ const startIntroAnimation = () => {
     document.body.classList.add("is-ready");
   });
 };
+
+const resetIntroAnimation = () => {
+  document.body.classList.remove("is-ready");
+  void document.body.offsetWidth;
+};
+
+const playPageEntry = ({ withWhiteFade = false } = {}) => {
+  const reveal = () => {
+    if (pageTransition) {
+      if (withWhiteFade && !prefersReducedMotion.matches) {
+        pageTransition.classList.add("is-visible");
+      } else {
+        pageTransition.classList.remove("is-visible");
+      }
+    }
+
+    resetIntroAnimation();
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (pageTransition && !prefersReducedMotion.matches) {
+          pageTransition.classList.remove("is-visible");
+        }
+
+        startIntroAnimation();
+      });
+    });
+  };
+
+  if (prefersReducedMotion.matches) {
+    if (pageTransition) {
+      pageTransition.classList.remove("is-visible");
+    }
+    resetIntroAnimation();
+    startIntroAnimation();
+    return;
+  }
+
+  if (withWhiteFade) {
+    reveal();
+    return;
+  }
+
+  if (pageTransition) {
+    window.setTimeout(reveal, 90);
+    return;
+  }
+
+  reveal();
+};
+
+const navigateWithFade = (href) => {
+  if (!href) {
+    return;
+  }
+
+  if (prefersReducedMotion.matches || !pageTransition) {
+    window.location.href = href;
+    return;
+  }
+
+  pageTransition.classList.add("is-visible");
+
+  window.setTimeout(() => {
+    window.location.href = href;
+  }, 460);
+};
+
+document.querySelectorAll("[data-route]").forEach((element) => {
+  element.addEventListener("click", () => {
+    navigateWithFade(element.dataset.route);
+  });
+});
+
+if (backButton) {
+  backButton.addEventListener("click", () => {
+    navigateWithFade("./index.html");
+  });
+}
 
 const categorySection = document.querySelector(".categories");
 const categoryCards = document.querySelectorAll(".category-card");
@@ -219,13 +305,40 @@ if (categorySection && categoryCards.length) {
   if (document.fonts) {
     document.fonts.ready.then(() => {
       syncLayout();
-      startIntroAnimation();
+      if (!document.body.classList.contains("photography-page")) {
+        if (isBackForwardLoad) {
+          playPageEntry({ withWhiteFade: true });
+        } else {
+          startIntroAnimation();
+        }
+      }
     });
-  } else {
-    startIntroAnimation();
+  } else if (!document.body.classList.contains("photography-page")) {
+    if (isBackForwardLoad) {
+      playPageEntry({ withWhiteFade: true });
+    } else {
+      startIntroAnimation();
+    }
   }
 
   syncLayout();
+} else if (document.body.classList.contains("photography-page")) {
+  playPageEntry();
+} else if (isBackForwardLoad) {
+  playPageEntry({ withWhiteFade: true });
 } else {
   startIntroAnimation();
 }
+
+window.addEventListener("pageshow", (event) => {
+  if (!event.persisted) {
+    return;
+  }
+
+  if (document.body.classList.contains("photography-page")) {
+    playPageEntry();
+    return;
+  }
+
+  playPageEntry({ withWhiteFade: true });
+});

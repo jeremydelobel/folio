@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Photography - Kota Studio</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./script.js" defer></script>
+  </head>
+  <body class="photography-page">
+    <div class="page-transition is-visible" aria-hidden="true"></div>
+
+    <main class="folio-page">
+      <button class="back-button text-reveal-mask text-line-1" type="button">
+        <span class="text-reveal-value">
+          <span class="back-button-label">Back</span>
+        </span>
+      </button>
+
+      <h1 class="folio-title text-reveal-mask text-line-1">
+        <span class="text-reveal-value" data-i18n="photoPageTitle">Photographie</span>
+      </h1>
+
+      <div
+        class="language-switch meta-block"
+        aria-label="Choix de langue"
+        data-active="fr"
+      >
+        <button
+          class="language-option is-active"
+          type="button"
+          data-lang="fr"
+          aria-pressed="true"
+        >
+          FR
+        </button>
+        <span class="language-separator" aria-hidden="true">|</span>
+        <button
+          class="language-option"
+          type="button"
+          data-lang="en"
+          aria-pressed="false"
+        >
+          EN
+        </button>
+      </div>
+
+      <section class="photo-grid" aria-label="Photography grid">
+        <article class="photo-tile"><div class="photo-placeholder color-1 landscape"></div></article>
+        <article class="photo-tile"><div class="photo-placeholder color-2 portrait"></div></article>
+        <article class="photo-tile"><div class="photo-placeholder color-3 landscape"></div></article>
+        <article class="photo-tile"><div class="photo-placeholder color-4 portrait"></div></article>
+        <article class="photo-tile"><div class="photo-placeholder color-5 landscape"></div></article>
+        <article class="photo-tile"><div class="photo-placeholder color-6 landscape"></div></article>
+        <article class="photo-tile"><div class="photo-placeholder color-7 portrait"></div></article>
+        <article class="photo-tile"><div class="photo-placeholder color-8 landscape"></div></article>
+        <article class="photo-tile"><div class="photo-placeholder color-9 portrait"></div></article>
+        <article class="photo-tile"><div class="photo-placeholder color-10 landscape"></div></article>
+        <article class="photo-tile"><div class="photo-placeholder color-11 landscape"></div></article>
+        <article class="photo-tile"><div class="photo-placeholder color-12 portrait"></div></article>
+      </section>
+    </main>
+  </body>
+</html>

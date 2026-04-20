@@ -30,6 +30,7 @@ const languageOptions = document.querySelectorAll(".language-option");
 const pageTransition = document.querySelector(".page-transition");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const backButton = document.querySelector(".back-button");
+const photoGrid = document.querySelector(".photo-grid");
 const navigationEntry = performance.getEntriesByType("navigation")[0];
 const isBackForwardLoad = navigationEntry?.type === "back_forward";
 
@@ -153,6 +154,137 @@ if (backButton) {
   backButton.addEventListener("click", () => {
     navigateWithFade("./index.html");
   });
+}
+
+if (photoGrid) {
+  const photoModels = Array.from(photoGrid.querySelectorAll(".photo-tile")).map(
+    (tile) => {
+      const image = tile.querySelector(".photo-image");
+      const width = Number(image?.getAttribute("width")) || 1;
+      const height = Number(image?.getAttribute("height")) || 1;
+      const ratio = width / height;
+      const kind =
+        ratio < 0.9 ? "portrait" : ratio > 1.65 ? "wide" : "landscape";
+
+      return {
+        tile,
+        width,
+        height,
+        ratio,
+        kind,
+        visualWeight: height / width,
+      };
+    }
+  );
+
+  let currentPhotoColumns = 0;
+
+  const takeFirstMatching = (items, preferredKinds) => {
+    for (const kind of preferredKinds) {
+      const index = items.findIndex((item) => item.kind === kind);
+
+      if (index >= 0) {
+        return items.splice(index, 1)[0];
+      }
+    }
+
+    return items.shift();
+  };
+
+  const buildBalancedSequence = (items) => {
+    const pools = {
+      portrait: items.filter((item) => item.kind === "portrait"),
+      landscape: items.filter((item) => item.kind === "landscape"),
+      wide: items.filter((item) => item.kind === "wide"),
+    };
+
+    const sequence = [];
+    let lastKind = "";
+
+    while (pools.portrait.length || pools.landscape.length || pools.wide.length) {
+      const choices = ["portrait", "landscape", "wide"]
+        .filter((kind) => pools[kind].length)
+        .sort((kindA, kindB) => pools[kindB].length - pools[kindA].length);
+
+      const nextKind =
+        choices.find((kind) => kind !== lastKind) || choices[0];
+
+      sequence.push(pools[nextKind].shift());
+      lastKind = nextKind;
+    }
+
+    return sequence;
+  };
+
+  const rebuildPhotoColumns = () => {
+    const nextColumns = window.innerWidth <= 980 ? 2 : 4;
+
+    if (nextColumns === currentPhotoColumns) {
+      return;
+    }
+
+    currentPhotoColumns = nextColumns;
+    photoGrid.innerHTML = "";
+
+    const columns = Array.from({ length: nextColumns }, () => {
+      const element = document.createElement("div");
+      element.className = "photo-column";
+      photoGrid.appendChild(element);
+
+      return {
+        element,
+        height: 0,
+        lastKind: "",
+      };
+    });
+
+    const remaining = [...photoModels];
+    const seedPatterns =
+      nextColumns === 2
+        ? [
+            ["portrait", "landscape", "wide"],
+            ["landscape", "wide", "portrait"],
+          ]
+        : [
+            ["portrait", "landscape", "wide"],
+            ["landscape", "wide", "portrait"],
+            ["portrait", "wide", "landscape"],
+            ["landscape", "portrait", "wide"],
+          ];
+
+    const placeInColumn = (column, model) => {
+      column.element.appendChild(model.tile);
+      column.height += model.visualWeight;
+      column.lastKind = model.kind;
+    };
+
+    columns.forEach((column, index) => {
+      const model = takeFirstMatching(
+        remaining,
+        seedPatterns[index] || ["portrait", "landscape", "wide"]
+      );
+
+      if (model) {
+        placeInColumn(column, model);
+      }
+    });
+
+    const balancedSequence = buildBalancedSequence(remaining);
+
+    balancedSequence.forEach((model) => {
+      const targetColumn = [...columns].sort((columnA, columnB) => {
+        const penaltyA = columnA.lastKind === model.kind ? 0.35 : 0;
+        const penaltyB = columnB.lastKind === model.kind ? 0.35 : 0;
+
+        return columnA.height + penaltyA - (columnB.height + penaltyB);
+      })[0];
+
+      placeInColumn(targetColumn, model);
+    });
+  };
+
+  rebuildPhotoColumns();
+  window.addEventListener("resize", rebuildPhotoColumns);
 }
 
 const categorySection = document.querySelector(".categories");

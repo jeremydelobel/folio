@@ -182,56 +182,6 @@ button {
   letter-spacing: -0.01em;
 }
 
-.language-switch {
-  left: 2rem;
-  bottom: 2rem;
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.45rem 0;
-  font-size: 15px;
-  line-height: 1;
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  cursor: pointer;
-}
-
-.language-option,
-.language-separator {
-  transition: opacity 220ms ease;
-}
-
-.language-option {
-  appearance: none;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  padding: 0.45rem 0.4rem;
-  margin: -0.45rem -0.08rem;
-  opacity: 0.32;
-  pointer-events: none;
-}
-
-.language-separator {
-  padding: 0.45rem 0.1rem;
-  margin: -0.45rem 0;
-}
-
-.language-option.is-active {
-  opacity: 1;
-}
-
-.language-switch[data-active="fr"] .language-separator,
-.language-switch[data-active="fr"] [data-lang="en"] {
-  opacity: 0.32;
-}
-
-.language-switch[data-active="en"] .language-separator,
-.language-switch[data-active="en"] [data-lang="fr"] {
-  opacity: 0.32;
-}
-
 .categories {
   --group-scale: 1;
   position: absolute;
@@ -433,13 +383,8 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   overflow: hidden;
   padding-top: 0.2rem;
   padding-bottom: 0.3rem;
-}
-
-.photography-page .language-switch {
-  position: fixed;
-  left: 2rem;
-  bottom: 2rem;
-  z-index: 2;
+  padding-right: 0.08em;
+  margin-right: -0.08em;
 }
 
 .photo-grid {
@@ -567,13 +512,6 @@ body.is-ready .text-reveal-mask .text-reveal-value {
     margin-top: 0;
   }
 
-  .language-switch {
-    position: fixed;
-    left: 1.25rem;
-    bottom: 1.25rem;
-    margin-top: 0;
-  }
-
   .categories {
     position: static;
     width: 100%;
@@ -599,11 +537,6 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   .folio-title {
     top: 1.25rem;
     font-size: 32px;
-  }
-
-  .photography-page .language-switch {
-    left: 1.25rem;
-    bottom: 1.25rem;
   }
 
   .photo-grid {

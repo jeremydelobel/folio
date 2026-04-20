@@ -1,75 +1,9 @@
-const translations = {
-  fr: {
-    name: 'Jérémy "Kota" Delobel',
-    roles: "Monteur Vidéo, Motion Designer & Photographe",
-    locationLine1: "Basé en France,",
-    locationLine2: "à Angoulême",
-    comingSoon: "Bientôt",
-    backButton: "Retour",
-    photoPageTitle: "Photographie",
-    cardVideo: "MONTAGE VIDÉO",
-    cardPhotography: "PHOTOGRAPHIE",
-    cardMotion: "MOTION DESIGN",
-  },
-  en: {
-    name: 'Jérémy "Kota" Delobel',
-    roles: "Video Editor, Motion Designer & Photographer",
-    locationLine1: "Based in France,",
-    locationLine2: "in Angoulême",
-    comingSoon: "Coming soon",
-    backButton: "Back",
-    photoPageTitle: "Photography",
-    cardVideo: "VIDEO EDITING",
-    cardPhotography: "PHOTOGRAPHY",
-    cardMotion: "MOTION DESIGN",
-  },
-};
-
-const languageSwitch = document.querySelector(".language-switch");
-const languageOptions = document.querySelectorAll(".language-option");
 const pageTransition = document.querySelector(".page-transition");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const backButton = document.querySelector(".back-button");
 const photoGrid = document.querySelector(".photo-grid");
 const navigationEntry = performance.getEntriesByType("navigation")[0];
 const isBackForwardLoad = navigationEntry?.type === "back_forward";
-
-const setLanguage = (lang) => {
-  const copy = translations[lang];
-
-  if (!copy) {
-    return;
-  }
-
-  document.documentElement.lang = lang;
-
-  document.querySelectorAll("[data-i18n]").forEach((element) => {
-    const key = element.dataset.i18n;
-
-    if (copy[key]) {
-      element.textContent = copy[key];
-    }
-  });
-
-  if (languageSwitch) {
-    languageSwitch.dataset.active = lang;
-  }
-
-  languageOptions.forEach((option) => {
-    const isActive = option.dataset.lang === lang;
-    option.classList.toggle("is-active", isActive);
-    option.setAttribute("aria-pressed", String(isActive));
-  });
-};
-
-if (languageSwitch) {
-  languageSwitch.addEventListener("click", () => {
-    const current = languageSwitch.dataset.active || "fr";
-    setLanguage(current === "fr" ? "en" : "fr");
-  });
-}
-
-setLanguage("fr");
 
 const startIntroAnimation = () => {
   requestAnimationFrame(() => {
@@ -168,9 +102,6 @@ if (photoGrid) {
 
       return {
         tile,
-        width,
-        height,
-        ratio,
         kind,
         visualWeight: height / width,
       };
@@ -235,6 +166,7 @@ if (photoGrid) {
         element,
         height: 0,
         lastKind: "",
+        items: [],
       };
     });
 
@@ -256,6 +188,7 @@ if (photoGrid) {
       column.element.appendChild(model.tile);
       column.height += model.visualWeight;
       column.lastKind = model.kind;
+      column.items.push(model);
     };
 
     columns.forEach((column, index) => {
@@ -281,6 +214,20 @@ if (photoGrid) {
 
       placeInColumn(targetColumn, model);
     });
+
+    const firstColumn = columns[0];
+
+    if (nextColumns === 4 && firstColumn?.items.length >= 3) {
+      [firstColumn.items[0], firstColumn.items[2]] = [
+        firstColumn.items[2],
+        firstColumn.items[0],
+      ];
+
+      firstColumn.element.innerHTML = "";
+      firstColumn.items.forEach((model) => {
+        firstColumn.element.appendChild(model.tile);
+      });
+    }
   };
 
   rebuildPhotoColumns();
@@ -323,10 +270,7 @@ if (categorySection && categoryCards.length) {
     const sidePadding = Math.max(window.innerWidth * 0.15, 20);
     const introHeight = intro ? intro.offsetHeight : 0;
     const shopHeight = shopButton ? shopButton.offsetHeight : 0;
-    const footerHeight = Math.max(
-      languageSwitch ? languageSwitch.offsetHeight : 0,
-      locationBlock ? locationBlock.offsetHeight : 0
-    );
+    const footerHeight = locationBlock ? locationBlock.offsetHeight : 0;
 
     const topZone = Math.max(introHeight, shopHeight) + 36;
     const bottomZone = footerHeight + 36;

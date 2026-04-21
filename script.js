@@ -91,24 +91,50 @@ if (backButton) {
 }
 
 if (photoGrid) {
-  const photoModels = Array.from(photoGrid.querySelectorAll(".photo-tile")).map(
-    (tile) => {
+  let currentPhotoColumns = 0;
+  let randomizedPhotoModels = [];
+  let tileRevealObserver;
+  let imageLoadObserver;
+
+  const shuffleArray = (items) => {
+    const shuffled = [...items];
+
+    for (let index = shuffled.length - 1; index > 0; index -= 1) {
+      const randomIndex = Math.floor(Math.random() * (index + 1));
+
+      [shuffled[index], shuffled[randomIndex]] = [
+        shuffled[randomIndex],
+        shuffled[index],
+      ];
+    }
+
+    return shuffled;
+  };
+
+  const buildPhotoModels = () =>
+    Array.from(photoGrid.querySelectorAll(".photo-tile")).map((tile) => {
       const image = tile.querySelector(".photo-image");
-      const width = Number(image?.getAttribute("width")) || 1;
-      const height = Number(image?.getAttribute("height")) || 1;
+      const width =
+        image?.naturalWidth || Number(image?.getAttribute("width")) || 1;
+      const height =
+        image?.naturalHeight || Number(image?.getAttribute("height")) || 1;
       const ratio = width / height;
       const kind =
         ratio < 0.9 ? "portrait" : ratio > 1.65 ? "wide" : "landscape";
 
+      tile.style.setProperty("--tile-ratio", `${width} / ${height}`);
+
       return {
         tile,
+        image,
         kind,
         visualWeight: height / width,
       };
-    }
-  );
+    });
 
-  let currentPhotoColumns = 0;
+  const refreshRandomizedPhotoModels = () => {
+    randomizedPhotoModels = shuffleArray(buildPhotoModels());
+  };
 
   const takeFirstMatching = (items, preferredKinds) => {
     for (const kind of preferredKinds) {
@@ -124,9 +150,11 @@ if (photoGrid) {
 
   const buildBalancedSequence = (items) => {
     const pools = {
-      portrait: items.filter((item) => item.kind === "portrait"),
-      landscape: items.filter((item) => item.kind === "landscape"),
-      wide: items.filter((item) => item.kind === "wide"),
+      portrait: shuffleArray(items.filter((item) => item.kind === "portrait")),
+      landscape: shuffleArray(
+        items.filter((item) => item.kind === "landscape")
+      ),
+      wide: shuffleArray(items.filter((item) => item.kind === "wide")),
     };
 
     const sequence = [];
@@ -135,7 +163,15 @@ if (photoGrid) {
     while (pools.portrait.length || pools.landscape.length || pools.wide.length) {
       const choices = ["portrait", "landscape", "wide"]
         .filter((kind) => pools[kind].length)
-        .sort((kindA, kindB) => pools[kindB].length - pools[kindA].length);
+        .sort((kindA, kindB) => {
+          const poolDifference = pools[kindB].length - pools[kindA].length;
+
+          if (poolDifference !== 0) {
+            return poolDifference;
+          }
+
+          return Math.random() - 0.5;
+        });
 
       const nextKind =
         choices.find((kind) => kind !== lastKind) || choices[0];
@@ -147,32 +183,9 @@ if (photoGrid) {
     return sequence;
   };
 
-  const rebuildPhotoColumns = () => {
-    const nextColumns = window.innerWidth <= 980 ? 2 : 4;
-
-    if (nextColumns === currentPhotoColumns) {
-      return;
-    }
-
-    currentPhotoColumns = nextColumns;
-    photoGrid.innerHTML = "";
-
-    const columns = Array.from({ length: nextColumns }, () => {
-      const element = document.createElement("div");
-      element.className = "photo-column";
-      photoGrid.appendChild(element);
-
-      return {
-        element,
-        height: 0,
-        lastKind: "",
-        items: [],
-      };
-    });
-
-    const remaining = [...photoModels];
-    const seedPatterns =
-      nextColumns === 2
+  const getSeedPatterns = (columnCount) =>
+    shuffleArray(
+      columnCount === 2
         ? [
             ["portrait", "landscape", "wide"],
             ["landscape", "wide", "portrait"],
@@ -182,10 +195,20 @@ if (photoGrid) {
             ["landscape", "wide", "portrait"],
             ["portrait", "wide", "landscape"],
             ["landscape", "portrait", "wide"],
-          ];
+          ]
+    );
+
+  const buildColumnCandidate = (columnCount) => {
+    const columns = Array.from({ length: columnCount }, () => ({
+      height: 0,
+      lastKind: "",
+      items: [],
+    }));
+
+    const remaining = [...randomizedPhotoModels];
+    const seedPatterns = getSeedPatterns(columnCount);
 
     const placeInColumn = (column, model) => {
-      column.element.appendChild(model.tile);
       column.height += model.visualWeight;
       column.lastKind = model.kind;
       column.items.push(model);
@@ -205,31 +228,192 @@ if (photoGrid) {
     const balancedSequence = buildBalancedSequence(remaining);
 
     balancedSequence.forEach((model) => {
-      const targetColumn = [...columns].sort((columnA, columnB) => {
-        const penaltyA = columnA.lastKind === model.kind ? 0.35 : 0;
-        const penaltyB = columnB.lastKind === model.kind ? 0.35 : 0;
+      const averageHeight =
+        columns.reduce((total, column) => total + column.height, 0) /
+        columns.length;
 
-        return columnA.height + penaltyA - (columnB.height + penaltyB);
+      const targetColumn = [...columns].sort((columnA, columnB) => {
+        const repetitionPenaltyA = columnA.lastKind === model.kind ? 0.35 : 0;
+        const repetitionPenaltyB = columnB.lastKind === model.kind ? 0.35 : 0;
+        const projectedHeightA = columnA.height + model.visualWeight;
+        const projectedHeightB = columnB.height + model.visualWeight;
+        const balancePenaltyA = Math.abs(projectedHeightA - averageHeight);
+        const balancePenaltyB = Math.abs(projectedHeightB - averageHeight);
+        const itemCountPenaltyA = columnA.items.length * 0.025;
+        const itemCountPenaltyB = columnB.items.length * 0.025;
+
+        return (
+          columnA.height +
+          repetitionPenaltyA +
+          balancePenaltyA * 0.55 +
+          itemCountPenaltyA -
+          (columnB.height +
+            repetitionPenaltyB +
+            balancePenaltyB * 0.55 +
+            itemCountPenaltyB)
+        );
       })[0];
 
       placeInColumn(targetColumn, model);
     });
 
-    const firstColumn = columns[0];
+    return columns;
+  };
 
-    if (nextColumns === 4 && firstColumn?.items.length >= 3) {
-      [firstColumn.items[0], firstColumn.items[2]] = [
-        firstColumn.items[2],
-        firstColumn.items[0],
-      ];
+  const scoreColumnCandidate = (columns) => {
+    const heights = columns.map((column) => column.height);
+    const tallest = Math.max(...heights);
+    const shortest = Math.min(...heights);
+    const averageHeight =
+      heights.reduce((total, height) => total + height, 0) / heights.length;
+    const heightVariance = heights.reduce(
+      (total, height) => total + Math.abs(height - averageHeight),
+      0
+    );
+    const repetitionPenalty = columns.reduce((total, column) => {
+      let penalty = 0;
 
-      firstColumn.element.innerHTML = "";
-      firstColumn.items.forEach((model) => {
-        firstColumn.element.appendChild(model.tile);
-      });
+      for (let index = 1; index < column.items.length; index += 1) {
+        if (column.items[index].kind === column.items[index - 1].kind) {
+          penalty += 0.28;
+        }
+      }
+
+      return total + penalty;
+    }, 0);
+
+    return (tallest - shortest) * 4.8 + heightVariance * 1.6 + repetitionPenalty;
+  };
+
+  const getBestColumnCandidate = (columnCount) => {
+    const attemptCount = columnCount === 2 ? 10 : 16;
+    let bestCandidate = null;
+    let bestScore = Infinity;
+
+    for (let attempt = 0; attempt < attemptCount; attempt += 1) {
+      const candidate = buildColumnCandidate(columnCount);
+      const candidateScore = scoreColumnCandidate(candidate);
+
+      if (candidateScore < bestScore) {
+        bestCandidate = candidate;
+        bestScore = candidateScore;
+      }
+    }
+
+    return bestCandidate;
+  };
+
+  const loadPhotoImage = (image) => {
+    if (!image || image.dataset.loaded === "true") {
+      return;
+    }
+
+    const tile = image.closest(".photo-tile");
+    const source = image.dataset.src;
+
+    if (!source) {
+      tile?.classList.add("is-loaded");
+      image.dataset.loaded = "true";
+      return;
+    }
+
+    const handleLoad = () => {
+      tile?.classList.add("is-loaded");
+      image.dataset.loaded = "true";
+      image.removeEventListener("load", handleLoad);
+    };
+
+    image.addEventListener("load", handleLoad, { once: true });
+    image.src = source;
+
+    if (image.complete) {
+      handleLoad();
     }
   };
 
+  const observePhotoTiles = () => {
+    if (tileRevealObserver) {
+      tileRevealObserver.disconnect();
+    }
+
+    if (imageLoadObserver) {
+      imageLoadObserver.disconnect();
+    }
+
+    const tiles = Array.from(photoGrid.querySelectorAll(".photo-tile"));
+    const images = tiles
+      .map((tile) => tile.querySelector(".photo-image"))
+      .filter(Boolean);
+
+    if (prefersReducedMotion.matches || !("IntersectionObserver" in window)) {
+      tiles.forEach((tile) => tile.classList.add("is-visible"));
+      images.forEach((image) => loadPhotoImage(image));
+      return;
+    }
+
+    tileRevealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+
+          entry.target.classList.add("is-visible");
+          tileRevealObserver.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.14,
+        rootMargin: "0px 0px -8% 0px",
+      }
+    );
+
+    imageLoadObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+
+          loadPhotoImage(entry.target);
+          imageLoadObserver.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.01,
+        rootMargin: "400px 0px 400px 0px",
+      }
+    );
+
+    tiles.forEach((tile) => tileRevealObserver.observe(tile));
+    images.forEach((image) => imageLoadObserver.observe(image));
+  };
+
+  const rebuildPhotoColumns = () => {
+    const nextColumns = window.innerWidth <= 980 ? 2 : 4;
+
+    if (nextColumns === currentPhotoColumns) {
+      return;
+    }
+
+    currentPhotoColumns = nextColumns;
+    photoGrid.innerHTML = "";
+    const bestCandidate = getBestColumnCandidate(nextColumns);
+
+    bestCandidate.forEach((column) => {
+      const element = document.createElement("div");
+      element.className = "photo-column";
+      photoGrid.appendChild(element);
+
+      column.items.forEach((model) => {
+        element.appendChild(model.tile);
+      });
+    });
+
+    observePhotoTiles();
+  };
+
+  refreshRandomizedPhotoModels();
   rebuildPhotoColumns();
   window.addEventListener("resize", rebuildPhotoColumns);
 }

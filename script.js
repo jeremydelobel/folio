@@ -115,9 +115,9 @@ if (photoGrid) {
     Array.from(photoGrid.querySelectorAll(".photo-tile")).map((tile) => {
       const image = tile.querySelector(".photo-image");
       const width =
-        image?.naturalWidth || Number(image?.getAttribute("width")) || 1;
+        Number(image?.getAttribute("width")) || image?.naturalWidth || 1;
       const height =
-        image?.naturalHeight || Number(image?.getAttribute("height")) || 1;
+        Number(image?.getAttribute("height")) || image?.naturalHeight || 1;
       const ratio = width / height;
       const kind =
         ratio < 0.9 ? "portrait" : ratio > 1.65 ? "wide" : "landscape";
@@ -128,7 +128,8 @@ if (photoGrid) {
         tile,
         image,
         kind,
-        visualWeight: height / width,
+        formatGroup: kind === "portrait" ? "portrait" : "horizontal",
+        balanceUnits: kind === "portrait" ? 2 : 1,
       };
     });
 
@@ -136,162 +137,276 @@ if (photoGrid) {
     randomizedPhotoModels = shuffleArray(buildPhotoModels());
   };
 
-  const takeFirstMatching = (items, preferredKinds) => {
-    for (const kind of preferredKinds) {
-      const index = items.findIndex((item) => item.kind === kind);
-
-      if (index >= 0) {
-        return items.splice(index, 1)[0];
-      }
-    }
-
-    return items.shift();
-  };
-
-  const buildBalancedSequence = (items) => {
-    const pools = {
-      portrait: shuffleArray(items.filter((item) => item.kind === "portrait")),
-      landscape: shuffleArray(
-        items.filter((item) => item.kind === "landscape")
-      ),
-      wide: shuffleArray(items.filter((item) => item.kind === "wide")),
-    };
-
-    const sequence = [];
-    let lastKind = "";
-
-    while (pools.portrait.length || pools.landscape.length || pools.wide.length) {
-      const choices = ["portrait", "landscape", "wide"]
-        .filter((kind) => pools[kind].length)
-        .sort((kindA, kindB) => {
-          const poolDifference = pools[kindB].length - pools[kindA].length;
-
-          if (poolDifference !== 0) {
-            return poolDifference;
-          }
-
-          return Math.random() - 0.5;
-        });
-
-      const nextKind =
-        choices.find((kind) => kind !== lastKind) || choices[0];
-
-      sequence.push(pools[nextKind].shift());
-      lastKind = nextKind;
-    }
-
-    return sequence;
-  };
-
-  const getSeedPatterns = (columnCount) =>
-    shuffleArray(
-      columnCount === 2
-        ? [
-            ["portrait", "landscape", "wide"],
-            ["landscape", "wide", "portrait"],
-          ]
-        : [
-            ["portrait", "landscape", "wide"],
-            ["landscape", "wide", "portrait"],
-            ["portrait", "wide", "landscape"],
-            ["landscape", "portrait", "wide"],
-          ]
-    );
-
   const buildColumnCandidate = (columnCount) => {
-    const columns = Array.from({ length: columnCount }, () => ({
-      height: 0,
-      lastKind: "",
+    const portraitModels = shuffleArray(
+      randomizedPhotoModels.filter((model) => model.formatGroup === "portrait")
+    );
+    const horizontalModels = shuffleArray(
+      randomizedPhotoModels.filter((model) => model.formatGroup === "horizontal")
+    );
+    const columns = Array.from({ length: columnCount }, (_, index) => ({
+      index,
+      portraitCount: 0,
+      horizontalCount: 0,
+      balanceUnits: 0,
       items: [],
     }));
+    let remainingPortraitCount = portraitModels.length;
+    let remainingHorizontalCount = horizontalModels.length;
+    const startOffset = Math.random() < 0.5 ? 0 : 1;
 
-    const remaining = [...randomizedPhotoModels];
-    const seedPatterns = getSeedPatterns(columnCount);
+    const addGroupToColumn = (column, group) => {
+      if (group === "portrait") {
+        if (remainingPortraitCount <= 0) {
+          return false;
+        }
 
-    const placeInColumn = (column, model) => {
-      column.height += model.visualWeight;
-      column.lastKind = model.kind;
-      column.items.push(model);
+        column.portraitCount += 1;
+        column.balanceUnits += 2;
+        remainingPortraitCount -= 1;
+        return true;
+      }
+
+      if (remainingHorizontalCount <= 0) {
+        return false;
+      }
+
+      column.horizontalCount += 1;
+      column.balanceUnits += 1;
+      remainingHorizontalCount -= 1;
+      return true;
     };
 
-    columns.forEach((column, index) => {
-      const model = takeFirstMatching(
-        remaining,
-        seedPatterns[index] || ["portrait", "landscape", "wide"]
-      );
+    const getColumnItemCount = (column) =>
+      column.portraitCount + column.horizontalCount;
 
-      if (model) {
-        placeInColumn(column, model);
+    const buildGroupSequence = (portraitCount, horizontalCount, startGroup) => {
+      const cache = new Map();
+
+      const solve = (
+        remainingPortrait,
+        remainingHorizontal,
+        lastGroup,
+        streakLength,
+        isFirstStep
+      ) => {
+        const cacheKey = [
+          remainingPortrait,
+          remainingHorizontal,
+          lastGroup || "none",
+          streakLength,
+          isFirstStep ? 1 : 0,
+        ].join("|");
+
+        if (cache.has(cacheKey)) {
+          return cache.get(cacheKey);
+        }
+
+        if (remainingPortrait === 0 && remainingHorizontal === 0) {
+          cache.set(cacheKey, []);
+          return [];
+        }
+
+        const candidateGroups = isFirstStep
+          ? [startGroup]
+          : shuffleArray(["portrait", "horizontal"]).sort((groupA, groupB) => {
+              const remainingCountA =
+                groupA === "portrait" ? remainingPortrait : remainingHorizontal;
+              const remainingCountB =
+                groupB === "portrait" ? remainingPortrait : remainingHorizontal;
+
+              return remainingCountB - remainingCountA;
+            });
+
+        for (const group of candidateGroups) {
+          if (group === "portrait" && remainingPortrait <= 0) {
+            continue;
+          }
+
+          if (group === "horizontal" && remainingHorizontal <= 0) {
+            continue;
+          }
+
+          if (!isFirstStep && lastGroup === group && streakLength >= 2) {
+            continue;
+          }
+
+          const nextPortrait =
+            remainingPortrait - (group === "portrait" ? 1 : 0);
+          const nextHorizontal =
+            remainingHorizontal - (group === "horizontal" ? 1 : 0);
+          const nextStreak = lastGroup === group ? streakLength + 1 : 1;
+          const tail = solve(
+            nextPortrait,
+            nextHorizontal,
+            group,
+            nextStreak,
+            false
+          );
+
+          if (tail) {
+            const result = [group, ...tail];
+            cache.set(cacheKey, result);
+            return result;
+          }
+        }
+
+        cache.set(cacheKey, null);
+        return null;
+      };
+
+      return solve(portraitCount, horizontalCount, "", 0, true);
+    };
+
+    for (const [index, column] of columns.entries()) {
+      const startGroup =
+        (index + startOffset) % 2 === 0 ? "portrait" : "horizontal";
+      let placedStartGroup = startGroup;
+
+      if (!addGroupToColumn(column, startGroup)) {
+        const fallbackGroup =
+          startGroup === "portrait" ? "horizontal" : "portrait";
+
+        if (!addGroupToColumn(column, fallbackGroup)) {
+          return null;
+        }
+
+        placedStartGroup = fallbackGroup;
       }
+
+      column.startGroup = placedStartGroup;
+    }
+
+    while (remainingPortraitCount > 0) {
+      const rankedColumns = shuffleArray([...columns]).sort((columnA, columnB) => {
+        if (columnA.balanceUnits !== columnB.balanceUnits) {
+          return columnA.balanceUnits - columnB.balanceUnits;
+        }
+
+        return getColumnItemCount(columnA) - getColumnItemCount(columnB);
+      });
+
+      addGroupToColumn(rankedColumns[0], "portrait");
+    }
+
+    while (remainingHorizontalCount > 0) {
+      const rankedColumns = shuffleArray([...columns]).sort((columnA, columnB) => {
+        if (columnA.balanceUnits !== columnB.balanceUnits) {
+          return columnA.balanceUnits - columnB.balanceUnits;
+        }
+
+        return getColumnItemCount(columnA) - getColumnItemCount(columnB);
+      });
+
+      addGroupToColumn(rankedColumns[0], "horizontal");
+    }
+
+    const sequences = columns.map((column) =>
+      buildGroupSequence(
+        column.portraitCount,
+        column.horizontalCount,
+        column.startGroup
+      )
+    );
+
+    if (sequences.some((sequence) => !sequence)) {
+      return null;
+    }
+
+    const portraitPool = [...portraitModels];
+    const horizontalPool = [...horizontalModels];
+
+    columns.forEach((column, index) => {
+      column.items = sequences[index].map((group) => {
+        const model =
+          group === "portrait"
+            ? portraitPool.shift()
+            : horizontalPool.shift();
+
+        return model;
+      });
     });
 
-    const balancedSequence = buildBalancedSequence(remaining);
-
-    balancedSequence.forEach((model) => {
-      const averageHeight =
-        columns.reduce((total, column) => total + column.height, 0) /
-        columns.length;
-
-      const targetColumn = [...columns].sort((columnA, columnB) => {
-        const repetitionPenaltyA = columnA.lastKind === model.kind ? 0.35 : 0;
-        const repetitionPenaltyB = columnB.lastKind === model.kind ? 0.35 : 0;
-        const projectedHeightA = columnA.height + model.visualWeight;
-        const projectedHeightB = columnB.height + model.visualWeight;
-        const balancePenaltyA = Math.abs(projectedHeightA - averageHeight);
-        const balancePenaltyB = Math.abs(projectedHeightB - averageHeight);
-        const itemCountPenaltyA = columnA.items.length * 0.025;
-        const itemCountPenaltyB = columnB.items.length * 0.025;
-
-        return (
-          columnA.height +
-          repetitionPenaltyA +
-          balancePenaltyA * 0.55 +
-          itemCountPenaltyA -
-          (columnB.height +
-            repetitionPenaltyB +
-            balancePenaltyB * 0.55 +
-            itemCountPenaltyB)
-        );
-      })[0];
-
-      placeInColumn(targetColumn, model);
-    });
+    if (portraitPool.length || horizontalPool.length) {
+      return null;
+    }
 
     return columns;
   };
 
   const scoreColumnCandidate = (columns) => {
-    const heights = columns.map((column) => column.height);
-    const tallest = Math.max(...heights);
-    const shortest = Math.min(...heights);
-    const averageHeight =
-      heights.reduce((total, height) => total + height, 0) / heights.length;
-    const heightVariance = heights.reduce(
-      (total, height) => total + Math.abs(height - averageHeight),
+    const balances = columns.map((column) => column.balanceUnits);
+    const highestBalance = Math.max(...balances);
+    const lowestBalance = Math.min(...balances);
+    const averageBalance =
+      balances.reduce((total, balance) => total + balance, 0) / balances.length;
+    const balanceVariance = balances.reduce(
+      (total, balance) => total + Math.abs(balance - averageBalance),
       0
     );
-    const repetitionPenalty = columns.reduce((total, column) => {
+    const counts = columns.map((column) => column.items.length);
+    const highestCount = Math.max(...counts);
+    const lowestCount = Math.min(...counts);
+    const averageCount =
+      counts.reduce((total, count) => total + count, 0) / counts.length;
+    const countVariance = counts.reduce(
+      (total, count) => total + Math.abs(count - averageCount),
+      0
+    );
+    const startPenalty = columns.reduce((total, column, index) => {
+      if (index === 0) {
+        return total;
+      }
+
+      const previousStart = columns[index - 1].items[0]?.formatGroup;
+      const currentStart = column.items[0]?.formatGroup;
+
+      return total + (previousStart === currentStart ? 8 : 0);
+    }, 0);
+    const streakPenalty = columns.reduce((total, column) => {
       let penalty = 0;
+      let currentStreak = 1;
 
       for (let index = 1; index < column.items.length; index += 1) {
-        if (column.items[index].kind === column.items[index - 1].kind) {
-          penalty += 0.28;
+        const currentGroup = column.items[index]?.formatGroup;
+        const previousGroup = column.items[index - 1]?.formatGroup;
+
+        if (currentGroup === previousGroup) {
+          currentStreak += 1;
+        } else {
+          currentStreak = 1;
+        }
+
+        if (currentStreak > 2) {
+          penalty += 50;
         }
       }
 
       return total + penalty;
     }, 0);
 
-    return (tallest - shortest) * 4.8 + heightVariance * 1.6 + repetitionPenalty;
+    return (
+      (highestBalance - lowestBalance) * 42 +
+      balanceVariance * 22 +
+      (highestCount - lowestCount) * 4 +
+      countVariance * 0.6 +
+      startPenalty +
+      streakPenalty
+    );
   };
 
   const getBestColumnCandidate = (columnCount) => {
-    const attemptCount = columnCount === 2 ? 10 : 16;
+    const attemptCount = columnCount === 2 ? 80 : 160;
     let bestCandidate = null;
     let bestScore = Infinity;
 
     for (let attempt = 0; attempt < attemptCount; attempt += 1) {
       const candidate = buildColumnCandidate(columnCount);
+
+      if (!candidate) {
+        continue;
+      }
+
       const candidateScore = scoreColumnCandidate(candidate);
 
       if (candidateScore < bestScore) {
@@ -300,7 +415,7 @@ if (photoGrid) {
       }
     }
 
-    return bestCandidate;
+    return bestCandidate || buildColumnCandidate(columnCount);
   };
 
   const loadPhotoImage = (image) => {
@@ -363,8 +478,8 @@ if (photoGrid) {
         });
       },
       {
-        threshold: 0.14,
-        rootMargin: "0px 0px -8% 0px",
+        threshold: 0.02,
+        rootMargin: "0px 0px 14% 0px",
       }
     );
 
@@ -381,7 +496,7 @@ if (photoGrid) {
       },
       {
         threshold: 0.01,
-        rootMargin: "400px 0px 400px 0px",
+        rootMargin: "500px 0px 500px 0px",
       }
     );
 
@@ -399,6 +514,10 @@ if (photoGrid) {
     currentPhotoColumns = nextColumns;
     photoGrid.innerHTML = "";
     const bestCandidate = getBestColumnCandidate(nextColumns);
+
+    if (!bestCandidate) {
+      return;
+    }
 
     bestCandidate.forEach((column) => {
       const element = document.createElement("div");

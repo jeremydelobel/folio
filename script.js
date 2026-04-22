@@ -1,6 +1,7 @@
 const pageTransition = document.querySelector(".page-transition");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const backButton = document.querySelector(".back-button");
+const showreelButton = document.querySelector(".showreel-button");
 const photoGrid = document.querySelector(".photo-grid");
 const videoTimeline = document.querySelector(".video-timeline");
 const timelineScrollArea = document.querySelector(".timeline-scroll-area");
@@ -420,6 +421,21 @@ document.querySelectorAll("[data-route]").forEach((element) => {
 if (backButton) {
   backButton.addEventListener("click", () => {
     navigateWithFade("./index.html");
+  });
+}
+
+if (showreelButton) {
+  showreelButton.addEventListener("click", () => {
+    const href =
+      typeof showreelButton.dataset.showreelUrl === "string"
+        ? showreelButton.dataset.showreelUrl.trim()
+        : "";
+
+    if (!href) {
+      return;
+    }
+
+    openExternalProjectLink(href);
   });
 }
 
@@ -907,21 +923,99 @@ const initVideoTimelineScene = () => {
   }));
   let currentTrackOffset = 0;
   let targetTrackOffset = 0;
+  let maxTrackOffset = 0;
   let videoSceneFrame = 0;
 
   const applyVideoTrackOffset = (offset) => {
     videoTimeline.style.setProperty("--track-offset", `${offset.toFixed(2)}px`);
   };
 
-  const syncVideoTimelineScroll = ({ snap = false } = {}) => {
-    const scrollDistance = Math.max(
-      timelineScrollArea.offsetHeight - window.innerHeight,
-      1
-    );
-    const progress = clamp(window.scrollY / scrollDistance, 0, 1);
-    const maxOffset = Math.max(videoTimeline.offsetWidth - window.innerWidth, 0);
+  const getFittedVideoCardTitleMetrics = ({
+    card,
+    baseWidth,
+    maxWidth,
+  }) => {
+    const labelMask = card.querySelector(".video-card-label-mask");
+    const labelRow = card.querySelector(".video-card-label-row");
+    const labelValue = card.querySelector(".video-card-label-value");
 
-    targetTrackOffset = maxOffset * progress;
+    if (!labelMask || !labelRow || !labelValue) {
+      return {
+        cardWidth: baseWidth,
+        titleScale: 1,
+      };
+    }
+
+    card.style.setProperty("--card-width", `${baseWidth.toFixed(2)}px`);
+    card.style.setProperty("--card-title-scale", "1");
+
+    const maskWidth = labelMask.clientWidth || baseWidth;
+    const titleWidth = labelValue.getBoundingClientRect().width;
+    const captionSize =
+      Number.parseFloat(window.getComputedStyle(labelRow).fontSize) || 14;
+    const hoverReserve = Math.max(captionSize * 0.92, 12);
+    const availableWidth = Math.max(maskWidth - hoverReserve, 48);
+
+    if (!titleWidth || titleWidth <= availableWidth) {
+      return {
+        cardWidth: baseWidth,
+        titleScale: 1,
+      };
+    }
+
+    const fittedScale = availableWidth / titleWidth;
+
+    if (fittedScale >= 0.9) {
+      return {
+        cardWidth: baseWidth,
+        titleScale: clamp(fittedScale, 0.9, 1),
+      };
+    }
+
+    const minimumScale = 0.9;
+    const requiredWidth = titleWidth * minimumScale + hoverReserve;
+    const adjustedWidth = clamp(
+      Math.max(baseWidth, requiredWidth),
+      baseWidth,
+      maxWidth
+    );
+    const adjustedAvailableWidth = Math.max(adjustedWidth - hoverReserve, 48);
+
+    return {
+      cardWidth: adjustedWidth,
+      titleScale: clamp(adjustedAvailableWidth / titleWidth, minimumScale, 1),
+    };
+  };
+
+  const syncVideoPageOverflow = () => {
+    if (videoIsMobileLayout.matches) {
+      document.documentElement.style.removeProperty("overflow-y");
+      document.body.style.removeProperty("overflow-y");
+      return;
+    }
+
+    document.documentElement.style.setProperty("overflow-y", "hidden");
+    document.body.style.setProperty("overflow-y", "hidden");
+    window.scrollTo({
+      top: 0,
+      behavior: "auto",
+    });
+  };
+
+  const syncVideoTimelineScroll = ({ snap = false } = {}) => {
+    if (videoIsMobileLayout.matches) {
+      targetTrackOffset = 0;
+
+      if (snap || prefersReducedMotion.matches) {
+        currentTrackOffset = 0;
+      }
+
+      applyVideoTrackOffset(0);
+      return;
+    }
+
+    targetTrackOffset = clamp(targetTrackOffset, 0, maxTrackOffset);
+    currentTrackOffset = clamp(currentTrackOffset, 0, maxTrackOffset);
 
     if (snap || prefersReducedMotion.matches) {
       currentTrackOffset = targetTrackOffset;
@@ -1003,9 +1097,78 @@ const initVideoTimelineScene = () => {
     videoSceneFrame = window.requestAnimationFrame(animateVideoScene);
   };
 
+  const handleVideoWheel = (event) => {
+    if (videoIsMobileLayout.matches) {
+      return;
+    }
+
+    event.preventDefault();
+
+    const deltaScale =
+      event.deltaMode === WheelEvent.DOM_DELTA_LINE
+        ? 16
+        : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+          ? window.innerHeight
+          : 1;
+    const scrollDelta = (event.deltaY + event.deltaX) * deltaScale;
+
+    if (Math.abs(scrollDelta) < 0.1) {
+      return;
+    }
+
+    targetTrackOffset = clamp(targetTrackOffset + scrollDelta, 0, maxTrackOffset);
+
+    if (prefersReducedMotion.matches) {
+      currentTrackOffset = targetTrackOffset;
+      applyVideoTrackOffset(currentTrackOffset);
+    }
+  };
+
   const layoutVideoTimeline = () => {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
+    syncVideoPageOverflow();
+
+    if (videoIsMobileLayout.matches) {
+      const mobileBaseWidth = clamp(viewportWidth * 0.72, 220, 310);
+      const mobileShiftLimit = clamp(viewportWidth * 0.11, 14, 34);
+      const mobileShiftPattern = [0, -0.75, 0.55, -0.35, 0.72, -0.22, 0.42, -0.58];
+
+      videoTimeline.style.setProperty("--card-caption-size", "14px");
+      videoTimeline.style.width = "100%";
+      videoTimeline.style.height = "auto";
+      timelineScrollArea.style.minHeight = "auto";
+      maxTrackOffset = 0;
+      currentTrackOffset = 0;
+      targetTrackOffset = 0;
+      applyVideoTrackOffset(0);
+
+      timelineCards.forEach((card, index) => {
+        const isVertical = card.dataset.format === "vertical";
+        const scaleFactor = scalePattern[index % scalePattern.length];
+        const formatWidthFactor = isVertical ? 0.78 : 1;
+        const baseWidth = mobileBaseWidth * scaleFactor * formatWidthFactor;
+        const centeredShift =
+          mobileShiftPattern[index % mobileShiftPattern.length] * mobileShiftLimit;
+        const maxWidth = Math.max(viewportWidth - 28, baseWidth);
+        const { cardWidth, titleScale } = getFittedVideoCardTitleMetrics({
+          card,
+          baseWidth,
+          maxWidth,
+        });
+
+        card.style.setProperty("--card-width", `${cardWidth.toFixed(2)}px`);
+        card.style.setProperty("--card-title-scale", titleScale.toFixed(3));
+        card.style.setProperty("--mobile-shift", `${centeredShift.toFixed(2)}px`);
+        card.style.setProperty("--entry-delay", `${(0.08 + index * 0.08).toFixed(2)}s`);
+        card.style.setProperty("--card-color", pastelPalette[index % pastelPalette.length]);
+        card.style.removeProperty("--card-x");
+        card.style.removeProperty("--card-y");
+      });
+
+      return;
+    }
+
     const captionScale =
       viewportWidth <= 640
         ? 1
@@ -1019,12 +1182,27 @@ const initVideoTimelineScene = () => {
         : clamp(viewportWidth * 0.31, 280, 460);
     const safeTop = viewportWidth <= 640 ? 112 : 160;
     const safeBottom = viewportWidth <= 640 ? 120 : 92;
+    videoTimeline.style.setProperty(
+      "--card-caption-size",
+      `${(14 * captionScale).toFixed(2)}px`
+    );
+    videoTimeline.style.height = "100vh";
+
     const cardMetrics = timelineCards.map((card, index) => {
       const isVertical = card.dataset.format === "vertical";
       const scaleFactor = scalePattern[index % scalePattern.length];
       const formatWidthFactor = isVertical ? 0.74 : 1;
-      const cardWidth = baseCardWidth * scaleFactor * formatWidthFactor;
+      const baseWidth = baseCardWidth * scaleFactor * formatWidthFactor;
       const aspectRatio = isVertical ? 2 / 3 : 3 / 2;
+      const maxWidth = Math.max(
+        baseWidth,
+        viewportWidth * (isVertical ? 0.44 : 0.62)
+      );
+      const { cardWidth, titleScale } = getFittedVideoCardTitleMetrics({
+        card,
+        baseWidth,
+        maxWidth,
+      });
       const cardHeight = cardWidth / aspectRatio;
 
       return {
@@ -1033,6 +1211,7 @@ const initVideoTimelineScene = () => {
         isVertical,
         cardWidth,
         cardHeight,
+        titleScale,
       };
     });
     const maxCardHeight = Math.max(
@@ -1046,13 +1225,8 @@ const initVideoTimelineScene = () => {
     let cursor = sidePadding;
     let lastCardWidth = cardMetrics[0]?.cardWidth || baseCardWidth;
 
-    videoTimeline.style.setProperty(
-      "--card-caption-size",
-      `${(14 * captionScale).toFixed(2)}px`
-    );
-
     cardMetrics.forEach((metric) => {
-      const { card, index, cardWidth, cardHeight } = metric;
+      const { card, index, cardWidth, cardHeight, titleScale } = metric;
       const gapRatio = gapPattern[(index - 1 + gapPattern.length) % gapPattern.length];
       const gap = viewportWidth * gapRatio;
 
@@ -1065,6 +1239,8 @@ const initVideoTimelineScene = () => {
         safeTop + availableHeight * lane + (maxCardHeight - cardHeight) * 0.5;
 
       card.style.setProperty("--card-width", `${cardWidth.toFixed(2)}px`);
+      card.style.setProperty("--card-title-scale", titleScale.toFixed(3));
+      card.style.setProperty("--mobile-shift", "0px");
       card.style.setProperty("--card-x", `${cursor.toFixed(2)}px`);
       card.style.setProperty("--card-y", `${y.toFixed(2)}px`);
       card.style.setProperty("--entry-delay", `${(0.1 + index * 0.09).toFixed(2)}s`);
@@ -1083,10 +1259,9 @@ const initVideoTimelineScene = () => {
       ) || baseCardWidth;
     const trackWidth = lastCardX + lastWidth + trailingPadding;
 
+    maxTrackOffset = Math.max(trackWidth - viewportWidth, 0);
     videoTimeline.style.width = `${trackWidth.toFixed(2)}px`;
-    timelineScrollArea.style.minHeight = `${(
-      viewportHeight + Math.max(trackWidth - viewportWidth, 0)
-    ).toFixed(2)}px`;
+    timelineScrollArea.style.minHeight = `${viewportHeight.toFixed(2)}px`;
 
     syncVideoTimelineScroll({ snap: true });
   };
@@ -1105,7 +1280,7 @@ const initVideoTimelineScene = () => {
 
   layoutVideoTimeline();
   window.addEventListener("resize", layoutVideoTimeline);
-  window.addEventListener("scroll", syncVideoTimelineScroll, { passive: true });
+  timelineScrollArea.addEventListener("wheel", handleVideoWheel, { passive: false });
   startVideoScene();
 };
 

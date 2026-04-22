@@ -96,10 +96,10 @@ button {
   overflow: hidden;
 }
 
-.back-button {
+.back-button,
+.showreel-button {
   position: fixed;
   top: 2rem;
-  left: 2rem;
   appearance: none;
   border: 0;
   background: transparent;
@@ -116,10 +116,21 @@ button {
   transition: opacity 220ms ease;
 }
 
-.back-button.text-reveal-mask {
+.back-button {
+  left: 2rem;
+}
+
+.showreel-button {
+  right: 2rem;
+}
+
+.back-button.text-reveal-mask,
+.showreel-button.text-reveal-mask {
   overflow: hidden;
 }
-.back-button:hover {
+
+.back-button:hover,
+.showreel-button:hover {
   opacity: 0.7;
 }
 
@@ -442,7 +453,8 @@ body.is-ready .text-reveal-mask .text-reveal-value {
 }
 
 .video-page {
-  overflow-x: hidden;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 .video-page .video-page-shell {
@@ -503,6 +515,7 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   --card-y: 0px;
   --card-fx: 0px;
   --card-fy: 0px;
+  --card-title-scale: 1;
   --entry-delay: 0.08s;
   --card-color: #d9b8b1;
   position: absolute;
@@ -547,6 +560,10 @@ body.is-ready .text-reveal-mask .text-reveal-value {
 
 .video-card-date-row::before {
   content: none;
+}
+
+.video-card-label-row {
+  font-size: calc(var(--card-caption-size, 14px) * var(--card-title-scale, 1));
 }
 
 .video-card-inner {
@@ -732,6 +749,12 @@ body.is-ready .video-card-label-mask .video-card-label-value {
 }
 
 @media (max-width: 640px) {
+  .video-page {
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: auto;
+  }
+
   .landing {
     min-height: 100svh;
     --mobile-side-padding: 15vw;
@@ -751,6 +774,11 @@ body.is-ready .video-card-label-mask .video-card-label-value {
   .back-button {
     top: 1.25rem;
     left: 1.25rem;
+  }
+
+  .showreel-button {
+    top: 1.25rem;
+    right: 1.25rem;
   }
 
   .intro {
@@ -813,11 +841,41 @@ body.is-ready .video-card-label-mask .video-card-label-value {
   }
 
   .timeline-scroll-area {
-    min-height: 100vh;
+    min-height: auto;
+  }
+
+  .timeline-sticky-stage {
+    position: static;
+    height: auto;
+    overflow: visible;
+  }
+
+  .video-timeline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    padding: 7.2rem 0 2rem;
+    transform: none;
   }
 
   .video-timeline-card {
+    position: relative;
+    top: auto;
+    left: auto;
     width: var(--card-width, min(72vw, 310px));
+    transform: translate3d(var(--mobile-shift, 0px), 0, 0);
+  }
+
+  .video-card-inner {
+    gap: 0.45rem;
+  }
+
+  .video-card-date-value {
+    transform: translate3d(0, 0, 0);
   }
 
   .photo-grid {

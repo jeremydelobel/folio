@@ -2,9 +2,14 @@ const pageTransition = document.querySelector(".page-transition");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const backButton = document.querySelector(".back-button");
 const showreelButton = document.querySelector(".showreel-button");
+const showreelOverlay = document.querySelector(".showreel-overlay");
+const showreelIframe = document.querySelector(".showreel-iframe");
 const photoGrid = document.querySelector(".photo-grid");
 const videoTimeline = document.querySelector(".video-timeline");
 const timelineScrollArea = document.querySelector(".timeline-scroll-area");
+const videoScrollbar = document.querySelector(".video-scrollbar");
+const videoScrollbarTrack = document.querySelector(".video-scrollbar-track");
+const videoScrollbarThumb = document.querySelector(".video-scrollbar-thumb");
 const navigationEntry = performance.getEntriesByType("navigation")[0];
 const isBackForwardLoad = navigationEntry?.type === "back_forward";
 const isPhotographyPage = document.body.classList.contains("photography-page");
@@ -20,6 +25,10 @@ const videoRoleMap = {
   sd: "Sound Design",
   dr: "Derush",
 };
+let showreelCloseTimer = 0;
+let vimeoPlayerApiPromise = null;
+let showreelPlayer = null;
+let showreelPlayerInitPromise = null;
 
 const parseVideoProjectFolderName = (folderName = "") => {
   const folderParts = folderName.split("_");
@@ -213,6 +222,157 @@ const openPendingProjectWindow = () => {
   }
 
   return pendingWindow;
+};
+
+const loadVimeoPlayerApi = () => {
+  if (window.Vimeo?.Player) {
+    return Promise.resolve(window.Vimeo.Player);
+  }
+
+  if (vimeoPlayerApiPromise) {
+    return vimeoPlayerApiPromise;
+  }
+
+  vimeoPlayerApiPromise = new Promise((resolve, reject) => {
+    const existingScript = document.querySelector("script[data-vimeo-player-api]");
+
+    const handleLoad = () => {
+      if (window.Vimeo?.Player) {
+        resolve(window.Vimeo.Player);
+        return;
+      }
+
+      vimeoPlayerApiPromise = null;
+      reject(new Error("Vimeo player API unavailable"));
+    };
+
+    const handleError = () => {
+      vimeoPlayerApiPromise = null;
+      reject(new Error("Failed to load Vimeo player API"));
+    };
+
+    if (existingScript) {
+      existingScript.addEventListener("load", handleLoad, { once: true });
+      existingScript.addEventListener("error", handleError, { once: true });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://player.vimeo.com/api/player.js";
+    script.async = true;
+    script.dataset.vimeoPlayerApi = "true";
+    script.addEventListener("load", handleLoad, { once: true });
+    script.addEventListener("error", handleError, { once: true });
+    document.head.appendChild(script);
+  });
+
+  return vimeoPlayerApiPromise;
+};
+
+const ensureShowreelPlayer = () => {
+  if (!showreelIframe?.getAttribute("src")) {
+    return Promise.resolve(null);
+  }
+
+  if (showreelPlayer) {
+    return Promise.resolve(showreelPlayer);
+  }
+
+  if (showreelPlayerInitPromise) {
+    return showreelPlayerInitPromise;
+  }
+
+  showreelPlayerInitPromise = loadVimeoPlayerApi()
+    .then((Player) => {
+      if (!showreelIframe?.getAttribute("src")) {
+        return null;
+      }
+
+      const player = new Player(showreelIframe);
+      showreelPlayer = player;
+
+      return player;
+    })
+    .catch(() => null)
+    .finally(() => {
+      showreelPlayerInitPromise = null;
+    });
+
+  return showreelPlayerInitPromise;
+};
+
+const setShowreelState = (isOpen) => {
+  const normalizedState = Boolean(isOpen);
+
+  document.documentElement.classList.toggle("is-showreel-open", normalizedState);
+  document.body.classList.toggle("is-showreel-open", normalizedState);
+
+  if (showreelButton) {
+    showreelButton.setAttribute("aria-expanded", String(normalizedState));
+  }
+
+  if (showreelOverlay) {
+    showreelOverlay.setAttribute("aria-hidden", String(!normalizedState));
+  }
+};
+
+const openShowreelOverlay = () => {
+  const embedSrc =
+    typeof showreelIframe?.dataset.src === "string"
+      ? showreelIframe.dataset.src.trim()
+      : "";
+
+  if (!showreelOverlay || !showreelIframe || !embedSrc) {
+    return false;
+  }
+
+  window.clearTimeout(showreelCloseTimer);
+
+  if (showreelIframe.getAttribute("src") !== embedSrc) {
+    showreelIframe.setAttribute("src", embedSrc);
+  }
+
+  showreelOverlay.classList.add("is-visible");
+  setShowreelState(true);
+  void ensureShowreelPlayer().then((player) => {
+    if (!player) {
+      return;
+    }
+
+    void player.play().catch(() => {});
+  });
+
+  return true;
+};
+
+const closeShowreelOverlay = ({ restoreFocus = true } = {}) => {
+  if (!showreelOverlay || !showreelIframe) {
+    return;
+  }
+
+  showreelOverlay.classList.remove("is-visible");
+  setShowreelState(false);
+
+  if (showreelPlayer) {
+    void showreelPlayer.pause().catch(() => {});
+  }
+
+  window.clearTimeout(showreelCloseTimer);
+  showreelCloseTimer = window.setTimeout(() => {
+    const player = showreelPlayer;
+
+    showreelPlayer = null;
+
+    if (player) {
+      void player.unload().catch(() => {});
+    }
+
+    showreelIframe.removeAttribute("src");
+  }, 260);
+
+  if (restoreFocus && showreelButton) {
+    showreelButton.focus();
+  }
 };
 
 const initVideoHoverMedia = () => {
@@ -426,6 +586,10 @@ if (backButton) {
 
 if (showreelButton) {
   showreelButton.addEventListener("click", () => {
+    if (openShowreelOverlay()) {
+      return;
+    }
+
     const href =
       typeof showreelButton.dataset.showreelUrl === "string"
         ? showreelButton.dataset.showreelUrl.trim()
@@ -436,6 +600,29 @@ if (showreelButton) {
     }
 
     openExternalProjectLink(href);
+  });
+}
+
+if (showreelOverlay) {
+  showreelOverlay.querySelectorAll("[data-showreel-close]").forEach((element) => {
+    element.addEventListener("click", () => {
+      closeShowreelOverlay();
+    });
+  });
+
+  showreelOverlay.addEventListener("click", (event) => {
+    if (event.target === showreelOverlay) {
+      closeShowreelOverlay();
+    }
+  });
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || !showreelOverlay.classList.contains("is-visible")) {
+      return;
+    }
+
+    event.preventDefault();
+    closeShowreelOverlay();
   });
 }
 
@@ -915,6 +1102,7 @@ const initVideoTimelineScene = () => {
   const lanePattern = [0.08, 0.52, 0.18, 0.62, 0.14, 0.46, 0.24, 0.68];
   const scalePattern = [0.84, 1.14, 0.94, 1.2, 0.8, 1.08, 0.9, 1.18];
   const gapPattern = [0.11, 0.14, 0.1, 0.15, 0.12, 0.13, 0.11];
+  const videoWheelSensitivity = 1.35;
   const videoCards = timelineCards.map((card, index) => ({
     element: card,
     currentX: 0,
@@ -924,10 +1112,85 @@ const initVideoTimelineScene = () => {
   let currentTrackOffset = 0;
   let targetTrackOffset = 0;
   let maxTrackOffset = 0;
+  let scrollbarThumbRatio = 0.18;
+  let isVideoScrollbarActive = false;
+  let isVideoScrollbarDragging = false;
   let videoSceneFrame = 0;
 
   const applyVideoTrackOffset = (offset) => {
     videoTimeline.style.setProperty("--track-offset", `${offset.toFixed(2)}px`);
+  };
+
+  const syncVideoScrollbarState = () => {
+    if (!videoScrollbar) {
+      return;
+    }
+
+    videoScrollbar.classList.toggle("is-active", isVideoScrollbarActive);
+    videoScrollbar.classList.toggle("is-dragging", isVideoScrollbarDragging);
+  };
+
+  const updateVideoScrollbar = (offset = currentTrackOffset) => {
+    if (!videoScrollbar || !videoScrollbarThumb) {
+      return;
+    }
+
+    if (videoIsMobileLayout.matches || maxTrackOffset <= 0) {
+      videoScrollbar.hidden = true;
+      isVideoScrollbarActive = false;
+      isVideoScrollbarDragging = false;
+      syncVideoScrollbarState();
+      return;
+    }
+
+    videoScrollbar.hidden = false;
+
+    const progress = clamp(offset / maxTrackOffset, 0, 1);
+    videoScrollbarThumb.style.setProperty(
+      "--scrollbar-progress",
+      progress.toFixed(4)
+    );
+    videoScrollbarThumb.style.setProperty(
+      "--scrollbar-size",
+      scrollbarThumbRatio.toFixed(4)
+    );
+  };
+
+  const setVideoScrollbarActivityFromPointer = (clientY) => {
+    if (!videoScrollbar || videoIsMobileLayout.matches || maxTrackOffset <= 0) {
+      return;
+    }
+
+    const rect = videoScrollbar.getBoundingClientRect();
+    const nearBottomZone = window.innerHeight - 96;
+    const isNearBottom = clientY >= nearBottomZone;
+    const isOverScrollbar = clientY >= rect.top - 10 && clientY <= rect.bottom + 10;
+
+    isVideoScrollbarActive = isVideoScrollbarDragging || isNearBottom || isOverScrollbar;
+    syncVideoScrollbarState();
+  };
+
+  const syncTimelineOffsetFromProgress = (progress, { immediate = false } = {}) => {
+    const normalizedProgress = clamp(progress, 0, 1);
+    targetTrackOffset = normalizedProgress * maxTrackOffset;
+
+    if (immediate || prefersReducedMotion.matches) {
+      currentTrackOffset = targetTrackOffset;
+      applyVideoTrackOffset(currentTrackOffset);
+      updateVideoScrollbar(currentTrackOffset);
+    }
+  };
+
+  const syncTimelineOffsetFromPointerX = (clientX, { immediate = false } = {}) => {
+    if (!videoScrollbarTrack || maxTrackOffset <= 0) {
+      return;
+    }
+
+    const rect = videoScrollbarTrack.getBoundingClientRect();
+    const usableWidth = Math.max(rect.width, 1);
+    const nextProgress = (clientX - rect.left) / usableWidth;
+
+    syncTimelineOffsetFromProgress(nextProgress, { immediate });
   };
 
   const getFittedVideoCardTitleMetrics = ({
@@ -988,6 +1251,12 @@ const initVideoTimelineScene = () => {
   };
 
   const syncVideoPageOverflow = () => {
+    if (document.body.classList.contains("is-showreel-open")) {
+      document.documentElement.style.setProperty("overflow-y", "hidden");
+      document.body.style.setProperty("overflow-y", "hidden");
+      return;
+    }
+
     if (videoIsMobileLayout.matches) {
       document.documentElement.style.removeProperty("overflow-y");
       document.body.style.removeProperty("overflow-y");
@@ -1011,6 +1280,7 @@ const initVideoTimelineScene = () => {
       }
 
       applyVideoTrackOffset(0);
+      updateVideoScrollbar(0);
       return;
     }
 
@@ -1020,12 +1290,14 @@ const initVideoTimelineScene = () => {
     if (snap || prefersReducedMotion.matches) {
       currentTrackOffset = targetTrackOffset;
       applyVideoTrackOffset(currentTrackOffset);
+      updateVideoScrollbar(currentTrackOffset);
     }
   };
 
   const animateVideoScene = () => {
     const motionDisabled = prefersReducedMotion.matches || videoIsMobileLayout.matches;
-    const timelineEase = prefersReducedMotion.matches ? 1 : 0.11;
+    const timelineEase =
+      prefersReducedMotion.matches ? 1 : isVideoScrollbarDragging ? 0.18 : 0.1;
 
     currentTrackOffset += (targetTrackOffset - currentTrackOffset) * timelineEase;
 
@@ -1034,6 +1306,7 @@ const initVideoTimelineScene = () => {
     }
 
     applyVideoTrackOffset(currentTrackOffset);
+    updateVideoScrollbar(currentTrackOffset);
 
     videoCards.forEach((card) => {
       let pointerX = 0;
@@ -1110,7 +1383,8 @@ const initVideoTimelineScene = () => {
         : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
           ? window.innerHeight
           : 1;
-    const scrollDelta = (event.deltaY + event.deltaX) * deltaScale;
+    const scrollDelta =
+      (event.deltaY + event.deltaX) * deltaScale * videoWheelSensitivity;
 
     if (Math.abs(scrollDelta) < 0.1) {
       return;
@@ -1135,13 +1409,16 @@ const initVideoTimelineScene = () => {
       const mobileShiftPattern = [0, -0.75, 0.55, -0.35, 0.72, -0.22, 0.42, -0.58];
 
       videoTimeline.style.setProperty("--card-caption-size", "14px");
+      document.body.style.setProperty("--showreel-caption-size", "14px");
       videoTimeline.style.width = "100%";
       videoTimeline.style.height = "auto";
       timelineScrollArea.style.minHeight = "auto";
+      scrollbarThumbRatio = 1;
       maxTrackOffset = 0;
       currentTrackOffset = 0;
       targetTrackOffset = 0;
       applyVideoTrackOffset(0);
+      updateVideoScrollbar(0);
 
       timelineCards.forEach((card, index) => {
         const isVertical = card.dataset.format === "vertical";
@@ -1184,6 +1461,10 @@ const initVideoTimelineScene = () => {
     const safeBottom = viewportWidth <= 640 ? 120 : 92;
     videoTimeline.style.setProperty(
       "--card-caption-size",
+      `${(14 * captionScale).toFixed(2)}px`
+    );
+    document.body.style.setProperty(
+      "--showreel-caption-size",
       `${(14 * captionScale).toFixed(2)}px`
     );
     videoTimeline.style.height = "100vh";
@@ -1260,6 +1541,7 @@ const initVideoTimelineScene = () => {
     const trackWidth = lastCardX + lastWidth + trailingPadding;
 
     maxTrackOffset = Math.max(trackWidth - viewportWidth, 0);
+    scrollbarThumbRatio = clamp(viewportWidth / Math.max(trackWidth, viewportWidth), 0.12, 0.42);
     videoTimeline.style.width = `${trackWidth.toFixed(2)}px`;
     timelineScrollArea.style.minHeight = `${viewportHeight.toFixed(2)}px`;
 
@@ -1271,10 +1553,62 @@ const initVideoTimelineScene = () => {
       videoPointer.x = event.clientX;
       videoPointer.y = event.clientY;
       videoPointer.active = true;
+      setVideoScrollbarActivityFromPointer(event.clientY);
+
+      if (isVideoScrollbarDragging) {
+        syncTimelineOffsetFromPointerX(event.clientX);
+      }
     });
 
     window.addEventListener("pointerleave", () => {
       videoPointer.active = false;
+
+      if (!isVideoScrollbarDragging) {
+        isVideoScrollbarActive = false;
+        syncVideoScrollbarState();
+      }
+    });
+
+    window.addEventListener("pointerup", () => {
+      if (!isVideoScrollbarDragging) {
+        return;
+      }
+
+      isVideoScrollbarDragging = false;
+      if (videoPointer.active) {
+        setVideoScrollbarActivityFromPointer(videoPointer.y);
+        return;
+      }
+
+      syncVideoScrollbarState();
+    });
+
+    window.addEventListener("pointercancel", () => {
+      if (!isVideoScrollbarDragging) {
+        return;
+      }
+
+      isVideoScrollbarDragging = false;
+      if (videoPointer.active) {
+        setVideoScrollbarActivityFromPointer(videoPointer.y);
+        return;
+      }
+
+      syncVideoScrollbarState();
+    });
+  }
+
+  if (videoScrollbarTrack) {
+    videoScrollbarTrack.addEventListener("pointerdown", (event) => {
+      if (videoIsMobileLayout.matches || maxTrackOffset <= 0) {
+        return;
+      }
+
+      event.preventDefault();
+      isVideoScrollbarDragging = true;
+      isVideoScrollbarActive = true;
+      syncVideoScrollbarState();
+      syncTimelineOffsetFromPointerX(event.clientX);
     });
   }
 

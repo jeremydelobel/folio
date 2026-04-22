@@ -134,6 +134,105 @@ button {
   opacity: 0.7;
 }
 
+.is-showreel-open .showreel-button {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+html.is-showreel-open,
+body.is-showreel-open {
+  overflow: hidden;
+}
+
+.showreel-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 30;
+  transition:
+    opacity 260ms ease,
+    visibility 0s linear 260ms;
+}
+
+.showreel-overlay.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+
+.showreel-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  appearance: none;
+  border: 0;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.showreel-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(80vw, calc(80vh * 16 / 9));
+  max-width: 80vw;
+  max-height: 80vh;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.08rem;
+  line-height: 0;
+}
+
+.showreel-close-button {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0.45rem 0.7rem;
+  margin: -0.45rem -0.7rem;
+  font-family: "Neue Montreal", sans-serif;
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  cursor: pointer;
+  transition: opacity 220ms ease;
+}
+
+.showreel-close-button:hover {
+  opacity: 0.7;
+}
+
+.showreel-embed-shell {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  overflow: hidden;
+  background: transparent;
+  box-shadow: 0 28px 90px rgba(17, 17, 17, 0.1);
+  line-height: 0;
+}
+
+.showreel-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: transparent;
+}
+
 .text-reveal-mask {
   display: inline-flex;
   overflow: hidden;
@@ -501,6 +600,84 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   overflow: hidden;
 }
 
+.video-scrollbar {
+  position: fixed;
+  left: 50%;
+  bottom: 1.2rem;
+  width: min(420px, calc(100vw - 4rem));
+  transform: translateX(-50%);
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.62;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.video-scrollbar.is-active,
+.video-scrollbar.is-dragging {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.video-scrollbar-track {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  transition:
+    height 180ms ease,
+    background-color 180ms ease;
+  cursor: pointer;
+}
+
+.video-scrollbar-track::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background: rgba(17, 17, 17, 0.16);
+  transform: translateY(-50%);
+  transition:
+    height 180ms ease,
+    background-color 180ms ease;
+}
+
+.video-scrollbar-thumb {
+  --scrollbar-progress: 0;
+  --scrollbar-size: 0.18;
+  position: absolute;
+  top: 50%;
+  left: calc(var(--scrollbar-progress) * (100% - (var(--scrollbar-size) * 100%)));
+  width: calc(var(--scrollbar-size) * 100%);
+  height: 2px;
+  background: #111111;
+  transform: translateY(-50%);
+  cursor: grab;
+  transition: height 180ms ease;
+}
+
+.video-scrollbar.is-active .video-scrollbar-track,
+.video-scrollbar.is-dragging .video-scrollbar-track {
+  height: 24px;
+}
+
+.video-scrollbar.is-active .video-scrollbar-track::before,
+.video-scrollbar.is-dragging .video-scrollbar-track::before {
+  height: 5px;
+  background: rgba(17, 17, 17, 0.2);
+}
+
+.video-scrollbar.is-active .video-scrollbar-thumb,
+.video-scrollbar.is-dragging .video-scrollbar-thumb {
+  height: 5px;
+}
+
+.video-scrollbar.is-dragging .video-scrollbar-thumb {
+  cursor: grabbing;
+}
+
 .video-timeline {
   --track-offset: 0px;
   position: relative;
@@ -781,6 +958,11 @@ body.is-ready .video-card-label-mask .video-card-label-value {
     right: 1.25rem;
   }
 
+  .showreel-close-button {
+    top: 1.25rem;
+    right: 1.25rem;
+  }
+
   .intro {
     position: static;
     align-items: flex-start;
@@ -842,6 +1024,16 @@ body.is-ready .video-card-label-mask .video-card-label-value {
 
   .timeline-scroll-area {
     min-height: auto;
+  }
+
+  .video-scrollbar {
+    display: none;
+  }
+
+  .showreel-dialog {
+    width: min(80vw, calc(80vh * 16 / 9));
+    max-width: calc(100vw - 2.5rem);
+    max-height: calc(100vh - 7rem);
   }
 
   .timeline-sticky-stage {

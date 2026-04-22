@@ -10,6 +10,333 @@ const isPhotographyPage = document.body.classList.contains("photography-page");
 const isVideoPage = document.body.classList.contains("video-page");
 const isFolioPage = isPhotographyPage || isVideoPage;
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+const videoProjectLinksCache = new Map();
+const videoLinkPriority = ["youtube", "tiktok", "instagram"];
+const videoRoleMap = {
+  m: "Monteur",
+  md: "Motion Design",
+  fx: "FX",
+  sd: "Sound Design",
+  dr: "Derush",
+};
+
+const parseVideoProjectFolderName = (folderName = "") => {
+  const folderParts = folderName.split("_");
+  const rawDate = folderParts[0] || "";
+  const title = (folderParts[1] || "").trim();
+  const [year = "", month = "", day = ""] = rawDate.split(".");
+  const hasValidDate =
+    year.length === 4 &&
+    month.length === 2 &&
+    day.length === 2 &&
+    [year, month, day].every((part) => /^\d+$/.test(part));
+  const displayDate = hasValidDate ? `${day}.${month}.${year}` : rawDate;
+  const sortKey = hasValidDate ? Number(`${year}${month}${day}`) : 0;
+  const roleTokens = folderParts
+    .slice(2)
+    .join("_")
+    .split(" - ")
+    .map((token) => token.trim().toLowerCase())
+    .filter(Boolean);
+  const roleLabel = roleTokens
+    .map((token) => videoRoleMap[token])
+    .filter(Boolean)
+    .join(" · ");
+
+  return {
+    displayDate,
+    sortKey,
+    title,
+    titleLabel: title ? title.toLocaleUpperCase("fr-FR") : "",
+    roleLabel,
+  };
+};
+
+const getVideoVisualFolderName = (visual) => {
+  if (!visual) {
+    return "";
+  }
+
+  if (visual.dataset.projectFolder) {
+    return visual.dataset.projectFolder;
+  }
+
+  const mediaSource =
+    visual.querySelector(".video-card-hover-video source")?.getAttribute("src") ||
+    visual.querySelector(".video-card-thumb")?.getAttribute("src") ||
+    "";
+
+  if (!mediaSource) {
+    return "";
+  }
+
+  const normalizedPath = mediaSource.replace(/\\/g, "/");
+  const segments = normalizedPath.split("/").filter(Boolean);
+
+  return decodeURIComponent(segments.at(-2) || "");
+};
+
+const getInlineVideoProjectLink = (card) => {
+  if (!card) {
+    return "";
+  }
+
+  const directHref =
+    typeof card.dataset.projectUrl === "string"
+      ? card.dataset.projectUrl.trim()
+      : "";
+
+  if (directHref) {
+    return directHref;
+  }
+
+  const visualHref =
+    card
+      .querySelector(".video-card-visual")
+      ?.dataset.projectUrl?.trim() || "";
+
+  return visualHref;
+};
+
+const buildVideoProjectFileUrl = (folderName, fileName) => {
+  if (!folderName || !fileName) {
+    return null;
+  }
+
+  const encodedFolder = folderName
+    .split("/")
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+
+  return new URL(`./rsrc/montage-video/${encodedFolder}/${fileName}`, window.location.href);
+};
+
+const normalizeVideoProjectLinks = (payload) => {
+  if (!payload || typeof payload !== "object") {
+    return "";
+  }
+
+  const directUrl =
+    typeof payload.url === "string" ? payload.url.trim() : "";
+
+  if (directUrl) {
+    return directUrl;
+  }
+
+  const namedLinks = Object.fromEntries(
+    videoLinkPriority
+      .map((platform) => [platform, payload[platform]])
+      .filter(([, value]) => typeof value === "string" && value.trim())
+      .map(([platform, value]) => [platform, value.trim()])
+  );
+
+  if (!Object.keys(namedLinks).length) {
+    return "";
+  }
+
+  const defaultPlatform =
+    typeof payload.default === "string" ? payload.default.trim().toLowerCase() : "";
+
+  if (defaultPlatform && namedLinks[defaultPlatform]) {
+    return namedLinks[defaultPlatform];
+  }
+
+  return (
+    videoLinkPriority.map((platform) => namedLinks[platform]).find(Boolean) ||
+    Object.values(namedLinks)[0] ||
+    ""
+  );
+};
+
+const loadVideoProjectLink = async (folderName) => {
+  if (!folderName) {
+    return "";
+  }
+
+  if (videoProjectLinksCache.has(folderName)) {
+    return videoProjectLinksCache.get(folderName);
+  }
+
+  const candidateFiles = ["link.json", "links.json"];
+
+  for (const fileName of candidateFiles) {
+    const linksUrl = buildVideoProjectFileUrl(folderName, fileName);
+
+    if (!linksUrl) {
+      continue;
+    }
+
+    try {
+      const response = await fetch(linksUrl);
+
+      if (!response.ok) {
+        continue;
+      }
+
+      const payload = await response.json();
+      const resolvedLink = normalizeVideoProjectLinks(payload);
+
+      videoProjectLinksCache.set(folderName, resolvedLink);
+      return resolvedLink;
+    } catch {
+      continue;
+    }
+  }
+
+  videoProjectLinksCache.set(folderName, "");
+  return "";
+};
+
+const openExternalProjectLink = (href) => {
+  if (!href) {
+    return;
+  }
+
+  const link = document.createElement("a");
+  link.href = href;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.style.display = "none";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+};
+
+const openPendingProjectWindow = () => {
+  const pendingWindow = window.open("", "_blank");
+
+  if (pendingWindow) {
+    try {
+      pendingWindow.opener = null;
+    } catch {}
+  }
+
+  return pendingWindow;
+};
+
+const initVideoHoverMedia = () => {
+  const hoverMediaVisuals = Array.from(
+    document.querySelectorAll(".video-card-visual.has-hover-media")
+  );
+
+  hoverMediaVisuals.forEach((visual) => {
+    if (visual.dataset.hoverBound === "true") {
+      return;
+    }
+
+    const video = visual.querySelector(".video-card-hover-video");
+    const folderName = getVideoVisualFolderName(visual);
+    const roleLabel = parseVideoProjectFolderName(folderName).roleLabel;
+
+    if (roleLabel && !visual.querySelector(".video-card-role-list")) {
+      const roleElement = document.createElement("p");
+      roleElement.className = "video-card-role-list";
+      roleElement.textContent = roleLabel;
+      visual.appendChild(roleElement);
+    }
+
+    if (!video) {
+      return;
+    }
+
+    const activate = () => {
+      visual.classList.add("is-hover-media-active");
+
+      const playPromise = video.play();
+
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {});
+      }
+    };
+
+    const deactivate = () => {
+      visual.classList.remove("is-hover-media-active");
+      video.pause();
+      video.currentTime = 0;
+    };
+
+    visual.addEventListener("mouseenter", activate);
+    visual.addEventListener("mouseleave", deactivate);
+    visual.dataset.hoverBound = "true";
+  });
+};
+
+const initVideoProjectLinks = () => {
+  const videoCards = Array.from(
+    document.querySelectorAll(".video-timeline-card")
+  );
+
+  videoCards.forEach((card) => {
+    if (card.dataset.projectLinkBound === "true") {
+      return;
+    }
+
+    const inlineHref = getInlineVideoProjectLink(card);
+    const folderName = getVideoVisualFolderName(
+      card.querySelector(".video-card-visual")
+    );
+
+    if (!folderName && !inlineHref) {
+      return;
+    }
+
+    if (inlineHref) {
+      videoProjectLinksCache.set(folderName || inlineHref, inlineHref);
+    } else if (folderName) {
+      void loadVideoProjectLink(folderName);
+    }
+
+    const openCardLink = () => {
+      const cachedHref =
+        inlineHref || videoProjectLinksCache.get(folderName || inlineHref);
+
+      if (cachedHref) {
+        openExternalProjectLink(cachedHref);
+        return;
+      }
+
+      if (!folderName) {
+        return;
+      }
+
+      const pendingWindow = openPendingProjectWindow();
+
+      void loadVideoProjectLink(folderName).then((href) => {
+        if (!href) {
+          if (pendingWindow && !pendingWindow.closed) {
+            pendingWindow.close();
+          }
+          return;
+        }
+
+        if (pendingWindow && !pendingWindow.closed) {
+          pendingWindow.location.href = href;
+          return;
+        }
+
+        openExternalProjectLink(href);
+      });
+    };
+
+    card.tabIndex = 0;
+    card.setAttribute("role", "link");
+
+    card.addEventListener("click", () => {
+      void openCardLink();
+    });
+
+    card.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+
+      event.preventDefault();
+      void openCardLink();
+    });
+
+    card.dataset.projectLinkBound = "true";
+  });
+};
 
 const startIntroAnimation = () => {
   requestAnimationFrame(() => {
@@ -543,10 +870,19 @@ if (photoGrid) {
   window.addEventListener("resize", rebuildPhotoColumns);
 }
 
-if (videoTimeline && timelineScrollArea) {
+const initVideoTimelineScene = () => {
+  if (!videoTimeline || !timelineScrollArea) {
+    return;
+  }
+
   const timelineCards = Array.from(
     videoTimeline.querySelectorAll(".video-timeline-card")
   );
+
+  if (!timelineCards.length) {
+    return;
+  }
+
   const videoCanHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   const videoIsMobileLayout = window.matchMedia("(max-width: 640px)");
   const videoPointer = { x: 0, y: 0, active: false };
@@ -568,9 +904,6 @@ if (videoTimeline && timelineScrollArea) {
     currentX: 0,
     currentY: 0,
     strength: 13 + (index % 3) * 1.6,
-    driftPhase: 0.45 + index * 0.78,
-    driftXAmplitude: 4 + (index % 3) * 1.15,
-    driftYAmplitude: 5.5 + (index % 4) * 0.95,
   }));
   let currentTrackOffset = 0;
   let targetTrackOffset = 0;
@@ -596,7 +929,7 @@ if (videoTimeline && timelineScrollArea) {
     }
   };
 
-  const animateVideoScene = (time) => {
+  const animateVideoScene = () => {
     const motionDisabled = prefersReducedMotion.matches || videoIsMobileLayout.matches;
     const timelineEase = prefersReducedMotion.matches ? 1 : 0.11;
 
@@ -609,17 +942,8 @@ if (videoTimeline && timelineScrollArea) {
     applyVideoTrackOffset(currentTrackOffset);
 
     videoCards.forEach((card) => {
-      let floatX = 0;
-      let floatY = 0;
       let pointerX = 0;
       let pointerY = 0;
-
-      if (!motionDisabled) {
-        floatX =
-          Math.sin(time * 0.00052 + card.driftPhase) * card.driftXAmplitude;
-        floatY =
-          Math.cos(time * 0.00072 + card.driftPhase * 1.12) * card.driftYAmplitude;
-      }
 
       if (!motionDisabled && videoCanHover && videoPointer.active) {
         const rect = card.element.getBoundingClientRect();
@@ -649,8 +973,8 @@ if (videoTimeline && timelineScrollArea) {
         }
       }
 
-      const targetX = floatX + pointerX;
-      const targetY = floatY + pointerY;
+      const targetX = pointerX;
+      const targetY = pointerY;
       const ease = motionDisabled ? 0.2 : 0.085;
 
       card.currentX += (targetX - card.currentX) * ease;
@@ -693,24 +1017,42 @@ if (videoTimeline && timelineScrollArea) {
       viewportWidth <= 640
         ? clamp(viewportWidth * 0.72, 220, 310)
         : clamp(viewportWidth * 0.31, 280, 460);
-    const maxCardHeight = baseCardWidth * 1.2 * (2 / 3);
     const safeTop = viewportWidth <= 640 ? 112 : 160;
     const safeBottom = viewportWidth <= 640 ? 120 : 92;
+    const cardMetrics = timelineCards.map((card, index) => {
+      const isVertical = card.dataset.format === "vertical";
+      const scaleFactor = scalePattern[index % scalePattern.length];
+      const formatWidthFactor = isVertical ? 0.74 : 1;
+      const cardWidth = baseCardWidth * scaleFactor * formatWidthFactor;
+      const aspectRatio = isVertical ? 2 / 3 : 3 / 2;
+      const cardHeight = cardWidth / aspectRatio;
+
+      return {
+        card,
+        index,
+        isVertical,
+        cardWidth,
+        cardHeight,
+      };
+    });
+    const maxCardHeight = Math.max(
+      ...cardMetrics.map((metric) => metric.cardHeight),
+      0
+    );
     const availableHeight = Math.max(
       viewportHeight - safeTop - safeBottom - maxCardHeight,
       120
     );
     let cursor = sidePadding;
-    let lastCardWidth = baseCardWidth;
+    let lastCardWidth = cardMetrics[0]?.cardWidth || baseCardWidth;
 
     videoTimeline.style.setProperty(
       "--card-caption-size",
       `${(14 * captionScale).toFixed(2)}px`
     );
 
-    timelineCards.forEach((card, index) => {
-      const scaleFactor = scalePattern[index % scalePattern.length];
-      const cardWidth = baseCardWidth * scaleFactor;
+    cardMetrics.forEach((metric) => {
+      const { card, index, cardWidth, cardHeight } = metric;
       const gapRatio = gapPattern[(index - 1 + gapPattern.length) % gapPattern.length];
       const gap = viewportWidth * gapRatio;
 
@@ -719,7 +1061,8 @@ if (videoTimeline && timelineScrollArea) {
       }
 
       const lane = lanePattern[index % lanePattern.length];
-      const y = safeTop + availableHeight * lane;
+      const y =
+        safeTop + availableHeight * lane + (maxCardHeight - cardHeight) * 0.5;
 
       card.style.setProperty("--card-width", `${cardWidth.toFixed(2)}px`);
       card.style.setProperty("--card-x", `${cursor.toFixed(2)}px`);
@@ -764,7 +1107,19 @@ if (videoTimeline && timelineScrollArea) {
   window.addEventListener("resize", layoutVideoTimeline);
   window.addEventListener("scroll", syncVideoTimelineScroll, { passive: true });
   startVideoScene();
-}
+};
+
+const initVideoPage = () => {
+  if (!videoTimeline || !timelineScrollArea) {
+    return;
+  }
+
+  initVideoHoverMedia();
+  initVideoProjectLinks();
+  initVideoTimelineScene();
+};
+
+initVideoPage();
 
 const categorySection = document.querySelector(".categories");
 const categoryCards = document.querySelectorAll(".category-card");

@@ -2,8 +2,14 @@ const pageTransition = document.querySelector(".page-transition");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const backButton = document.querySelector(".back-button");
 const photoGrid = document.querySelector(".photo-grid");
+const videoTimeline = document.querySelector(".video-timeline");
+const timelineScrollArea = document.querySelector(".timeline-scroll-area");
 const navigationEntry = performance.getEntriesByType("navigation")[0];
 const isBackForwardLoad = navigationEntry?.type === "back_forward";
+const isPhotographyPage = document.body.classList.contains("photography-page");
+const isVideoPage = document.body.classList.contains("video-page");
+const isFolioPage = isPhotographyPage || isVideoPage;
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
 const startIntroAnimation = () => {
   requestAnimationFrame(() => {
@@ -537,6 +543,229 @@ if (photoGrid) {
   window.addEventListener("resize", rebuildPhotoColumns);
 }
 
+if (videoTimeline && timelineScrollArea) {
+  const timelineCards = Array.from(
+    videoTimeline.querySelectorAll(".video-timeline-card")
+  );
+  const videoCanHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const videoIsMobileLayout = window.matchMedia("(max-width: 640px)");
+  const videoPointer = { x: 0, y: 0, active: false };
+  const pastelPalette = [
+    "#e2b8b0",
+    "#c8d8f2",
+    "#d8ccb8",
+    "#bedfcf",
+    "#f1d8a8",
+    "#dbc6e9",
+    "#f2c9c3",
+    "#bfd7d9",
+  ];
+  const lanePattern = [0.08, 0.52, 0.18, 0.62, 0.14, 0.46, 0.24, 0.68];
+  const scalePattern = [0.84, 1.14, 0.94, 1.2, 0.8, 1.08, 0.9, 1.18];
+  const gapPattern = [0.11, 0.14, 0.1, 0.15, 0.12, 0.13, 0.11];
+  const videoCards = timelineCards.map((card, index) => ({
+    element: card,
+    currentX: 0,
+    currentY: 0,
+    strength: 13 + (index % 3) * 1.6,
+    driftPhase: 0.45 + index * 0.78,
+    driftXAmplitude: 4 + (index % 3) * 1.15,
+    driftYAmplitude: 5.5 + (index % 4) * 0.95,
+  }));
+  let currentTrackOffset = 0;
+  let targetTrackOffset = 0;
+  let videoSceneFrame = 0;
+
+  const applyVideoTrackOffset = (offset) => {
+    videoTimeline.style.setProperty("--track-offset", `${offset.toFixed(2)}px`);
+  };
+
+  const syncVideoTimelineScroll = ({ snap = false } = {}) => {
+    const scrollDistance = Math.max(
+      timelineScrollArea.offsetHeight - window.innerHeight,
+      1
+    );
+    const progress = clamp(window.scrollY / scrollDistance, 0, 1);
+    const maxOffset = Math.max(videoTimeline.offsetWidth - window.innerWidth, 0);
+
+    targetTrackOffset = maxOffset * progress;
+
+    if (snap || prefersReducedMotion.matches) {
+      currentTrackOffset = targetTrackOffset;
+      applyVideoTrackOffset(currentTrackOffset);
+    }
+  };
+
+  const animateVideoScene = (time) => {
+    const motionDisabled = prefersReducedMotion.matches || videoIsMobileLayout.matches;
+    const timelineEase = prefersReducedMotion.matches ? 1 : 0.11;
+
+    currentTrackOffset += (targetTrackOffset - currentTrackOffset) * timelineEase;
+
+    if (Math.abs(targetTrackOffset - currentTrackOffset) < 0.1) {
+      currentTrackOffset = targetTrackOffset;
+    }
+
+    applyVideoTrackOffset(currentTrackOffset);
+
+    videoCards.forEach((card) => {
+      let floatX = 0;
+      let floatY = 0;
+      let pointerX = 0;
+      let pointerY = 0;
+
+      if (!motionDisabled) {
+        floatX =
+          Math.sin(time * 0.00052 + card.driftPhase) * card.driftXAmplitude;
+        floatY =
+          Math.cos(time * 0.00072 + card.driftPhase * 1.12) * card.driftYAmplitude;
+      }
+
+      if (!motionDisabled && videoCanHover && videoPointer.active) {
+        const rect = card.element.getBoundingClientRect();
+        const cardCenterX = rect.left + rect.width / 2;
+        const cardCenterY = rect.top + rect.height / 2;
+        const dx = videoPointer.x - cardCenterX;
+        const dy = videoPointer.y - cardCenterY;
+        const distance = Math.hypot(dx, dy);
+        const influenceRadius = Math.max(rect.width, rect.height) * 1.9;
+        const influence = clamp(1 - distance / influenceRadius, 0, 1);
+        const easedInfluence = influence * influence;
+
+        if (easedInfluence > 0) {
+          const normalizedX = dx / influenceRadius;
+          const normalizedY = dy / influenceRadius;
+
+          pointerX = clamp(
+            normalizedX * card.strength * 4.2 * easedInfluence,
+            -30,
+            30
+          );
+          pointerY = clamp(
+            normalizedY * card.strength * 4.9 * easedInfluence,
+            -22,
+            22
+          );
+        }
+      }
+
+      const targetX = floatX + pointerX;
+      const targetY = floatY + pointerY;
+      const ease = motionDisabled ? 0.2 : 0.085;
+
+      card.currentX += (targetX - card.currentX) * ease;
+      card.currentY += (targetY - card.currentY) * ease;
+
+      if (Math.abs(card.currentX) < 0.02) {
+        card.currentX = 0;
+      }
+
+      if (Math.abs(card.currentY) < 0.02) {
+        card.currentY = 0;
+      }
+
+      card.element.style.setProperty("--card-fx", `${card.currentX.toFixed(2)}px`);
+      card.element.style.setProperty("--card-fy", `${card.currentY.toFixed(2)}px`);
+    });
+
+    videoSceneFrame = window.requestAnimationFrame(animateVideoScene);
+  };
+
+  const startVideoScene = () => {
+    if (videoSceneFrame) {
+      return;
+    }
+
+    videoSceneFrame = window.requestAnimationFrame(animateVideoScene);
+  };
+
+  const layoutVideoTimeline = () => {
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const captionScale =
+      viewportWidth <= 640
+        ? 1
+        : clamp(Math.min(viewportWidth / 1440, viewportHeight / 980), 0.9, 1.28);
+    const paddingRatio = Number.parseFloat(videoTimeline.dataset.trackPadding) || 0.14;
+    const sidePadding = viewportWidth * paddingRatio;
+    const trailingPadding = viewportWidth <= 640 ? 88 : sidePadding;
+    const baseCardWidth =
+      viewportWidth <= 640
+        ? clamp(viewportWidth * 0.72, 220, 310)
+        : clamp(viewportWidth * 0.31, 280, 460);
+    const maxCardHeight = baseCardWidth * 1.2 * (2 / 3);
+    const safeTop = viewportWidth <= 640 ? 112 : 160;
+    const safeBottom = viewportWidth <= 640 ? 120 : 92;
+    const availableHeight = Math.max(
+      viewportHeight - safeTop - safeBottom - maxCardHeight,
+      120
+    );
+    let cursor = sidePadding;
+    let lastCardWidth = baseCardWidth;
+
+    videoTimeline.style.setProperty(
+      "--card-caption-size",
+      `${(14 * captionScale).toFixed(2)}px`
+    );
+
+    timelineCards.forEach((card, index) => {
+      const scaleFactor = scalePattern[index % scalePattern.length];
+      const cardWidth = baseCardWidth * scaleFactor;
+      const gapRatio = gapPattern[(index - 1 + gapPattern.length) % gapPattern.length];
+      const gap = viewportWidth * gapRatio;
+
+      if (index > 0) {
+        cursor += lastCardWidth + gap;
+      }
+
+      const lane = lanePattern[index % lanePattern.length];
+      const y = safeTop + availableHeight * lane;
+
+      card.style.setProperty("--card-width", `${cardWidth.toFixed(2)}px`);
+      card.style.setProperty("--card-x", `${cursor.toFixed(2)}px`);
+      card.style.setProperty("--card-y", `${y.toFixed(2)}px`);
+      card.style.setProperty("--entry-delay", `${(0.1 + index * 0.09).toFixed(2)}s`);
+      card.style.setProperty("--card-color", pastelPalette[index % pastelPalette.length]);
+
+      lastCardWidth = cardWidth;
+    });
+
+    const lastCardX =
+      Number.parseFloat(
+        timelineCards[timelineCards.length - 1]?.style.getPropertyValue("--card-x")
+      ) || 0;
+    const lastWidth =
+      Number.parseFloat(
+        timelineCards[timelineCards.length - 1]?.style.getPropertyValue("--card-width")
+      ) || baseCardWidth;
+    const trackWidth = lastCardX + lastWidth + trailingPadding;
+
+    videoTimeline.style.width = `${trackWidth.toFixed(2)}px`;
+    timelineScrollArea.style.minHeight = `${(
+      viewportHeight + Math.max(trackWidth - viewportWidth, 0)
+    ).toFixed(2)}px`;
+
+    syncVideoTimelineScroll({ snap: true });
+  };
+
+  if (videoCanHover) {
+    window.addEventListener("pointermove", (event) => {
+      videoPointer.x = event.clientX;
+      videoPointer.y = event.clientY;
+      videoPointer.active = true;
+    });
+
+    window.addEventListener("pointerleave", () => {
+      videoPointer.active = false;
+    });
+  }
+
+  layoutVideoTimeline();
+  window.addEventListener("resize", layoutVideoTimeline);
+  window.addEventListener("scroll", syncVideoTimelineScroll, { passive: true });
+  startVideoScene();
+}
+
 const categorySection = document.querySelector(".categories");
 const categoryCards = document.querySelectorAll(".category-card");
 const canHover =
@@ -557,8 +786,6 @@ if (categorySection && categoryCards.length) {
     targetY: 0,
     strength: index === 0 ? 18 : 16,
   }));
-
-  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
   const updateMobileLandingLayout = () => {
     if (!landing || !isMobileLayout.matches) {
@@ -732,7 +959,7 @@ if (categorySection && categoryCards.length) {
   if (document.fonts) {
     document.fonts.ready.then(() => {
       syncLayout();
-      if (!document.body.classList.contains("photography-page")) {
+      if (!isFolioPage) {
         if (isBackForwardLoad) {
           playPageEntry({ withWhiteFade: true });
         } else {
@@ -740,7 +967,7 @@ if (categorySection && categoryCards.length) {
         }
       }
     });
-  } else if (!document.body.classList.contains("photography-page")) {
+  } else if (!isFolioPage) {
     if (isBackForwardLoad) {
       playPageEntry({ withWhiteFade: true });
     } else {
@@ -749,7 +976,7 @@ if (categorySection && categoryCards.length) {
   }
 
   syncLayout();
-} else if (document.body.classList.contains("photography-page")) {
+} else if (isFolioPage) {
   playPageEntry();
 } else if (isBackForwardLoad) {
   playPageEntry({ withWhiteFade: true });
@@ -762,7 +989,7 @@ window.addEventListener("pageshow", (event) => {
     return;
   }
 
-  if (document.body.classList.contains("photography-page")) {
+  if (isFolioPage) {
     playPageEntry();
     return;
   }

@@ -85,15 +85,36 @@ button {
   letter-spacing: -0.03em;
   cursor: pointer;
   z-index: 2;
-  transition: opacity 220ms ease;
-}
-
-.shop-button:hover {
-  opacity: 0.7;
 }
 
 .shop-button.text-reveal-mask {
   overflow: hidden;
+}
+
+.shop-button .text-reveal-value {
+  position: relative;
+  display: inline-grid;
+  align-items: center;
+}
+
+.shop-button-label,
+.shop-button-status {
+  grid-area: 1 / 1;
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
+.shop-button-status {
+  opacity: 0;
+}
+
+.shop-button:hover .shop-button-label {
+  opacity: 0;
+}
+
+.shop-button:hover .shop-button-status {
+  opacity: 1;
 }
 
 .back-button,

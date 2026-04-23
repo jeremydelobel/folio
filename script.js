@@ -74,7 +74,9 @@ const getVideoVisualFolderName = (visual) => {
 
   const mediaSource =
     visual.querySelector(".video-card-hover-video source")?.getAttribute("src") ||
+    visual.querySelector(".video-card-hover-video source")?.dataset.src ||
     visual.querySelector(".video-card-thumb")?.getAttribute("src") ||
+    visual.querySelector(".video-card-thumb")?.dataset.src ||
     "";
 
   if (!mediaSource) {
@@ -120,6 +122,156 @@ const buildVideoProjectFileUrl = (folderName, fileName) => {
     .join("/");
 
   return new URL(`./rsrc/montage-video/${encodedFolder}/${fileName}`, window.location.href);
+};
+
+const getVideoVisualThumb = (visual) =>
+  visual?.querySelector(".video-card-thumb") || null;
+
+const getVideoVisualHoverVideo = (visual) =>
+  visual?.querySelector(".video-card-hover-video") || null;
+
+const getVideoVisualSource = (visual) =>
+  getVideoVisualHoverVideo(visual)?.querySelector("source") || null;
+
+const primeVideoVisualMedia = (visual) => {
+  if (!visual || visual.dataset.mediaPrimed === "true") {
+    return;
+  }
+
+  const thumb = getVideoVisualThumb(visual);
+  const video = getVideoVisualHoverVideo(visual);
+  const source = getVideoVisualSource(visual);
+
+  if (thumb) {
+    const thumbSrc =
+      (typeof thumb.dataset.src === "string" && thumb.dataset.src.trim()) ||
+      thumb.getAttribute("src") ||
+      "";
+
+    if (thumbSrc) {
+      thumb.dataset.src = thumbSrc;
+    }
+
+    thumb.removeAttribute("src");
+    thumb.dataset.loaded = "false";
+  }
+
+  if (source) {
+    const videoSrc =
+      (typeof source.dataset.src === "string" && source.dataset.src.trim()) ||
+      source.getAttribute("src") ||
+      "";
+
+    if (videoSrc) {
+      source.dataset.src = videoSrc;
+    }
+
+    source.removeAttribute("src");
+  }
+
+  if (video) {
+    video.preload = "none";
+
+    try {
+      video.load();
+    } catch {}
+  }
+
+  visual.dataset.mediaPrimed = "true";
+};
+
+const ensureVideoVisualThumbLoaded = (visual, { priority = "auto" } = {}) => {
+  const thumb = getVideoVisualThumb(visual);
+
+  if (!thumb) {
+    return false;
+  }
+
+  const thumbSrc =
+    (typeof thumb.dataset.src === "string" && thumb.dataset.src.trim()) ||
+    thumb.getAttribute("src") ||
+    "";
+
+  if (!thumbSrc) {
+    return false;
+  }
+
+  thumb.fetchPriority = priority;
+  thumb.loading = priority === "high" ? "eager" : "lazy";
+
+  if (thumb.dataset.loadBound !== "true") {
+    thumb.addEventListener("load", () => {
+      thumb.dataset.loaded = "true";
+    });
+
+    thumb.dataset.loadBound = "true";
+  }
+
+  if (thumb.getAttribute("src") !== thumbSrc) {
+    thumb.setAttribute("src", thumbSrc);
+  }
+
+  if (thumb.complete && thumb.naturalWidth > 0) {
+    thumb.dataset.loaded = "true";
+  }
+
+  return true;
+};
+
+const ensureVideoVisualHoverVideoLoaded = (
+  visual,
+  { preload = "metadata" } = {}
+) => {
+  const video = getVideoVisualHoverVideo(visual);
+  const source = getVideoVisualSource(visual);
+
+  if (!video || !source) {
+    return false;
+  }
+
+  const videoSrc =
+    (typeof source.dataset.src === "string" && source.dataset.src.trim()) ||
+    source.getAttribute("src") ||
+    "";
+
+  if (!videoSrc) {
+    return false;
+  }
+
+  video.preload = preload;
+
+  if (source.getAttribute("src") !== videoSrc) {
+    source.setAttribute("src", videoSrc);
+
+    try {
+      video.load();
+    } catch {}
+  }
+
+  return true;
+};
+
+const releaseVideoVisualHoverVideo = (visual) => {
+  const video = getVideoVisualHoverVideo(visual);
+  const source = getVideoVisualSource(visual);
+
+  if (!video || !source || !source.getAttribute("src")) {
+    return;
+  }
+
+  visual.classList.remove("is-hover-media-active");
+  video.pause();
+
+  try {
+    video.currentTime = 0;
+  } catch {}
+
+  video.preload = "none";
+  source.removeAttribute("src");
+
+  try {
+    video.load();
+  } catch {}
 };
 
 const normalizeVideoProjectLinks = (payload) => {
@@ -386,6 +538,8 @@ const initVideoHoverMedia = () => {
       return;
     }
 
+    primeVideoVisualMedia(visual);
+
     const video = visual.querySelector(".video-card-hover-video");
     const folderName = getVideoVisualFolderName(visual);
     const roleLabel = parseVideoProjectFolderName(folderName).roleLabel;
@@ -402,6 +556,8 @@ const initVideoHoverMedia = () => {
     }
 
     const activate = () => {
+      ensureVideoVisualThumbLoaded(visual, { priority: "high" });
+      ensureVideoVisualHoverVideoLoaded(visual, { preload: "auto" });
       visual.classList.add("is-hover-media-active");
 
       const playPromise = video.play();
@@ -1106,6 +1262,7 @@ const initVideoTimelineScene = () => {
   const videoWheelSensitivity = 1.35;
   const videoCards = timelineCards.map((card, index) => ({
     element: card,
+    visual: card.querySelector(".video-card-visual"),
     currentX: 0,
     currentY: 0,
     strength: 13 + (index % 3) * 1.6,
@@ -1117,6 +1274,50 @@ const initVideoTimelineScene = () => {
   let isVideoScrollbarActive = false;
   let isVideoScrollbarDragging = false;
   let videoSceneFrame = 0;
+  let lastVideoMediaRefresh = -Infinity;
+  let forceVideoMediaRefresh = true;
+
+  const refreshVisibleVideoMedia = () => {
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const horizontalBuffer = videoIsMobileLayout.matches
+      ? viewportWidth * 0.16
+      : viewportWidth * 0.8;
+    const verticalBuffer = videoIsMobileLayout.matches
+      ? viewportHeight * 0.42
+      : viewportHeight * 0.24;
+    const priorityCardCount = videoIsMobileLayout.matches ? 3 : 4;
+
+    videoCards.forEach((card, index) => {
+      const { element, visual } = card;
+
+      if (!visual) {
+        return;
+      }
+
+      const rect = element.getBoundingClientRect();
+      const isWithinMediaRange =
+        rect.right >= -horizontalBuffer &&
+        rect.left <= viewportWidth + horizontalBuffer &&
+        rect.bottom >= -verticalBuffer &&
+        rect.top <= viewportHeight + verticalBuffer;
+      const shouldLoadThumb = isWithinMediaRange || index < priorityCardCount;
+
+      if (shouldLoadThumb) {
+        ensureVideoVisualThumbLoaded(visual, {
+          priority: index < 2 ? "high" : "low",
+        });
+      }
+
+      if (isWithinMediaRange) {
+        ensureVideoVisualHoverVideoLoaded(visual, { preload: "metadata" });
+      } else {
+        releaseVideoVisualHoverVideo(visual);
+      }
+
+      element.classList.toggle("is-near-viewport", isWithinMediaRange);
+    });
+  };
 
   const applyVideoTrackOffset = (offset) => {
     videoTimeline.style.setProperty("--track-offset", `${offset.toFixed(2)}px`);
@@ -1295,7 +1496,7 @@ const initVideoTimelineScene = () => {
     }
   };
 
-  const animateVideoScene = () => {
+  const animateVideoScene = (timestamp = performance.now()) => {
     const motionDisabled = prefersReducedMotion.matches || videoIsMobileLayout.matches;
     const timelineEase =
       prefersReducedMotion.matches ? 1 : isVideoScrollbarDragging ? 0.18 : 0.1;
@@ -1308,6 +1509,12 @@ const initVideoTimelineScene = () => {
 
     applyVideoTrackOffset(currentTrackOffset);
     updateVideoScrollbar(currentTrackOffset);
+
+    if (forceVideoMediaRefresh || timestamp - lastVideoMediaRefresh >= 120) {
+      refreshVisibleVideoMedia();
+      lastVideoMediaRefresh = timestamp;
+      forceVideoMediaRefresh = false;
+    }
 
     videoCards.forEach((card) => {
       let pointerX = 0;
@@ -1547,6 +1754,8 @@ const initVideoTimelineScene = () => {
     timelineScrollArea.style.minHeight = `${viewportHeight.toFixed(2)}px`;
 
     syncVideoTimelineScroll({ snap: true });
+    forceVideoMediaRefresh = true;
+    refreshVisibleVideoMedia();
   };
 
   if (videoCanHover) {

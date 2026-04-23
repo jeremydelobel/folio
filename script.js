@@ -133,6 +133,29 @@ const getVideoVisualHoverVideo = (visual) =>
 const getVideoVisualSource = (visual) =>
   getVideoVisualHoverVideo(visual)?.querySelector("source") || null;
 
+const setVideoVisualThumbReadyState = (visual, isReady) => {
+  const card = visual?.closest(".video-timeline-card");
+
+  if (!card) {
+    return;
+  }
+
+  card.classList.toggle("is-thumb-ready", Boolean(isReady));
+};
+
+const bindVideoVisualThumbLoad = (visual, thumb) => {
+  if (!visual || !thumb || thumb.dataset.loadBound === "true") {
+    return;
+  }
+
+  thumb.addEventListener("load", () => {
+    thumb.dataset.loaded = "true";
+    setVideoVisualThumbReadyState(visual, true);
+  });
+
+  thumb.dataset.loadBound = "true";
+};
+
 const primeVideoVisualMedia = (visual) => {
   if (!visual || visual.dataset.mediaPrimed === "true") {
     return;
@@ -152,8 +175,15 @@ const primeVideoVisualMedia = (visual) => {
       thumb.dataset.src = thumbSrc;
     }
 
-    thumb.removeAttribute("src");
-    thumb.dataset.loaded = "false";
+    bindVideoVisualThumbLoad(visual, thumb);
+
+    if (thumb.complete && thumb.naturalWidth > 0) {
+      thumb.dataset.loaded = "true";
+      setVideoVisualThumbReadyState(visual, true);
+    } else {
+      thumb.dataset.loaded = "false";
+      setVideoVisualThumbReadyState(visual, false);
+    }
   }
 
   if (source) {
@@ -180,7 +210,10 @@ const primeVideoVisualMedia = (visual) => {
   visual.dataset.mediaPrimed = "true";
 };
 
-const ensureVideoVisualThumbLoaded = (visual, { priority = "auto" } = {}) => {
+const ensureVideoVisualThumbLoaded = (
+  visual,
+  { priority = "auto", loading = null } = {}
+) => {
   const thumb = getVideoVisualThumb(visual);
 
   if (!thumb) {
@@ -197,15 +230,12 @@ const ensureVideoVisualThumbLoaded = (visual, { priority = "auto" } = {}) => {
   }
 
   thumb.fetchPriority = priority;
-  thumb.loading = priority === "high" ? "eager" : "lazy";
 
-  if (thumb.dataset.loadBound !== "true") {
-    thumb.addEventListener("load", () => {
-      thumb.dataset.loaded = "true";
-    });
-
-    thumb.dataset.loadBound = "true";
+  if (loading) {
+    thumb.loading = loading;
   }
+
+  bindVideoVisualThumbLoad(visual, thumb);
 
   if (thumb.getAttribute("src") !== thumbSrc) {
     thumb.setAttribute("src", thumbSrc);
@@ -213,6 +243,7 @@ const ensureVideoVisualThumbLoaded = (visual, { priority = "auto" } = {}) => {
 
   if (thumb.complete && thumb.naturalWidth > 0) {
     thumb.dataset.loaded = "true";
+    setVideoVisualThumbReadyState(visual, true);
   }
 
   return true;
@@ -1296,6 +1327,11 @@ const initVideoTimelineScene = () => {
       }
 
       const rect = element.getBoundingClientRect();
+      const isInViewport =
+        rect.right >= 0 &&
+        rect.left <= viewportWidth &&
+        rect.bottom >= 0 &&
+        rect.top <= viewportHeight;
       const isWithinMediaRange =
         rect.right >= -horizontalBuffer &&
         rect.left <= viewportWidth + horizontalBuffer &&
@@ -1304,8 +1340,14 @@ const initVideoTimelineScene = () => {
       const shouldLoadThumb = isWithinMediaRange || index < priorityCardCount;
 
       if (shouldLoadThumb) {
+        const thumbPriority = isInViewport || index < priorityCardCount
+          ? "high"
+          : isWithinMediaRange
+            ? "auto"
+            : "low";
+
         ensureVideoVisualThumbLoaded(visual, {
-          priority: index < 2 ? "high" : "low",
+          priority: thumbPriority,
         });
       }
 

@@ -583,15 +583,23 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   padding-bottom: 0;
 }
 
+.video-page .back-button,
+.video-page .showreel-button,
+.photography-page .back-button {
+  z-index: 5;
+  color: #ffffff;
+  mix-blend-mode: difference;
+}
+
 .video-page .folio-title {
-  position: fixed;
+  position: absolute;
   top: 2rem;
   left: 50%;
   width: max-content;
   max-width: calc(100vw - 12rem);
   transform: translateX(-50%);
   text-align: center;
-  z-index: 4;
+  z-index: 5;
   pointer-events: none;
 }
 
@@ -1069,11 +1077,11 @@ body.is-ready .video-card-label-mask .video-card-label-value {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.2rem;
+    gap: clamp(4.4rem, 14vw, 5.8rem);
     width: 100%;
     min-width: 0;
     height: auto;
-    padding: 7.2rem 0 2rem;
+    padding: 7.2rem var(--mobile-side-padding, clamp(2rem, 9vw, 3.4rem)) 2.8rem;
     transform: none;
   }
 
@@ -1081,7 +1089,7 @@ body.is-ready .video-card-label-mask .video-card-label-value {
     position: relative;
     top: auto;
     left: auto;
-    width: var(--card-width, min(72vw, 310px));
+    width: var(--card-width, min(58vw, 250px));
     transform: translate3d(var(--mobile-shift, 0px), 0, 0);
   }
 

@@ -1612,11 +1612,16 @@ const initVideoTimelineScene = () => {
     syncVideoPageOverflow();
 
     if (videoIsMobileLayout.matches) {
-      const mobileBaseWidth = clamp(viewportWidth * 0.72, 220, 310);
-      const mobileShiftLimit = clamp(viewportWidth * 0.11, 14, 34);
-      const mobileShiftPattern = [0, -0.75, 0.55, -0.35, 0.72, -0.22, 0.42, -0.58];
+      const mobileSidePadding = clamp(viewportWidth * 0.12, 32, 56);
+      const mobileBaseWidth = clamp(viewportWidth * 0.56, 176, 248);
+      const mobileShiftLimit = clamp(viewportWidth * 0.155, 24, 52);
+      const mobileShiftPattern = [0, -0.9, 0.68, -0.42, 0.88, -0.28, 0.54, -0.74];
 
       videoTimeline.style.setProperty("--card-caption-size", "14px");
+      videoTimeline.style.setProperty(
+        "--mobile-side-padding",
+        `${mobileSidePadding.toFixed(2)}px`
+      );
       document.body.style.setProperty("--showreel-caption-size", "14px");
       videoTimeline.style.width = "100%";
       videoTimeline.style.height = "auto";
@@ -1628,27 +1633,69 @@ const initVideoTimelineScene = () => {
       applyVideoTrackOffset(0);
       updateVideoScrollbar(0);
 
-      timelineCards.forEach((card, index) => {
+      const mobileMetrics = timelineCards.map((card, index) => {
         const isVertical = card.dataset.format === "vertical";
         const scaleFactor = scalePattern[index % scalePattern.length];
         const formatWidthFactor = isVertical ? 0.78 : 1;
         const baseWidth = mobileBaseWidth * scaleFactor * formatWidthFactor;
-        const centeredShift =
+        const rawShift =
           mobileShiftPattern[index % mobileShiftPattern.length] * mobileShiftLimit;
-        const maxWidth = Math.max(viewportWidth - 28, baseWidth);
+        const maxWidth = Math.max(
+          viewportWidth - mobileSidePadding * 2,
+          baseWidth
+        );
         const { cardWidth, titleScale } = getFittedVideoCardTitleMetrics({
           card,
           baseWidth,
           maxWidth,
         });
 
-        card.style.setProperty("--card-width", `${cardWidth.toFixed(2)}px`);
-        card.style.setProperty("--card-title-scale", titleScale.toFixed(3));
-        card.style.setProperty("--mobile-shift", `${centeredShift.toFixed(2)}px`);
-        card.style.setProperty("--entry-delay", `${(0.08 + index * 0.08).toFixed(2)}s`);
-        card.style.setProperty("--card-color", pastelPalette[index % pastelPalette.length]);
-        card.style.removeProperty("--card-x");
-        card.style.removeProperty("--card-y");
+        return {
+          card,
+          index,
+          cardWidth,
+          titleScale,
+          rawShift,
+        };
+      });
+
+      const mobileBounds = mobileMetrics.reduce(
+        (bounds, metric) => ({
+          minLeft: Math.min(bounds.minLeft, -metric.cardWidth / 2 + metric.rawShift),
+          maxRight: Math.max(bounds.maxRight, metric.cardWidth / 2 + metric.rawShift),
+        }),
+        {
+          minLeft: Number.POSITIVE_INFINITY,
+          maxRight: Number.NEGATIVE_INFINITY,
+        }
+      );
+      const mobileBalanceShift =
+        Number.isFinite(mobileBounds.minLeft) && Number.isFinite(mobileBounds.maxRight)
+          ? -((mobileBounds.minLeft + mobileBounds.maxRight) * 0.5)
+          : 0;
+
+      mobileMetrics.forEach((metric) => {
+        const centeredShift = metric.rawShift + mobileBalanceShift;
+
+        metric.card.style.setProperty("--card-width", `${metric.cardWidth.toFixed(2)}px`);
+        metric.card.style.setProperty(
+          "--card-title-scale",
+          metric.titleScale.toFixed(3)
+        );
+        metric.card.style.setProperty(
+          "--mobile-shift",
+          `${centeredShift.toFixed(2)}px`
+        );
+        metric.card.style.setProperty(
+          "--entry-delay",
+          `${(0.08 + metric.index * 0.08).toFixed(2)}s`
+        );
+        metric.card.style.setProperty(
+          "--card-color",
+          pastelPalette[metric.index % pastelPalette.length]
+        );
+        metric.card.style.removeProperty("--card-x");
+        metric.card.style.removeProperty("--card-y");
       });
 
       return;

@@ -627,7 +627,7 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   transition:
     height 180ms ease,
     background-color 180ms ease;
-  cursor: pointer;
+  cursor: grab;
 }
 
 .video-scrollbar-track::before {
@@ -654,7 +654,7 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   height: 2px;
   background: #111111;
   transform: translateY(-50%);
-  cursor: grab;
+  cursor: inherit;
   transition: height 180ms ease;
 }
 
@@ -674,6 +674,8 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   height: 5px;
 }
 
+.video-scrollbar.is-dragging .video-scrollbar-track,
+.video-scrollbar.is-dragging .video-scrollbar-track::before,
 .video-scrollbar.is-dragging .video-scrollbar-thumb {
   cursor: grabbing;
 }

@@ -19,9 +19,10 @@ const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const videoProjectLinksCache = new Map();
 const videoLinkPriority = ["youtube", "tiktok", "instagram"];
 const videoRoleMap = {
-  m: "Monteur",
+  m: "Montage",
   md: "Motion Design",
   fx: "FX",
+  cg: "Étalonnage",
   sd: "Sound Design",
   dr: "Derush",
 };

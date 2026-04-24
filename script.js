@@ -629,18 +629,24 @@ const initVideoProjectLinks = () => {
       return;
     }
 
-    if (inlineHref) {
-      videoProjectLinksCache.set(folderName || inlineHref, inlineHref);
-    } else if (folderName) {
+    if (folderName) {
       void loadVideoProjectLink(folderName);
+    } else if (inlineHref) {
+      videoProjectLinksCache.set(inlineHref, inlineHref);
     }
 
     const openCardLink = () => {
-      const cachedHref =
-        inlineHref || videoProjectLinksCache.get(folderName || inlineHref);
+      const cachedHref = folderName
+        ? videoProjectLinksCache.get(folderName)
+        : videoProjectLinksCache.get(inlineHref);
 
       if (cachedHref) {
         openExternalProjectLink(cachedHref);
+        return;
+      }
+
+      if (!folderName && inlineHref) {
+        openExternalProjectLink(inlineHref);
         return;
       }
 
@@ -651,7 +657,9 @@ const initVideoProjectLinks = () => {
       const pendingWindow = openPendingProjectWindow();
 
       void loadVideoProjectLink(folderName).then((href) => {
-        if (!href) {
+        const resolvedHref = href || inlineHref;
+
+        if (!resolvedHref) {
           if (pendingWindow && !pendingWindow.closed) {
             pendingWindow.close();
           }
@@ -659,11 +667,11 @@ const initVideoProjectLinks = () => {
         }
 
         if (pendingWindow && !pendingWindow.closed) {
-          pendingWindow.location.href = href;
+          pendingWindow.location.href = resolvedHref;
           return;
         }
 
-        openExternalProjectLink(href);
+        openExternalProjectLink(resolvedHref);
       });
     };
 

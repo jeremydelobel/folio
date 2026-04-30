@@ -4,6 +4,9 @@ const backButton = document.querySelector(".back-button");
 const showreelButton = document.querySelector(".showreel-button");
 const showreelOverlay = document.querySelector(".showreel-overlay");
 const showreelIframe = document.querySelector(".showreel-iframe");
+const projectPlayerOverlay = document.querySelector(".project-player-overlay");
+const projectPlayerDialog = document.querySelector(".project-player-dialog");
+const projectPlayerEmbedShell = document.querySelector(".project-player-embed-shell");
 const photoGrid = document.querySelector(".photo-grid");
 const videoTimeline = document.querySelector(".video-timeline");
 const timelineScrollArea = document.querySelector(".timeline-scroll-area");
@@ -18,6 +21,7 @@ const isFolioPage = isPhotographyPage || isVideoPage;
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const videoProjectLinksCache = new Map();
 const videoLinkPriority = ["youtube", "tiktok", "instagram"];
+const videoOverlayTransitionDuration = 360;
 const videoHoverResumeRetentionDuration = 2000;
 const videoHoverResetTimers = new WeakMap();
 const videoHoverResumeTimes = new WeakMap();
@@ -25,6 +29,11 @@ const videoCardAspectRatios = {
   vertical: 2 / 3,
   wide: 1920 / 803,
   landscape: 3 / 2,
+};
+const projectPlayerAspectRatios = {
+  vertical: 9 / 16,
+  wide: 1920 / 803,
+  landscape: 16 / 9,
 };
 const videoRoleMap = {
   m: "Montage",
@@ -34,10 +43,10 @@ const videoRoleMap = {
   sd: "Sound Design",
   dr: "Derush",
 };
-let showreelCloseTimer = 0;
 let vimeoPlayerApiPromise = null;
 let showreelPlayer = null;
 let showreelPlayerInitPromise = null;
+let activeVideoOverlay = "none";
 
 const parseVideoProjectFolderName = (folderName = "") => {
   const folderParts = folderName.split("_");
@@ -186,6 +195,13 @@ const getVideoTimelineCardFormat = (card) => {
   }
 
   return "landscape";
+};
+
+const getVideoProjectPlayerFormat = (card) => {
+  const cardFormat = getVideoTimelineCardFormat(card);
+  return cardFormat === "vertical" || cardFormat === "wide"
+    ? cardFormat
+    : "landscape";
 };
 
 const setVideoVisualThumbReadyState = (visual, isReady) => {
@@ -438,31 +454,141 @@ const loadVideoProjectLink = async (folderName) => {
   return "";
 };
 
-const openExternalProjectLink = (href) => {
+const getYouTubeVideoId = (href) => {
   if (!href) {
-    return;
+    return "";
+  }
+
+  try {
+    const url = new URL(href, window.location.href);
+    const host = url.hostname.replace(/^www\./, "").toLowerCase();
+    const segments = url.pathname.split("/").filter(Boolean);
+
+    if (host === "youtu.be") {
+      return segments[0] || "";
+    }
+
+    if (
+      host === "youtube.com" ||
+      host === "m.youtube.com" ||
+      host === "music.youtube.com"
+    ) {
+      if (segments[0] === "watch") {
+        return url.searchParams.get("v") || "";
+      }
+
+      if (segments[0] === "shorts" || segments[0] === "embed") {
+        return segments[1] || "";
+      }
+
+      return url.searchParams.get("v") || "";
+    }
+  } catch {}
+
+  return "";
+};
+
+const resolveVideoProjectPlayerSource = (href) => {
+  const videoId = getYouTubeVideoId(href);
+
+  if (!videoId) {
+    return {
+      provider: "unsupported",
+      embedUrl: "",
+      href,
+    };
+  }
+
+  const embedUrl = new URL(
+    `https://www.youtube.com/embed/${encodeURIComponent(videoId)}`
+  );
+  embedUrl.searchParams.set("autoplay", "1");
+  embedUrl.searchParams.set("playsinline", "1");
+  embedUrl.searchParams.set("rel", "0");
+  embedUrl.searchParams.set("modestbranding", "1");
+
+  return {
+    provider: "youtube",
+    embedUrl: embedUrl.toString(),
+    href,
+  };
+};
+
+const openExternalVideoProjectLink = (href) => {
+  if (!href) {
+    return false;
   }
 
   const link = document.createElement("a");
   link.href = href;
   link.target = "_blank";
   link.rel = "noopener noreferrer";
-  link.style.display = "none";
+  link.className = "sr-only";
   document.body.appendChild(link);
   link.click();
   link.remove();
+  return true;
 };
 
-const openPendingProjectWindow = () => {
-  const pendingWindow = window.open("", "_blank");
+const clearProjectPlayerEmbed = () => {
+  projectPlayerEmbedShell?.replaceChildren();
+};
 
-  if (pendingWindow) {
-    try {
-      pendingWindow.opener = null;
-    } catch {}
+const mountProjectPlayerEmbed = (embedUrl, title = "Lecture du projet") => {
+  if (!projectPlayerEmbedShell || !embedUrl) {
+    return false;
   }
 
-  return pendingWindow;
+  const iframe = document.createElement("iframe");
+  iframe.src = embedUrl;
+  iframe.allow =
+    "autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share";
+  iframe.referrerPolicy = "strict-origin-when-cross-origin";
+  iframe.title = title;
+  iframe.loading = "eager";
+  iframe.allowFullscreen = true;
+  iframe.setAttribute("frameborder", "0");
+
+  projectPlayerEmbedShell.replaceChildren(iframe);
+  return true;
+};
+
+const applyProjectPlayerDialogMetrics = (format = "landscape") => {
+  if (!projectPlayerDialog) {
+    return;
+  }
+
+  const viewportGap = window.innerWidth <= 640 ? 40 : 48;
+  const maxWidth = Math.max(window.innerWidth - viewportGap, 220);
+  const maxHeight = Math.max(window.innerHeight - viewportGap, 220);
+  const aspectRatio = projectPlayerAspectRatios[format] || projectPlayerAspectRatios.landscape;
+  let width = 0;
+  let height = 0;
+
+  if (format === "vertical") {
+    height = Math.min(window.innerHeight * 0.7, maxHeight);
+    width = height * aspectRatio;
+
+    if (width > maxWidth) {
+      width = maxWidth;
+      height = width / aspectRatio;
+    }
+  } else {
+    width = Math.min(window.innerWidth * 0.7, maxWidth);
+    height = width / aspectRatio;
+
+    if (height > maxHeight) {
+      height = maxHeight;
+      width = height * aspectRatio;
+    }
+  }
+
+  projectPlayerDialog.style.setProperty("--project-player-width", `${width.toFixed(2)}px`);
+  projectPlayerDialog.style.setProperty(
+    "--project-player-height",
+    `${height.toFixed(2)}px`
+  );
+  projectPlayerDialog.dataset.format = format;
 };
 
 const loadVimeoPlayerApi = () => {
@@ -542,20 +668,33 @@ const ensureShowreelPlayer = () => {
   return showreelPlayerInitPromise;
 };
 
-const setShowreelState = (isOpen) => {
-  const normalizedState = Boolean(isOpen);
+const setActiveVideoOverlay = (overlayName) => {
+  activeVideoOverlay = overlayName;
+  const isOpen = overlayName !== "none";
 
-  document.documentElement.classList.toggle("is-showreel-open", normalizedState);
-  document.body.classList.toggle("is-showreel-open", normalizedState);
+  document.documentElement.classList.toggle("is-media-overlay-open", isOpen);
+  document.body.classList.toggle("is-media-overlay-open", isOpen);
 
   if (showreelButton) {
-    showreelButton.setAttribute("aria-expanded", String(normalizedState));
+    showreelButton.setAttribute("aria-expanded", String(isOpen));
   }
 
   if (showreelOverlay) {
-    showreelOverlay.setAttribute("aria-hidden", String(!normalizedState));
+    showreelOverlay.setAttribute("aria-hidden", String(overlayName !== "showreel"));
+  }
+
+  if (projectPlayerOverlay) {
+    projectPlayerOverlay.setAttribute("aria-hidden", String(overlayName !== "project"));
   }
 };
+
+const isShowreelOverlayOpen = () =>
+  activeVideoOverlay === "showreel" &&
+  Boolean(showreelOverlay?.classList.contains("is-visible"));
+
+const isProjectPlayerOverlayOpen = () =>
+  activeVideoOverlay === "project" &&
+  Boolean(projectPlayerOverlay?.classList.contains("is-visible"));
 
 const openShowreelOverlay = () => {
   const embedSrc =
@@ -563,18 +702,21 @@ const openShowreelOverlay = () => {
       ? showreelIframe.dataset.src.trim()
       : "";
 
-  if (!showreelOverlay || !showreelIframe || !embedSrc) {
+  if (
+    !showreelOverlay ||
+    !showreelIframe ||
+    !embedSrc ||
+    activeVideoOverlay !== "none"
+  ) {
     return false;
   }
-
-  window.clearTimeout(showreelCloseTimer);
 
   if (showreelIframe.getAttribute("src") !== embedSrc) {
     showreelIframe.setAttribute("src", embedSrc);
   }
 
   showreelOverlay.classList.add("is-visible");
-  setShowreelState(true);
+  setActiveVideoOverlay("showreel");
   void ensureShowreelPlayer().then((player) => {
     if (!player) {
       return;
@@ -587,32 +729,75 @@ const openShowreelOverlay = () => {
 };
 
 const closeShowreelOverlay = ({ restoreFocus = true } = {}) => {
-  if (!showreelOverlay || !showreelIframe) {
+  if (!showreelOverlay || !showreelIframe || !isShowreelOverlayOpen()) {
     return;
   }
 
   showreelOverlay.classList.remove("is-visible");
-  setShowreelState(false);
+  setActiveVideoOverlay("none");
 
   if (showreelPlayer) {
     void showreelPlayer.pause().catch(() => {});
   }
 
-  window.clearTimeout(showreelCloseTimer);
-  showreelCloseTimer = window.setTimeout(() => {
-    const player = showreelPlayer;
+  if (restoreFocus && showreelButton) {
+    showreelButton.focus();
+  }
+};
 
-    showreelPlayer = null;
+const openProjectPlayerOverlay = ({
+  embedUrl,
+  format = "landscape",
+  title = "Lecture du projet",
+} = {}) => {
+  if (!projectPlayerOverlay || !projectPlayerDialog || !embedUrl) {
+    return false;
+  }
 
-    if (player) {
-      void player.unload().catch(() => {});
+  if (isShowreelOverlayOpen()) {
+    closeShowreelOverlay({ restoreFocus: false });
+  } else if (isProjectPlayerOverlayOpen()) {
+    closeProjectPlayerOverlay({ restoreFocus: false });
+  }
+
+  applyProjectPlayerDialogMetrics(format);
+
+  if (!mountProjectPlayerEmbed(embedUrl, title)) {
+    return false;
+  }
+
+  projectPlayerOverlay.classList.add("is-visible");
+  setActiveVideoOverlay("project");
+  return true;
+};
+
+const closeProjectPlayerOverlay = ({ restoreFocus = true } = {}) => {
+  if (!projectPlayerOverlay || !isProjectPlayerOverlayOpen()) {
+    return;
+  }
+
+  projectPlayerOverlay.classList.remove("is-visible");
+  setActiveVideoOverlay("none");
+
+  window.setTimeout(() => {
+    if (!isProjectPlayerOverlayOpen()) {
+      clearProjectPlayerEmbed();
     }
-
-    showreelIframe.removeAttribute("src");
-  }, 260);
+  }, videoOverlayTransitionDuration);
 
   if (restoreFocus && showreelButton) {
     showreelButton.focus();
+  }
+};
+
+const closeActiveVideoOverlay = ({ restoreFocus = true } = {}) => {
+  if (isProjectPlayerOverlayOpen()) {
+    closeProjectPlayerOverlay({ restoreFocus });
+    return;
+  }
+
+  if (isShowreelOverlayOpen()) {
+    closeShowreelOverlay({ restoreFocus });
   }
 };
 
@@ -721,53 +906,48 @@ const initVideoProjectLinks = () => {
     }
 
     if (folderName) {
+      if (inlineHref && !videoProjectLinksCache.has(folderName)) {
+        videoProjectLinksCache.set(folderName, inlineHref);
+      }
+
       void loadVideoProjectLink(folderName);
     } else if (inlineHref) {
       videoProjectLinksCache.set(inlineHref, inlineHref);
     }
 
-    const openCardLink = () => {
-      const cachedHref = folderName
+    const openCardLink = async () => {
+      let resolvedHref = folderName
         ? videoProjectLinksCache.get(folderName)
         : videoProjectLinksCache.get(inlineHref);
 
-      if (cachedHref) {
-        openExternalProjectLink(cachedHref);
+      if (!resolvedHref && folderName) {
+        resolvedHref = (await loadVideoProjectLink(folderName)) || inlineHref;
+      }
+
+      if (!resolvedHref && inlineHref) {
+        resolvedHref = inlineHref;
+      }
+
+      const resolvedSource = resolveVideoProjectPlayerSource(resolvedHref || "");
+
+      if (resolvedSource.provider !== "youtube" || !resolvedSource.embedUrl) {
+        openExternalVideoProjectLink(resolvedHref || inlineHref);
         return;
       }
 
-      if (!folderName && inlineHref) {
-        openExternalProjectLink(inlineHref);
-        return;
-      }
+      const projectTitle =
+        card.querySelector(".video-card-label-value")?.textContent?.trim() ||
+        "Lecture du projet";
 
-      if (!folderName) {
-        return;
-      }
-
-      const pendingWindow = openPendingProjectWindow();
-
-      void loadVideoProjectLink(folderName).then((href) => {
-        const resolvedHref = href || inlineHref;
-
-        if (!resolvedHref) {
-          if (pendingWindow && !pendingWindow.closed) {
-            pendingWindow.close();
-          }
-          return;
-        }
-
-        if (pendingWindow && !pendingWindow.closed) {
-          pendingWindow.location.href = resolvedHref;
-          return;
-        }
-
-        openExternalProjectLink(resolvedHref);
+      openProjectPlayerOverlay({
+        embedUrl: resolvedSource.embedUrl,
+        format: getVideoProjectPlayerFormat(card),
+        title: projectTitle,
       });
     };
 
     card.tabIndex = 0;
-    card.setAttribute("role", "link");
+    card.setAttribute("role", "button");
 
     card.addEventListener("click", () => {
       void openCardLink();
@@ -873,20 +1053,12 @@ if (backButton) {
 
 if (showreelButton) {
   showreelButton.addEventListener("click", () => {
-    if (openShowreelOverlay()) {
+    if (activeVideoOverlay !== "none") {
+      closeActiveVideoOverlay({ restoreFocus: false });
       return;
     }
 
-    const href =
-      typeof showreelButton.dataset.showreelUrl === "string"
-        ? showreelButton.dataset.showreelUrl.trim()
-        : "";
-
-    if (!href) {
-      return;
-    }
-
-    openExternalProjectLink(href);
+    openShowreelOverlay();
   });
 }
 
@@ -904,14 +1076,37 @@ if (showreelOverlay) {
   });
 
   window.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape" || !showreelOverlay.classList.contains("is-visible")) {
+    if (event.key !== "Escape" || activeVideoOverlay === "none") {
       return;
     }
 
     event.preventDefault();
-    closeShowreelOverlay();
+    closeActiveVideoOverlay();
   });
 }
+
+if (projectPlayerOverlay) {
+  projectPlayerOverlay
+    .querySelectorAll("[data-project-player-close]")
+    .forEach((element) => {
+      element.addEventListener("click", () => {
+        closeProjectPlayerOverlay();
+      });
+    });
+}
+
+window.addEventListener("resize", () => {
+  if (!isProjectPlayerOverlayOpen()) {
+    return;
+  }
+
+  const dialogFormat = projectPlayerDialog?.dataset.format;
+  const format =
+    dialogFormat === "vertical" || dialogFormat === "wide"
+      ? dialogFormat
+      : "landscape";
+  applyProjectPlayerDialogMetrics(format);
+});
 
 if (photoGrid) {
   let currentPhotoColumns = 0;
@@ -1595,7 +1790,7 @@ const initVideoTimelineScene = () => {
   };
 
   const syncVideoPageOverflow = () => {
-    if (document.body.classList.contains("is-showreel-open")) {
+    if (document.body.classList.contains("is-media-overlay-open")) {
       document.documentElement.style.setProperty("overflow-y", "hidden");
       document.body.style.setProperty("overflow-y", "hidden");
       return;
@@ -1754,7 +1949,7 @@ const initVideoTimelineScene = () => {
     syncVideoPageOverflow();
 
     if (videoIsMobileLayout.matches) {
-      const mobileSidePadding = clamp(viewportWidth * 0.12, 32, 56);
+      const mobileSidePadding = clamp(viewportWidth * 0.18, 44, 76);
       const mobileBaseWidth = clamp(viewportWidth * 0.56, 176, 248);
       const mobileShiftLimit = clamp(viewportWidth * 0.155, 24, 52);
       const mobileShiftPattern = [0, -0.9, 0.68, -0.42, 0.88, -0.28, 0.54, -0.74];
@@ -1855,12 +2050,14 @@ const initVideoTimelineScene = () => {
     const paddingRatio = Number.parseFloat(videoTimeline.dataset.trackPadding) || 0.14;
     const sidePadding = viewportWidth * paddingRatio;
     const trailingPadding = viewportWidth <= 640 ? 88 : sidePadding;
-    const baseCardWidth =
+    const rawBaseCardWidth =
       viewportWidth <= 640
         ? clamp(viewportWidth * 0.72, 220, 310)
         : clamp(viewportWidth * 0.31, 280, 460);
-    const safeTop = viewportWidth <= 640 ? 112 : 160;
-    const safeBottom = viewportWidth <= 640 ? 120 : 92;
+    const safeTop =
+      viewportWidth <= 640 ? 112 : clamp(viewportHeight * 0.145, 132, 160);
+    const safeBottom =
+      viewportWidth <= 640 ? 120 : clamp(viewportHeight * 0.086, 72, 92);
     videoTimeline.style.setProperty(
       "--card-caption-size",
       `${(14 * captionScale).toFixed(2)}px`
@@ -1871,38 +2068,67 @@ const initVideoTimelineScene = () => {
     );
     videoTimeline.style.height = "100vh";
 
-    const cardMetrics = timelineCards.map((card, index) => {
-      const cardFormat = getVideoTimelineCardFormat(card);
-      const scaleFactor = scalePattern[index % scalePattern.length];
-      const formatWidthFactor =
-        cardFormat === "vertical"
-          ? 0.74
-          : cardFormat === "wide"
-            ? 1.28 * wideCardSizeBoost
-            : 1;
-      const baseWidth = baseCardWidth * scaleFactor * formatWidthFactor;
-      const aspectRatio = videoCardAspectRatios[cardFormat];
-      const maxWidth = Math.max(
-        baseWidth,
-        viewportWidth *
-          (cardFormat === "vertical" ? 0.44 : cardFormat === "wide" ? 0.74 : 0.62)
-      );
-      const { cardWidth, titleScale } = getFittedVideoCardTitleMetrics({
-        card,
-        baseWidth,
-        maxWidth,
-      });
-      const cardHeight = cardWidth / aspectRatio;
+    const buildDesktopCardMetrics = (baseCardWidth) =>
+      timelineCards.map((card, index) => {
+        const cardFormat = getVideoTimelineCardFormat(card);
+        const scaleFactor = scalePattern[index % scalePattern.length];
+        const formatWidthFactor =
+          cardFormat === "vertical"
+            ? 0.74
+            : cardFormat === "wide"
+              ? 1.28 * wideCardSizeBoost
+              : 1;
+        const baseWidth = baseCardWidth * scaleFactor * formatWidthFactor;
+        const aspectRatio = videoCardAspectRatios[cardFormat];
+        const maxWidth = Math.max(
+          baseWidth,
+          viewportWidth *
+            (cardFormat === "vertical" ? 0.44 : cardFormat === "wide" ? 0.74 : 0.62)
+        );
+        const { cardWidth, titleScale } = getFittedVideoCardTitleMetrics({
+          card,
+          baseWidth,
+          maxWidth,
+        });
+        const cardHeight = cardWidth / aspectRatio;
 
-      return {
-        card,
-        index,
-        cardFormat,
-        cardWidth,
-        cardHeight,
-        titleScale,
-      };
-    });
+        return {
+          card,
+          index,
+          cardFormat,
+          cardWidth,
+          cardHeight,
+          titleScale,
+        };
+      });
+
+    const rawCardMetrics = buildDesktopCardMetrics(rawBaseCardWidth);
+    const rawMaxCardHeight = Math.max(
+      ...rawCardMetrics.map((metric) => metric.cardHeight),
+      0
+    );
+    const heightBudget = Math.max(viewportHeight - safeTop - safeBottom, 260);
+    const desiredVerticalTravel = clamp(heightBudget * 0.33, 210, 340);
+    const heightResponsiveCardScale = clamp(
+      Math.pow(viewportHeight / 1280, 0.72),
+      0.82,
+      1
+    );
+    const heightPreservingCardScale =
+      rawMaxCardHeight > 0
+        ? clamp(
+            (heightBudget - desiredVerticalTravel) / rawMaxCardHeight,
+            0.82,
+            1
+          )
+        : 1;
+    const desktopCardScale = Math.min(
+      heightResponsiveCardScale,
+      heightPreservingCardScale
+    );
+    const cardMetrics = buildDesktopCardMetrics(
+      rawBaseCardWidth * desktopCardScale
+    );
     const maxCardHeight = Math.max(
       ...cardMetrics.map((metric) => metric.cardHeight),
       0
@@ -1912,7 +2138,7 @@ const initVideoTimelineScene = () => {
       120
     );
     let cursor = sidePadding;
-    let lastCardWidth = cardMetrics[0]?.cardWidth || baseCardWidth;
+    let lastCardWidth = cardMetrics[0]?.cardWidth || rawBaseCardWidth;
 
     cardMetrics.forEach((metric) => {
       const { card, index, cardWidth, cardHeight, titleScale } = metric;
@@ -1945,7 +2171,7 @@ const initVideoTimelineScene = () => {
     const lastWidth =
       Number.parseFloat(
         timelineCards[timelineCards.length - 1]?.style.getPropertyValue("--card-width")
-      ) || baseCardWidth;
+      ) || rawBaseCardWidth;
     const trackWidth = lastCardX + lastWidth + trailingPadding;
 
     maxTrackOffset = Math.max(trackWidth - viewportWidth, 0);

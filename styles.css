@@ -173,7 +173,7 @@ button {
   font-size: 20px;
   line-height: 1;
   font-weight: 500;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.01em;
   cursor: pointer;
   z-index: 2;
   transition: opacity 220ms ease;
@@ -192,88 +192,115 @@ button {
   overflow: hidden;
 }
 
+.showreel-button .text-reveal-value.showreel-button-copy {
+  display: inline-grid;
+  justify-items: end;
+}
+
+.showreel-button-label {
+  grid-area: 1 / 1;
+  display: block;
+  justify-self: end;
+  text-align: right;
+  transition: opacity 260ms ease;
+}
+
+.showreel-button-label-close {
+  opacity: 0;
+}
+
 .back-button:hover,
 .showreel-button:hover {
   opacity: 0.7;
 }
 
-.is-showreel-open .showreel-button {
+body.is-media-overlay-open .showreel-button-label-open {
   opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
 }
 
-html.is-showreel-open,
-body.is-showreel-open {
+body.is-media-overlay-open .showreel-button-label-close {
+  opacity: 1;
+}
+
+html.is-media-overlay-open,
+body.is-media-overlay-open {
   overflow: hidden;
 }
 
-.showreel-overlay {
+.showreel-overlay,
+.project-player-overlay {
   position: fixed;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
+  padding: 1.5rem;
   visibility: hidden;
   pointer-events: none;
   z-index: 30;
-  transition:
-    opacity 260ms ease,
-    visibility 0s linear 260ms;
+  transition: visibility 0s linear 360ms;
 }
 
-.showreel-overlay.is-visible {
-  opacity: 1;
+.showreel-overlay.is-visible,
+.project-player-overlay.is-visible {
   visibility: visible;
   pointer-events: auto;
   transition-delay: 0s;
 }
 
-.showreel-overlay-backdrop {
+.showreel-overlay-backdrop,
+.project-player-overlay-backdrop {
   position: absolute;
   inset: 0;
   appearance: none;
   border: 0;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.5);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  opacity: 0;
   cursor: pointer;
+  transition: opacity 360ms ease;
+  will-change: opacity;
 }
 
-.showreel-dialog {
+.showreel-overlay.is-visible .showreel-overlay-backdrop,
+.project-player-overlay.is-visible .project-player-overlay-backdrop {
+  opacity: 1;
+}
+
+.showreel-dialog,
+.project-player-dialog {
   position: relative;
   z-index: 1;
-  width: min(80vw, calc(80vh * 16 / 9));
-  max-width: 80vw;
-  max-height: 80vh;
   background: transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.08rem;
   line-height: 0;
+  opacity: 0;
+  transform: scale(0.965);
+  transition:
+    opacity 320ms ease,
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.showreel-close-button {
-  position: fixed;
-  top: 2rem;
-  right: 2rem;
-  appearance: none;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  padding: 0.45rem 0.7rem;
-  margin: -0.45rem -0.7rem;
-  font-family: "Neue Montreal", sans-serif;
-  font-size: 20px;
-  line-height: 1;
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  cursor: pointer;
-  transition: opacity 220ms ease;
+.showreel-dialog {
+  width: min(85vw, calc(85vh * 16 / 9));
+  max-width: calc(100vw - 3rem);
+  max-height: calc(100vh - 3rem);
 }
 
-.showreel-close-button:hover {
-  opacity: 0.7;
+.project-player-dialog {
+  width: var(--project-player-width, min(70vw, calc(100vw - 3rem)));
+  height: var(--project-player-height, auto);
+  max-width: calc(100vw - 3rem);
+  max-height: calc(100vh - 3rem);
+}
+
+.showreel-overlay.is-visible .showreel-dialog,
+.project-player-overlay.is-visible .project-player-dialog {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .showreel-embed-shell {
@@ -282,11 +309,29 @@ body.is-showreel-open {
   padding-top: 56.25%;
   overflow: hidden;
   background: transparent;
-  box-shadow: 0 28px 90px rgba(17, 17, 17, 0.1);
+  line-height: 0;
+}
+
+.project-player-embed-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
   line-height: 0;
 }
 
 .showreel-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: transparent;
+}
+
+.project-player-embed-shell iframe {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -327,6 +372,11 @@ body.is-showreel-open {
   top: 2rem;
   left: 2rem;
   align-items: flex-start;
+}
+
+.intro .text-line-1.text-reveal-mask {
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
 }
 
 .location {
@@ -628,9 +678,13 @@ body.is-ready .text-reveal-mask .text-reveal-value {
 .video-page .back-button,
 .video-page .showreel-button,
 .photography-page .back-button {
-  z-index: 5;
+  z-index: 40;
   color: #ffffff;
   mix-blend-mode: difference;
+}
+
+.video-page .folio-title {
+  z-index: 40;
 }
 
 .video-page .folio-title {
@@ -641,7 +695,7 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   max-width: calc(100vw - 12rem);
   transform: translateX(-50%);
   text-align: center;
-  z-index: 5;
+  z-index: 40;
   pointer-events: none;
 }
 
@@ -1033,11 +1087,6 @@ body.is-ready .video-card-label-mask .video-card-label-value {
     right: 1.25rem;
   }
 
-  .showreel-close-button {
-    top: 1.25rem;
-    right: 1.25rem;
-  }
-
   .social-links-fixed {
     left: 1.25rem;
     bottom: 1.25rem;
@@ -1119,9 +1168,9 @@ body.is-ready .video-card-label-mask .video-card-label-value {
   }
 
   .showreel-dialog {
-    width: min(80vw, calc(80vh * 16 / 9));
+    width: min(85vw, calc(85vh * 16 / 9));
     max-width: calc(100vw - 2.5rem);
-    max-height: calc(100vh - 7rem);
+    max-height: calc(100vh - 2.5rem);
   }
 
   .timeline-sticky-stage {
@@ -1138,7 +1187,7 @@ body.is-ready .video-card-label-mask .video-card-label-value {
     width: 100%;
     min-width: 0;
     height: auto;
-    padding: 7.2rem var(--mobile-side-padding, clamp(2rem, 9vw, 3.4rem)) 2.8rem;
+    padding: 7.2rem var(--mobile-side-padding, clamp(2.75rem, 14vw, 4.75rem)) 2.8rem;
     transform: none;
   }
 

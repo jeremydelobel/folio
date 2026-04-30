@@ -837,6 +837,10 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   aspect-ratio: 2 / 3;
 }
 
+.video-timeline-card[data-format="wide"] .video-card-frame {
+  aspect-ratio: 1920 / 803;
+}
+
 .video-card-visual {
   position: relative;
   width: 100%;
@@ -858,17 +862,14 @@ body.is-ready .text-reveal-mask .text-reveal-value {
 }
 
 .video-card-thumb {
+  z-index: 0;
   opacity: 1;
-  transition: opacity 460ms ease;
 }
 
 .video-card-hover-video {
+  z-index: 1;
   opacity: 0;
   transition: opacity 460ms ease;
-}
-
-.video-card-visual.is-hover-media-active .video-card-thumb {
-  opacity: 0;
 }
 
 .video-card-visual.is-hover-media-active .video-card-hover-video {
@@ -888,6 +889,7 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   color: #ffffff;
   text-align: right;
   white-space: normal;
+  z-index: 2;
   opacity: 0;
   transform: translate3d(0.95rem, 0, 0);
   transition:

@@ -18,6 +18,14 @@ const isFolioPage = isPhotographyPage || isVideoPage;
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const videoProjectLinksCache = new Map();
 const videoLinkPriority = ["youtube", "tiktok", "instagram"];
+const videoHoverResumeRetentionDuration = 2000;
+const videoHoverResetTimers = new WeakMap();
+const videoHoverResumeTimes = new WeakMap();
+const videoCardAspectRatios = {
+  vertical: 2 / 3,
+  wide: 1920 / 803,
+  landscape: 3 / 2,
+};
 const videoRoleMap = {
   m: "Montage",
   md: "Motion Design",
@@ -132,6 +140,53 @@ const getVideoVisualHoverVideo = (visual) =>
 
 const getVideoVisualSource = (visual) =>
   getVideoVisualHoverVideo(visual)?.querySelector("source") || null;
+
+const clearVideoVisualHoverResetTimer = (visual) => {
+  const timer = videoHoverResetTimers.get(visual);
+
+  if (!timer) {
+    return;
+  }
+
+  window.clearTimeout(timer);
+  videoHoverResetTimers.delete(visual);
+};
+
+const getVideoVisualStoredHoverTime = (visual) => {
+  const storedTime = videoHoverResumeTimes.get(visual);
+  return Number.isFinite(storedTime) && storedTime > 0 ? storedTime : 0;
+};
+
+const setVideoVisualStoredHoverTime = (visual, time) => {
+  if (!visual) {
+    return;
+  }
+
+  if (!Number.isFinite(time) || time <= 0) {
+    videoHoverResumeTimes.delete(visual);
+    return;
+  }
+
+  videoHoverResumeTimes.set(visual, time);
+};
+
+const resetVideoVisualStoredHoverTime = (visual) => {
+  if (!visual) {
+    return;
+  }
+
+  videoHoverResumeTimes.delete(visual);
+};
+
+const getVideoTimelineCardFormat = (card) => {
+  const rawFormat = card?.dataset.format;
+
+  if (rawFormat === "vertical" || rawFormat === "wide") {
+    return rawFormat;
+  }
+
+  return "landscape";
+};
 
 const setVideoVisualThumbReadyState = (visual, isReady) => {
   const card = visual?.closest(".video-timeline-card");
@@ -290,6 +345,8 @@ const releaseVideoVisualHoverVideo = (visual) => {
     return;
   }
 
+  clearVideoVisualHoverResetTimer(visual);
+  resetVideoVisualStoredHoverTime(visual);
   visual.classList.remove("is-hover-media-active");
   video.pause();
 
@@ -587,8 +644,18 @@ const initVideoHoverMedia = () => {
     }
 
     const activate = () => {
+      clearVideoVisualHoverResetTimer(visual);
       ensureVideoVisualThumbLoaded(visual, { priority: "high" });
       ensureVideoVisualHoverVideoLoaded(visual, { preload: "auto" });
+
+      const storedTime = getVideoVisualStoredHoverTime(visual);
+
+      if (storedTime > 0) {
+        try {
+          video.currentTime = storedTime;
+        } catch {}
+      }
+
       visual.classList.add("is-hover-media-active");
 
       const playPromise = video.play();
@@ -600,8 +667,32 @@ const initVideoHoverMedia = () => {
 
     const deactivate = () => {
       visual.classList.remove("is-hover-media-active");
+      clearVideoVisualHoverResetTimer(visual);
+
+      let storedTime = 0;
+
+      try {
+        storedTime = video.currentTime;
+      } catch {}
+
+      setVideoVisualStoredHoverTime(visual, storedTime);
       video.pause();
-      video.currentTime = 0;
+
+      const timer = window.setTimeout(() => {
+        if (visual.classList.contains("is-hover-media-active")) {
+          return;
+        }
+
+        resetVideoVisualStoredHoverTime(visual);
+
+        try {
+          video.currentTime = 0;
+        } catch {}
+
+        videoHoverResetTimers.delete(visual);
+      }, videoHoverResumeRetentionDuration);
+
+      videoHoverResetTimers.set(visual, timer);
     };
 
     visual.addEventListener("mouseenter", activate);
@@ -1298,6 +1389,7 @@ const initVideoTimelineScene = () => {
   const lanePattern = [0.08, 0.52, 0.18, 0.62, 0.14, 0.46, 0.24, 0.68];
   const scalePattern = [0.84, 1.14, 0.94, 1.2, 0.8, 1.08, 0.9, 1.18];
   const gapPattern = [0.11, 0.14, 0.1, 0.15, 0.12, 0.13, 0.11];
+  const wideCardSizeBoost = 1.5;
   const videoWheelSensitivity = 1.35;
   const videoCards = timelineCards.map((card, index) => ({
     element: card,
@@ -1684,9 +1776,14 @@ const initVideoTimelineScene = () => {
       updateVideoScrollbar(0);
 
       const mobileMetrics = timelineCards.map((card, index) => {
-        const isVertical = card.dataset.format === "vertical";
+        const cardFormat = getVideoTimelineCardFormat(card);
         const scaleFactor = scalePattern[index % scalePattern.length];
-        const formatWidthFactor = isVertical ? 0.78 : 1;
+        const formatWidthFactor =
+          cardFormat === "vertical"
+            ? 0.78
+            : cardFormat === "wide"
+              ? 1.34 * wideCardSizeBoost
+              : 1;
         const baseWidth = mobileBaseWidth * scaleFactor * formatWidthFactor;
         const rawShift =
           mobileShiftPattern[index % mobileShiftPattern.length] * mobileShiftLimit;
@@ -1775,14 +1872,20 @@ const initVideoTimelineScene = () => {
     videoTimeline.style.height = "100vh";
 
     const cardMetrics = timelineCards.map((card, index) => {
-      const isVertical = card.dataset.format === "vertical";
+      const cardFormat = getVideoTimelineCardFormat(card);
       const scaleFactor = scalePattern[index % scalePattern.length];
-      const formatWidthFactor = isVertical ? 0.74 : 1;
+      const formatWidthFactor =
+        cardFormat === "vertical"
+          ? 0.74
+          : cardFormat === "wide"
+            ? 1.28 * wideCardSizeBoost
+            : 1;
       const baseWidth = baseCardWidth * scaleFactor * formatWidthFactor;
-      const aspectRatio = isVertical ? 2 / 3 : 3 / 2;
+      const aspectRatio = videoCardAspectRatios[cardFormat];
       const maxWidth = Math.max(
         baseWidth,
-        viewportWidth * (isVertical ? 0.44 : 0.62)
+        viewportWidth *
+          (cardFormat === "vertical" ? 0.44 : cardFormat === "wide" ? 0.74 : 0.62)
       );
       const { cardWidth, titleScale } = getFittedVideoCardTitleMetrics({
         card,
@@ -1794,7 +1897,7 @@ const initVideoTimelineScene = () => {
       return {
         card,
         index,
-        isVertical,
+        cardFormat,
         cardWidth,
         cardHeight,
         titleScale,

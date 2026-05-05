@@ -19,6 +19,13 @@ const isPhotographyPage = document.body.classList.contains("photography-page");
 const isVideoPage = document.body.classList.contains("video-page");
 const isFolioPage = isPhotographyPage || isVideoPage;
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+const cleanRouteMap = new Map([
+  ["/index.html", "/"],
+  ["/photography/", "/photography"],
+  ["/photography/index.html", "/photography"],
+  ["/video-editing/", "/video-editing"],
+  ["/video-editing/index.html", "/video-editing"],
+]);
 const videoProjectLinksCache = new Map();
 const videoLinkPriority = ["youtube", "tiktok", "instagram"];
 const videoOverlayTransitionDuration = 360;
@@ -47,6 +54,23 @@ let vimeoPlayerApiPromise = null;
 let showreelPlayer = null;
 let showreelPlayerInitPromise = null;
 let activeVideoOverlay = "none";
+
+const normalizeVisibleRoute = () => {
+  if (window.location.protocol === "file:") {
+    return;
+  }
+
+  const normalizedPath = cleanRouteMap.get(window.location.pathname);
+
+  if (!normalizedPath || normalizedPath === window.location.pathname) {
+    return;
+  }
+
+  const normalizedUrl = `${normalizedPath}${window.location.search}${window.location.hash}`;
+  window.history.replaceState(window.history.state, "", normalizedUrl);
+};
+
+normalizeVisibleRoute();
 
 const parseVideoProjectFolderName = (folderName = "") => {
   const folderParts = folderName.split("_");
@@ -138,7 +162,7 @@ const buildVideoProjectFileUrl = (folderName, fileName) => {
     .map((segment) => encodeURIComponent(segment))
     .join("/");
 
-  return new URL(`./rsrc/montage-video/${encodedFolder}/${fileName}`, window.location.href);
+  return new URL(`./rsrc/montage-video/${encodedFolder}/${fileName}`, document.baseURI);
 };
 
 const getVideoVisualThumb = (visual) =>
@@ -1047,7 +1071,7 @@ document.querySelectorAll("[data-route]").forEach((element) => {
 
 if (backButton) {
   backButton.addEventListener("click", () => {
-    navigateWithFade("./index.html");
+    navigateWithFade("/");
   });
 }
 

@@ -17,15 +17,9 @@ const navigationEntry = performance.getEntriesByType("navigation")[0];
 const isBackForwardLoad = navigationEntry?.type === "back_forward";
 const isPhotographyPage = document.body.classList.contains("photography-page");
 const isVideoPage = document.body.classList.contains("video-page");
+const isMotionDesignPage = document.body.classList.contains("motion-design-page");
 const isFolioPage = isPhotographyPage || isVideoPage;
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
-const cleanRouteMap = new Map([
-  ["/index.html", "/"],
-  ["/photography/", "/photography"],
-  ["/photography/index.html", "/photography"],
-  ["/video-editing/", "/video-editing"],
-  ["/video-editing/index.html", "/video-editing"],
-]);
 const videoProjectLinksCache = new Map();
 const videoLinkPriority = ["youtube", "tiktok", "instagram"];
 const videoOverlayTransitionDuration = 360;
@@ -37,18 +31,15 @@ const videoCardAspectRatios = {
   wide: 1920 / 803,
   landscape: 3 / 2,
 };
+const motionDesignCardAspectRatios = {
+  vertical: 4 / 5,
+  wide: 1920 / 803,
+  landscape: 5 / 4,
+};
 const projectPlayerAspectRatios = {
   vertical: 9 / 16,
   wide: 1920 / 803,
   landscape: 16 / 9,
-};
-const videoRoleMap = {
-  m: "Montage",
-  md: "Motion Design",
-  fx: "FX",
-  cg: "Étalonnage",
-  sd: "Sound Design",
-  dr: "Derush",
 };
 let vimeoPlayerApiPromise = null;
 let showreelPlayer = null;
@@ -60,48 +51,29 @@ const normalizeVisibleRoute = () => {
     return;
   }
 
-  const normalizedPath = cleanRouteMap.get(window.location.pathname);
-
-  if (!normalizedPath || normalizedPath === window.location.pathname) {
+  if (window.location.pathname !== "/index.html") {
     return;
   }
 
-  const normalizedUrl = `${normalizedPath}${window.location.search}${window.location.hash}`;
+  const normalizedUrl = `/${window.location.search}${window.location.hash}`;
   window.history.replaceState(window.history.state, "", normalizedUrl);
 };
 
 normalizeVisibleRoute();
 
-const parseVideoProjectFolderName = (folderName = "") => {
-  const folderParts = folderName.split("_");
-  const rawDate = folderParts[0] || "";
-  const title = (folderParts[1] || "").trim();
-  const [year = "", month = "", day = ""] = rawDate.split(".");
-  const hasValidDate =
-    year.length === 4 &&
-    month.length === 2 &&
-    day.length === 2 &&
-    [year, month, day].every((part) => /^\d+$/.test(part));
-  const displayDate = hasValidDate ? `${day}.${month}.${year}` : rawDate;
-  const sortKey = hasValidDate ? Number(`${year}${month}${day}`) : 0;
-  const roleTokens = folderParts
-    .slice(2)
-    .join("_")
-    .split(" - ")
-    .map((token) => token.trim().toLowerCase())
-    .filter(Boolean);
-  const roleLabel = roleTokens
-    .map((token) => videoRoleMap[token])
-    .filter(Boolean)
-    .join(" · ");
+const getVideoVisualMediaSource = (visual) => {
+  if (!visual) {
+    return "";
+  }
 
-  return {
-    displayDate,
-    sortKey,
-    title,
-    titleLabel: title ? title.toLocaleUpperCase("fr-FR") : "",
-    roleLabel,
-  };
+  const mediaSource =
+    visual.querySelector(".video-card-hover-video source")?.getAttribute("src") ||
+    visual.querySelector(".video-card-hover-video source")?.dataset.src ||
+    visual.querySelector(".video-card-thumb")?.getAttribute("src") ||
+    visual.querySelector(".video-card-thumb")?.dataset.src ||
+    "";
+
+  return mediaSource;
 };
 
 const getVideoVisualFolderName = (visual) => {
@@ -113,12 +85,7 @@ const getVideoVisualFolderName = (visual) => {
     return visual.dataset.projectFolder;
   }
 
-  const mediaSource =
-    visual.querySelector(".video-card-hover-video source")?.getAttribute("src") ||
-    visual.querySelector(".video-card-hover-video source")?.dataset.src ||
-    visual.querySelector(".video-card-thumb")?.getAttribute("src") ||
-    visual.querySelector(".video-card-thumb")?.dataset.src ||
-    "";
+  const mediaSource = getVideoVisualMediaSource(visual);
 
   if (!mediaSource) {
     return "";
@@ -128,6 +95,36 @@ const getVideoVisualFolderName = (visual) => {
   const segments = normalizedPath.split("/").filter(Boolean);
 
   return decodeURIComponent(segments.at(-2) || "");
+};
+
+const getVideoVisualProjectRoot = (visual) => {
+  if (!visual) {
+    return "./rsrc/montage-video";
+  }
+
+  if (visual.dataset.projectRoot) {
+    return visual.dataset.projectRoot;
+  }
+
+  const mediaSource = getVideoVisualMediaSource(visual);
+
+  if (!mediaSource) {
+    return "./rsrc/montage-video";
+  }
+
+  try {
+    const url = new URL(mediaSource, window.location.href);
+    const segments = url.pathname.split("/").filter(Boolean);
+    const rsrcIndex = segments.lastIndexOf("rsrc");
+
+    if (rsrcIndex >= 0 && segments.length > rsrcIndex + 1) {
+      const projectRoot = `./${segments.slice(rsrcIndex, rsrcIndex + 2).join("/")}`;
+      visual.dataset.projectRoot = projectRoot;
+      return projectRoot;
+    }
+  } catch {}
+
+  return "./rsrc/montage-video";
 };
 
 const getInlineVideoProjectLink = (card) => {
@@ -152,8 +149,16 @@ const getInlineVideoProjectLink = (card) => {
   return visualHref;
 };
 
-const buildVideoProjectFileUrl = (folderName, fileName) => {
-  if (!folderName || !fileName) {
+const getVideoProjectLinkCacheKey = (projectRoot, folderName) => {
+  if (!folderName) {
+    return "";
+  }
+
+  return `${projectRoot || "./rsrc/montage-video"}::${folderName}`;
+};
+
+const buildVideoProjectFileUrl = (projectRoot, folderName, fileName) => {
+  if (!projectRoot || !folderName || !fileName) {
     return null;
   }
 
@@ -162,7 +167,9 @@ const buildVideoProjectFileUrl = (folderName, fileName) => {
     .map((segment) => encodeURIComponent(segment))
     .join("/");
 
-  return new URL(`./rsrc/montage-video/${encodedFolder}/${fileName}`, document.baseURI);
+  const normalizedRoot = projectRoot.replace(/\/+$/, "");
+
+  return new URL(`${normalizedRoot}/${encodedFolder}/${fileName}`, window.location.href);
 };
 
 const getVideoVisualThumb = (visual) =>
@@ -212,9 +219,13 @@ const resetVideoVisualStoredHoverTime = (visual) => {
 };
 
 const getVideoTimelineCardFormat = (card) => {
-  const rawFormat = card?.dataset.format;
+  const rawFormat = card?.dataset.format?.trim().toLowerCase();
 
-  if (rawFormat === "vertical" || rawFormat === "wide") {
+  if (
+    rawFormat === "vertical" ||
+    rawFormat === "wide" ||
+    rawFormat === "landscape"
+  ) {
     return rawFormat;
   }
 
@@ -223,9 +234,37 @@ const getVideoTimelineCardFormat = (card) => {
 
 const getVideoProjectPlayerFormat = (card) => {
   const cardFormat = getVideoTimelineCardFormat(card);
+
+  if (isMotionDesignPage && cardFormat !== "vertical") {
+    return "landscape";
+  }
+
   return cardFormat === "vertical" || cardFormat === "wide"
     ? cardFormat
     : "landscape";
+};
+
+const getActiveVideoCardAspectRatios = () =>
+  isMotionDesignPage ? motionDesignCardAspectRatios : videoCardAspectRatios;
+
+const getVideoTimelineCardAspectRatio = (card) => {
+  const detectedRatio = Number.parseFloat(card?.dataset.projectPlayerAspectRatio || "");
+
+  if (isMotionDesignPage && Number.isFinite(detectedRatio) && detectedRatio > 0) {
+    return detectedRatio;
+  }
+
+  const format = getVideoTimelineCardFormat(card);
+  return getActiveVideoCardAspectRatios()[format] || videoCardAspectRatios.landscape;
+};
+
+const getVideoProjectPlayerAspectRatio = (card) => {
+  if (isMotionDesignPage) {
+    return null;
+  }
+
+  const format = getVideoProjectPlayerFormat(card);
+  return projectPlayerAspectRatios[format] || projectPlayerAspectRatios.landscape;
 };
 
 const setVideoVisualThumbReadyState = (visual, isReady) => {
@@ -402,6 +441,152 @@ const releaseVideoVisualHoverVideo = (visual) => {
   } catch {}
 };
 
+const getVideoCardFormatFromRatio = (ratio) => {
+  if (!Number.isFinite(ratio) || ratio <= 0) {
+    return "landscape";
+  }
+
+  if (isMotionDesignPage) {
+    return ratio < 0.95 ? "vertical" : ratio > 1.9 ? "wide" : "landscape";
+  }
+
+  return ratio < 0.9 ? "vertical" : ratio > 1.65 ? "wide" : "landscape";
+};
+
+let motionDesignRelayoutFrame = 0;
+
+const requestMotionDesignTimelineRelayout = () => {
+  if (!isMotionDesignPage || motionDesignRelayoutFrame) {
+    return;
+  }
+
+  motionDesignRelayoutFrame = window.requestAnimationFrame(() => {
+    motionDesignRelayoutFrame = 0;
+    window.dispatchEvent(new Event("resize"));
+  });
+};
+
+const applyMotionDesignCardFormat = (card, width, height) => {
+  if (!card || !(width > 0) || !(height > 0)) {
+    return false;
+  }
+
+  const ratio = width / height;
+  const nextFormat = getVideoCardFormatFromRatio(ratio);
+  const serializedRatio = ratio.toFixed(6);
+  const previousRatio = card.dataset.projectPlayerAspectRatio || "";
+  const previousFormat = card.dataset.format || "";
+
+  card.dataset.projectPlayerAspectRatio = serializedRatio;
+  card.style.setProperty("--card-media-aspect-ratio", `${width} / ${height}`);
+
+  if (previousFormat === nextFormat && previousRatio === serializedRatio) {
+    return true;
+  }
+
+  card.dataset.format = nextFormat;
+  requestMotionDesignTimelineRelayout();
+  return true;
+};
+
+const initMotionDesignAutoFormats = () => {
+  if (!isMotionDesignPage || !videoTimeline) {
+    return;
+  }
+
+  const timelineCards = Array.from(
+    videoTimeline.querySelectorAll(".video-timeline-card")
+  );
+
+  timelineCards.forEach((card) => {
+    const rawFormat = card.dataset.format?.trim().toLowerCase();
+
+    if (
+      rawFormat === "vertical" ||
+      rawFormat === "wide" ||
+      rawFormat === "landscape"
+    ) {
+      return;
+    }
+
+    if (card.dataset.autoFormatBound === "true") {
+      return;
+    }
+
+    card.dataset.autoFormatBound = "true";
+
+    const visual = card.querySelector(".video-card-visual");
+    const thumb = getVideoVisualThumb(visual);
+    const hoverSource = getVideoVisualSource(visual);
+
+    const tryHoverFallback = () => {
+      if (!hoverSource || card.dataset.autoFormatFallbackStarted === "true") {
+        return;
+      }
+
+      const hoverSrc =
+        (typeof hoverSource.dataset.src === "string" && hoverSource.dataset.src.trim()) ||
+        hoverSource.getAttribute("src") ||
+        "";
+
+      if (!hoverSrc) {
+        return;
+      }
+
+      card.dataset.autoFormatFallbackStarted = "true";
+
+      const probe = document.createElement("video");
+      probe.preload = "metadata";
+      probe.muted = true;
+      probe.playsInline = true;
+
+      const cleanup = () => {
+        probe.removeAttribute("src");
+
+        try {
+          probe.load();
+        } catch {}
+      };
+
+      probe.addEventListener(
+        "loadedmetadata",
+        () => {
+          applyMotionDesignCardFormat(card, probe.videoWidth, probe.videoHeight);
+          cleanup();
+        },
+        { once: true }
+      );
+
+      probe.addEventListener("error", cleanup, { once: true });
+      probe.src = hoverSrc;
+    };
+
+    if (!thumb) {
+      tryHoverFallback();
+      return;
+    }
+
+    if (thumb.complete && thumb.naturalWidth > 0 && thumb.naturalHeight > 0) {
+      applyMotionDesignCardFormat(card, thumb.naturalWidth, thumb.naturalHeight);
+      return;
+    }
+
+    thumb.addEventListener(
+      "load",
+      () => {
+        if (
+          !applyMotionDesignCardFormat(card, thumb.naturalWidth, thumb.naturalHeight)
+        ) {
+          tryHoverFallback();
+        }
+      },
+      { once: true }
+    );
+
+    thumb.addEventListener("error", tryHoverFallback, { once: true });
+  });
+};
+
 const normalizeVideoProjectLinks = (payload) => {
   if (!payload || typeof payload !== "object") {
     return "";
@@ -439,19 +624,21 @@ const normalizeVideoProjectLinks = (payload) => {
   );
 };
 
-const loadVideoProjectLink = async (folderName) => {
-  if (!folderName) {
+const loadVideoProjectLink = async (projectRoot, folderName) => {
+  if (!projectRoot || !folderName) {
     return "";
   }
 
-  if (videoProjectLinksCache.has(folderName)) {
-    return videoProjectLinksCache.get(folderName);
+  const cacheKey = getVideoProjectLinkCacheKey(projectRoot, folderName);
+
+  if (videoProjectLinksCache.has(cacheKey)) {
+    return videoProjectLinksCache.get(cacheKey);
   }
 
   const candidateFiles = ["link.json", "links.json"];
 
   for (const fileName of candidateFiles) {
-    const linksUrl = buildVideoProjectFileUrl(folderName, fileName);
+    const linksUrl = buildVideoProjectFileUrl(projectRoot, folderName, fileName);
 
     if (!linksUrl) {
       continue;
@@ -467,14 +654,14 @@ const loadVideoProjectLink = async (folderName) => {
       const payload = await response.json();
       const resolvedLink = normalizeVideoProjectLinks(payload);
 
-      videoProjectLinksCache.set(folderName, resolvedLink);
+      videoProjectLinksCache.set(cacheKey, resolvedLink);
       return resolvedLink;
     } catch {
       continue;
     }
   }
 
-  videoProjectLinksCache.set(folderName, "");
+  videoProjectLinksCache.set(cacheKey, "");
   return "";
 };
 
@@ -577,7 +764,10 @@ const mountProjectPlayerEmbed = (embedUrl, title = "Lecture du projet") => {
   return true;
 };
 
-const applyProjectPlayerDialogMetrics = (format = "landscape") => {
+const applyProjectPlayerDialogMetrics = (
+  format = "landscape",
+  customAspectRatio = null
+) => {
   if (!projectPlayerDialog) {
     return;
   }
@@ -585,11 +775,14 @@ const applyProjectPlayerDialogMetrics = (format = "landscape") => {
   const viewportGap = window.innerWidth <= 640 ? 40 : 48;
   const maxWidth = Math.max(window.innerWidth - viewportGap, 220);
   const maxHeight = Math.max(window.innerHeight - viewportGap, 220);
-  const aspectRatio = projectPlayerAspectRatios[format] || projectPlayerAspectRatios.landscape;
+  const aspectRatio =
+    Number.isFinite(customAspectRatio) && customAspectRatio > 0
+      ? customAspectRatio
+      : projectPlayerAspectRatios[format] || projectPlayerAspectRatios.landscape;
   let width = 0;
   let height = 0;
 
-  if (format === "vertical") {
+  if (aspectRatio < 1) {
     height = Math.min(window.innerHeight * 0.7, maxHeight);
     width = height * aspectRatio;
 
@@ -613,6 +806,7 @@ const applyProjectPlayerDialogMetrics = (format = "landscape") => {
     `${height.toFixed(2)}px`
   );
   projectPlayerDialog.dataset.format = format;
+  projectPlayerDialog.dataset.aspectRatio = aspectRatio.toFixed(6);
 };
 
 const loadVimeoPlayerApi = () => {
@@ -772,6 +966,7 @@ const closeShowreelOverlay = ({ restoreFocus = true } = {}) => {
 const openProjectPlayerOverlay = ({
   embedUrl,
   format = "landscape",
+  customAspectRatio = null,
   title = "Lecture du projet",
 } = {}) => {
   if (!projectPlayerOverlay || !projectPlayerDialog || !embedUrl) {
@@ -784,7 +979,7 @@ const openProjectPlayerOverlay = ({
     closeProjectPlayerOverlay({ restoreFocus: false });
   }
 
-  applyProjectPlayerDialogMetrics(format);
+  applyProjectPlayerDialogMetrics(format, customAspectRatio);
 
   if (!mountProjectPlayerEmbed(embedUrl, title)) {
     return false;
@@ -838,15 +1033,6 @@ const initVideoHoverMedia = () => {
     primeVideoVisualMedia(visual);
 
     const video = visual.querySelector(".video-card-hover-video");
-    const folderName = getVideoVisualFolderName(visual);
-    const roleLabel = parseVideoProjectFolderName(folderName).roleLabel;
-
-    if (roleLabel && !visual.querySelector(".video-card-role-list")) {
-      const roleElement = document.createElement("p");
-      roleElement.className = "video-card-role-list";
-      roleElement.textContent = roleLabel;
-      visual.appendChild(roleElement);
-    }
 
     if (!video) {
       return;
@@ -921,31 +1107,34 @@ const initVideoProjectLinks = () => {
     }
 
     const inlineHref = getInlineVideoProjectLink(card);
-    const folderName = getVideoVisualFolderName(
-      card.querySelector(".video-card-visual")
-    );
+    const visual = card.querySelector(".video-card-visual");
+    const folderName = getVideoVisualFolderName(visual);
+    const projectRoot = getVideoVisualProjectRoot(visual);
+    const cacheKey = folderName
+      ? getVideoProjectLinkCacheKey(projectRoot, folderName)
+      : inlineHref;
 
     if (!folderName && !inlineHref) {
       return;
     }
 
     if (folderName) {
-      if (inlineHref && !videoProjectLinksCache.has(folderName)) {
-        videoProjectLinksCache.set(folderName, inlineHref);
+      if (inlineHref && !videoProjectLinksCache.has(cacheKey)) {
+        videoProjectLinksCache.set(cacheKey, inlineHref);
       }
 
-      void loadVideoProjectLink(folderName);
+      void loadVideoProjectLink(projectRoot, folderName);
     } else if (inlineHref) {
       videoProjectLinksCache.set(inlineHref, inlineHref);
     }
 
     const openCardLink = async () => {
       let resolvedHref = folderName
-        ? videoProjectLinksCache.get(folderName)
+        ? videoProjectLinksCache.get(cacheKey)
         : videoProjectLinksCache.get(inlineHref);
 
       if (!resolvedHref && folderName) {
-        resolvedHref = (await loadVideoProjectLink(folderName)) || inlineHref;
+        resolvedHref = (await loadVideoProjectLink(projectRoot, folderName)) || inlineHref;
       }
 
       if (!resolvedHref && inlineHref) {
@@ -966,6 +1155,7 @@ const initVideoProjectLinks = () => {
       openProjectPlayerOverlay({
         embedUrl: resolvedSource.embedUrl,
         format: getVideoProjectPlayerFormat(card),
+        customAspectRatio: getVideoProjectPlayerAspectRatio(card),
         title: projectTitle,
       });
     };
@@ -1129,7 +1319,15 @@ window.addEventListener("resize", () => {
     dialogFormat === "vertical" || dialogFormat === "wide"
       ? dialogFormat
       : "landscape";
-  applyProjectPlayerDialogMetrics(format);
+  const customAspectRatio = Number.parseFloat(
+    projectPlayerDialog?.dataset.aspectRatio || ""
+  );
+  applyProjectPlayerDialogMetrics(
+    format,
+    Number.isFinite(customAspectRatio) && customAspectRatio > 0
+      ? customAspectRatio
+      : null
+  );
 });
 
 if (photoGrid) {
@@ -2103,7 +2301,7 @@ const initVideoTimelineScene = () => {
               ? 1.28 * wideCardSizeBoost
               : 1;
         const baseWidth = baseCardWidth * scaleFactor * formatWidthFactor;
-        const aspectRatio = videoCardAspectRatios[cardFormat];
+        const aspectRatio = getVideoTimelineCardAspectRatio(card);
         const maxWidth = Math.max(
           baseWidth,
           viewportWidth *
@@ -2286,6 +2484,7 @@ const initVideoPage = () => {
   initVideoHoverMedia();
   initVideoProjectLinks();
   initVideoTimelineScene();
+  initMotionDesignAutoFormats();
 };
 
 initVideoPage();

@@ -3,16 +3,1092 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Redirection vers Video Editing</title>
-    <meta http-equiv="refresh" content="0; url=/video-editing" />
-    <script>
-      const cleanPath = `/video-editing${window.location.search}${window.location.hash}`;
-      window.location.replace(cleanPath);
-    </script>
+    <title>Jérémy Delobel - Monteur vidéo / Photographe</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./script.js" defer></script>
   </head>
-  <body>
-    <p>
-      Redirection vers <a href="/video-editing">/video-editing</a>.
-    </p>
+  <body class="video-page">
+    <div class="page-transition is-visible" aria-hidden="true"></div>
+
+    <main class="folio-page video-page-shell">
+      <button class="back-button text-reveal-mask text-line-1" type="button">
+        <span class="text-reveal-value">
+          <span class="back-button-label" data-i18n="backButton">Menu</span>
+        </span>
+      </button>
+
+      <button
+        class="showreel-button text-reveal-mask text-line-2"
+        type="button"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        aria-controls="showreel-overlay"
+      >
+        <span class="text-reveal-value showreel-button-copy">
+          <span class="showreel-button-label showreel-button-label-open">ShowReel</span>
+          <span class="showreel-button-label showreel-button-label-close">Fermer</span>
+        </span>
+      </button>
+
+      <div class="video-page-content">
+        <h1 class="folio-title text-reveal-mask text-line-1">
+          <span class="text-reveal-value" data-i18n="videoPageTitle">
+            Montage vid&eacute;o
+          </span>
+        </h1>
+
+        <section class="timeline-scroll-area" aria-label="Frise chronologique vid&eacute;o">
+        <div class="timeline-sticky-stage">
+          <div class="video-timeline" data-track-padding="0.12">
+            <article
+              class="video-timeline-card"
+              data-date="01.05.2026"
+              data-format="wide"
+              data-project-url="https://youtu.be/OrfdTghI4XQ"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">01.05.2026</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2026.05.01_PROJET FICTIF - DUNE PART TWO TRAILER_m - sd"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2026.05.01_PROJET FICTIF - DUNE PART TWO TRAILER_m - sd/Thumb.webp"
+                      src="./rsrc/montage-video/2026.05.01_PROJET FICTIF - DUNE PART TWO TRAILER_m - sd/Thumb.webp"
+                      alt="Miniature du projet PROJET FICTIF - DUNE PART TWO TRAILER"
+                      loading="eager"
+                      fetchpriority="high"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2026.05.01_PROJET FICTIF - DUNE PART TWO TRAILER_m - sd/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">PROJET FICTIF - DUNE PART TWO TRAILER</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="29.04.2026"
+              data-format="vertical"
+              data-project-url="https://www.instagram.com/reel/DXr5VRxjuU9/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA=="
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">29.04.2026</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2026.04.29_LYPNING - PROMO SYLICAL GEAR_m - fx - sd"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2026.04.29_LYPNING - PROMO SYLICAL GEAR_m - fx - sd/Thumb.webp"
+                      src="./rsrc/montage-video/2026.04.29_LYPNING - PROMO SYLICAL GEAR_m - fx - sd/Thumb.webp"
+                      alt="Miniature du projet LYPNING - PROMO SYLICAL GEAR"
+                      loading="eager"
+                      fetchpriority="high"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2026.04.29_LYPNING - PROMO SYLICAL GEAR_m - fx - sd/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">LYPNING - PROMO SYLICAL GEAR</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="21.04.2026"
+              data-format="vertical"
+              data-project-url="https://www.instagram.com/reel/DXXU7otjuhh/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA=="
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">21.04.2026</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2026.04.21_LYPNING - OP FLEXISPOT_m - fx - sd"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2026.04.21_LYPNING - OP FLEXISPOT_m - fx - sd/Thumb.webp"
+                      src="./rsrc/montage-video/2026.04.21_LYPNING - OP FLEXISPOT_m - fx - sd/Thumb.webp"
+                      alt="Miniature du projet LYPNING - OP FLEXISPOT"
+                      loading="eager"
+                      fetchpriority="high"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2026.04.21_LYPNING - OP FLEXISPOT_m - fx - sd/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">LYPNING - OP FLEXISPOT</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="17.04.2026"
+              data-project-url="https://youtu.be/t9_a5uRpcB4?si=9TEX4zDnsG9ejs-M"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">17.04.2026</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2026.04.17_MCSKYZ - HVF ELODIE MOREL_m - fx - sd"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2026.04.17_MCSKYZ - HVF ELODIE MOREL_m - fx - sd/Thumb.webp"
+                      src="./rsrc/montage-video/2026.04.17_MCSKYZ - HVF ELODIE MOREL_m - fx - sd/Thumb.webp"
+                      alt="Miniature du projet MCSKYZ - HVF &Eacute;LODIE MOREL"
+                      loading="eager"
+                      fetchpriority="high"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2026.04.17_MCSKYZ - HVF ELODIE MOREL_m - fx - sd/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">MCSKYZ - HVF &Eacute;LODIE MOREL</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="27.03.2026"
+              data-project-url="https://youtu.be/MFzo8ZYLC7Q?si=wpeWhAvN9PwV2pax"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">27.03.2026</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2026.03.27_MCSKYZ - HVF ESTIBALIZ CARRANZA_m - fx - sd"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2026.03.27_MCSKYZ - HVF ESTIBALIZ CARRANZA_m - fx - sd/Thumb.webp"
+                      src="./rsrc/montage-video/2026.03.27_MCSKYZ - HVF ESTIBALIZ CARRANZA_m - fx - sd/Thumb.webp"
+                      alt="Miniature du projet MCSKYZ - HVF ESTIBALIZ CARRANZA"
+                      loading="eager"
+                      fetchpriority="high"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2026.03.27_MCSKYZ - HVF ESTIBALIZ CARRANZA_m - fx - sd/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">MCSKYZ - HVF ESTIBALIZ CARRANZA</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="13.03.2026"
+              data-project-url="https://youtu.be/VSdzpCnTozQ?si=581jKV9WwnJ07rPw"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">13.03.2026</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2026.03.13_MCSKYZ - HVF KRISTINA JOKSIMOVIC_m - fx - sd"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2026.03.13_MCSKYZ - HVF KRISTINA JOKSIMOVIC_m - fx - sd/Thumb.webp"
+                      src="./rsrc/montage-video/2026.03.13_MCSKYZ - HVF KRISTINA JOKSIMOVIC_m - fx - sd/Thumb.webp"
+                      alt="Miniature du projet MCSKYZ - HVF KRISTINA JOKSIMOVIC"
+                      loading="eager"
+                      fetchpriority="high"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2026.03.13_MCSKYZ - HVF KRISTINA JOKSIMOVIC_m - fx - sd/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">MCSKYZ - HVF KRISTINA JOKSIMOVIC</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="06.02.2026"
+              data-project-url="https://youtu.be/pmpYpcvh8pQ"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">06.02.2026</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2026.02.06_LYPNING - OP OPERA GX_m - fx - sd"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2026.02.06_LYPNING - OP OPERA GX_m - fx - sd/Thumb.webp"
+                      src="./rsrc/montage-video/2026.02.06_LYPNING - OP OPERA GX_m - fx - sd/Thumb.webp"
+                      alt="Miniature du projet LYPNING - OP OPERA GX"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2026.02.06_LYPNING - OP OPERA GX_m - fx - sd/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">LYPNING - OP OPERA GX</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="06.02.2026"
+              data-project-url="https://youtu.be/DhpgS_wbHs8?si=n3FQmb2GOc5OVRwiQ"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">06.02.2026</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2026.02.06_SAMEZTWITCH - MONTER UNE VIDEO SUR UN ECRAN DE CINEMA_m - fx"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2026.02.06_SAMEZTWITCH - MONTER UNE VIDEO SUR UN ECRAN DE CINEMA_m - fx/Thumb.webp"
+                      src="./rsrc/montage-video/2026.02.06_SAMEZTWITCH - MONTER UNE VIDEO SUR UN ECRAN DE CINEMA_m - fx/Thumb.webp"
+                      alt="Miniature du projet SAMEZTWITCH - MONTER UNE VID&Eacute;O SUR UN &Eacute;CRAN DE CIN&Eacute;MA"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2026.02.06_SAMEZTWITCH - MONTER UNE VIDEO SUR UN ECRAN DE CINEMA_m - fx/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">SAMEZTWITCH - MONTER UNE VID&Eacute;O SUR UN &Eacute;CRAN DE CIN&Eacute;MA</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="21.12.2025"
+              data-project-url="https://youtu.be/C-jdVFWXmMg?si=rTe1681qwWfHOfwN"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">21.12.2025</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2025.12.21_VALISE & CARAMEL - 60 SEC POUR ETRE LE MEILLEUR_cg"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2025.12.21_VALISE & CARAMEL - 60 SEC POUR ETRE LE MEILLEUR_cg/Thumb.webp"
+                      src="./rsrc/montage-video/2025.12.21_VALISE & CARAMEL - 60 SEC POUR ETRE LE MEILLEUR_cg/Thumb.webp"
+                      alt="Miniature du projet VALISE & CARAMEL - 60 SEC POUR &Ecirc;TRE LE MEILLEUR"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2025.12.21_VALISE & CARAMEL - 60 SEC POUR ETRE LE MEILLEUR_cg/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">VALISE &amp; CARAMEL - 60 SEC POUR &Ecirc;TRE LE MEILLEUR</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="16.11.2025"
+              data-project-url="https://youtu.be/0Dr8Z5QXT9c?si=so3-YMlnxRYskTLh"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">16.11.2025</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2025.11.16_SAMEZTWITCH - 1V1 CONTRE UN MONTEUR_m - fx"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2025.11.16_SAMEZTWITCH - 1V1 CONTRE UN MONTEUR_m - fx/Thumb.webp"
+                      src="./rsrc/montage-video/2025.11.16_SAMEZTWITCH - 1V1 CONTRE UN MONTEUR_m - fx/Thumb.webp"
+                      alt="Miniature du projet SAMEZTWITCH - 1V1 CONTRE UN MONTEUR"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2025.11.16_SAMEZTWITCH - 1V1 CONTRE UN MONTEUR_m - fx/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">SAMEZTWITCH - 1V1 CONTRE UN MONTEUR</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="04.11.2025"
+              data-format="vertical"
+              data-project-url="https://www.instagram.com/p/DQpJbXNiFEU/"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">04.11.2025</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2025.11.04_SAMEZTWITCH - OP ADOBE FIREFLY_fx"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2025.11.04_SAMEZTWITCH - OP ADOBE FIREFLY_fx/Thumb.webp"
+                      src="./rsrc/montage-video/2025.11.04_SAMEZTWITCH - OP ADOBE FIREFLY_fx/Thumb.webp"
+                      alt="Miniature du projet SAMEZTWITCH - OP ADOBE FIREFLY"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2025.11.04_SAMEZTWITCH - OP ADOBE FIREFLY_fx/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">SAMEZTWITCH - OP ADOBE FIREFLY</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="02.11.2025"
+              data-project-url="https://youtu.be/lVyipw3LDhU?si=Klsn6iy5xx_qmKxA"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">02.11.2025</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2025.11.02_SAMEZTWITCH - JE CREE UN LOGICIEL DE MONTAGE_m - fx"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2025.11.02_SAMEZTWITCH - JE CREE UN LOGICIEL DE MONTAGE_m - fx/Thumb.webp"
+                      src="./rsrc/montage-video/2025.11.02_SAMEZTWITCH - JE CREE UN LOGICIEL DE MONTAGE_m - fx/Thumb.webp"
+                      alt="Miniature du projet SAMEZTWITCH - JE CR&Eacute;E UN LOGICIEL DE MONTAGE"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2025.11.02_SAMEZTWITCH - JE CREE UN LOGICIEL DE MONTAGE_m - fx/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">SAMEZTWITCH - JE CR&Eacute;E UN LOGICIEL DE MONTAGE</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="04.07.2025"
+              data-project-url="https://youtu.be/WNpAqrsG_eI?si=E05p7rzte-88HmB7"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">04.07.2025</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2025.07.04_MASTU - VLOG PUB YOP_fx"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2025.07.04_MASTU - VLOG PUB YOP_fx/Thumb.webp"
+                      src="./rsrc/montage-video/2025.07.04_MASTU - VLOG PUB YOP_fx/Thumb.webp"
+                      alt="Miniature du projet MASTU - VLOG PUB YOP"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2025.07.04_MASTU - VLOG PUB YOP_fx/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">MASTU - VLOG PUB YOP</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="25.05.2025"
+              data-project-url="https://youtu.be/qP4oaVGxm_I?si=KyItAD6x4PVo9Oc3"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">25.05.2025</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2025.05.25_NAZA - DEGUSTATION DE PLATS FARFELUS_fx"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2025.05.25_NAZA - DEGUSTATION DE PLATS FARFELUS_fx/Thumb.webp"
+                      src="./rsrc/montage-video/2025.05.25_NAZA - DEGUSTATION DE PLATS FARFELUS_fx/Thumb.webp"
+                      alt="Miniature du projet NAZA - D&Eacute;GUSTATION DE PLATS FARFELUS"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2025.05.25_NAZA - DEGUSTATION DE PLATS FARFELUS_fx/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">NAZA - D&Eacute;GUSTATION DE PLATS FARFELUS</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="19.05.2025"
+              data-project-url="https://youtu.be/-dKmxJJEVVo?si=zVHEUMMdlapnnZD_"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">19.05.2025</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2025.05.19_SAMEZTWITCH - QUI EST L'IMPOSTEUR_m - fx"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2025.05.19_SAMEZTWITCH - QUI EST L'IMPOSTEUR_m - fx/Thumb.webp"
+                      src="./rsrc/montage-video/2025.05.19_SAMEZTWITCH - QUI EST L'IMPOSTEUR_m - fx/Thumb.webp"
+                      alt="Miniature du projet SAMEZTWITCH - QUI EST L'IMPOSTEUR"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2025.05.19_SAMEZTWITCH - QUI EST L'IMPOSTEUR_m - fx/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">SAMEZTWITCH - QUI EST L'IMPOSTEUR</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="22.03.2025"
+              data-project-url="https://youtu.be/OALufHez_y0?si=I9uN_RIc-pSaMH7B"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">22.03.2025</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2025.03.22_MASTU - AIRBNB INSOLITES_fx - md"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2025.03.22_MASTU - AIRBNB INSOLITES_fx - md/Thumb.webp"
+                      src="./rsrc/montage-video/2025.03.22_MASTU - AIRBNB INSOLITES_fx - md/Thumb.webp"
+                      alt="Miniature du projet MASTU - AIRBNB INSOLITES"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2025.03.22_MASTU - AIRBNB INSOLITES_fx - md/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">MASTU - AIRBNB INSOLITES</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="16.02.2025"
+              data-project-url="https://youtu.be/qkrueE4pgbE?si=9xE7hQ64L9FVyRD7"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">16.02.2025</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2025.02.16_CHOCOH - PRODUITS JAPONAIS_m - fx"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2025.02.16_CHOCOH - PRODUITS JAPONAIS_m - fx/Thumb.webp"
+                      src="./rsrc/montage-video/2025.02.16_CHOCOH - PRODUITS JAPONAIS_m - fx/Thumb.webp"
+                      alt="Miniature du projet CHOCOH - PRODUITS JAPONAIS"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2025.02.16_CHOCOH - PRODUITS JAPONAIS_m - fx/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">CHOCOH - PRODUITS JAPONAIS</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="15.02.2025"
+              data-project-url="https://youtu.be/TtXVBCytTdU?si=QTWzB4AF8gnjilwu"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">15.02.2025</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2025.02.15_MASTU - DETECTEUR DE MENSONGES_fx"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2025.02.15_MASTU - DETECTEUR DE MENSONGES_fx/Thumb.webp"
+                      src="./rsrc/montage-video/2025.02.15_MASTU - DETECTEUR DE MENSONGES_fx/Thumb.webp"
+                      alt="Miniature du projet MASTU - D&Eacute;TECTEUR DE MENSONGES"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2025.02.15_MASTU - DETECTEUR DE MENSONGES_fx/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">MASTU - D&Eacute;TECTEUR DE MENSONGES</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="17.11.2024"
+              data-project-url="https://youtu.be/GPKSeAJky88?si=QhWN5PPwhsoX3pfa"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">17.11.2024</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2024.11.17_MASTU - AIRBNB INSOLITES_fx"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2024.11.17_MASTU - AIRBNB INSOLITES_fx/Thumb.webp"
+                      src="./rsrc/montage-video/2024.11.17_MASTU - AIRBNB INSOLITES_fx/Thumb.webp"
+                      alt="Miniature du projet MASTU - AIRBNB INSOLITES"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2024.11.17_MASTU - AIRBNB INSOLITES_fx/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">MASTU - AIRBNB INSOLITES</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="25.10.2024"
+              data-project-url="https://youtu.be/kePgmqtLmc0?si=1xrgui1KG1JF3uoQ"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">25.10.2024</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2024.10.25_GASP - FINIR 2 JEUX ZELDA_m - fx - sd"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2024.10.25_GASP - FINIR 2 JEUX ZELDA_m - fx - sd/Thumb.webp"
+                      src="./rsrc/montage-video/2024.10.25_GASP - FINIR 2 JEUX ZELDA_m - fx - sd/Thumb.webp"
+                      alt="Miniature du projet GASP - FINIR 2 JEUX ZELDA"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2024.10.25_GASP - FINIR 2 JEUX ZELDA_m - fx - sd/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">GASP - FINIR 2 JEUX ZELDA</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="video-timeline-card"
+              data-date="11.10.2024"
+              data-project-url="https://youtu.be/JoSP89b7I5s?si=OLOn_WDc--msCDWs"
+            >
+              <div class="video-card-inner">
+                <div class="video-card-date-mask">
+                  <p class="video-card-date-row">
+                    <span class="video-card-date-value">11.10.2024</span>
+                  </p>
+                </div>
+                <div class="video-card-frame">
+                  <div
+                    class="video-card-visual has-hover-media"
+                    data-project-folder="2024.10.11_GIO - LE COMBO CHEATE DES JOUEURS PROS_m - fx - sd"
+                  >
+                    <img
+                      class="video-card-thumb"
+                      data-src="./rsrc/montage-video/2024.10.11_GIO - LE COMBO CHEATE DES JOUEURS PROS_m - fx - sd/Thumb.webp"
+                      src="./rsrc/montage-video/2024.10.11_GIO - LE COMBO CHEATE DES JOUEURS PROS_m - fx - sd/Thumb.webp"
+                      alt="Miniature du projet GIO - LE COMBO CHEAT&Eacute; DES JOUEURS PROS"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <video
+                      class="video-card-hover-video"
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                    >
+                      <source data-src="./rsrc/montage-video/2024.10.11_GIO - LE COMBO CHEATE DES JOUEURS PROS_m - fx - sd/Hover.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                </div>
+                <div class="video-card-label-mask">
+                  <p class="video-card-label-row">
+                    <span class="video-card-label-value">GIO - LE COMBO CHEAT&Eacute; DES JOUEURS PROS</span>
+                  </p>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+        </section>
+
+        <div class="video-scrollbar" aria-hidden="true">
+          <div class="video-scrollbar-track">
+            <span class="video-scrollbar-thumb"></span>
+          </div>
+        </div>
+
+        <nav class="social-links social-links-video" aria-label="Réseaux sociaux">
+          <a
+            class="social-link"
+            href="https://x.com/kotarow28"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="X"
+          >
+            <img src="./rsrc/social-icons/x.svg" alt="" />
+          </a>
+          <a
+            class="social-link"
+            href="https://www.instagram.com/jeremy.delobel/"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Instagram"
+          >
+            <img src="./rsrc/social-icons/instagram.svg" alt="" />
+          </a>
+          <a
+            class="social-link"
+            href="mailto:kotarow.montage@gmail.com"
+            aria-label="Mail"
+          >
+            <img src="./rsrc/social-icons/mail.svg" alt="" />
+          </a>
+        </nav>
+      </div>
+    </main>
+
+    <div
+      class="showreel-overlay"
+      id="showreel-overlay"
+      aria-hidden="true"
+    >
+      <button
+        class="showreel-overlay-backdrop"
+        type="button"
+        aria-label="Fermer le ShowReel"
+        data-showreel-close
+      ></button>
+
+      <div
+        class="showreel-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-label="ShowReel"
+      >
+        <div class="showreel-embed-shell">
+          <iframe
+            class="showreel-iframe"
+            src="https://player.vimeo.com/video/1185581776?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+            data-src="https://player.vimeo.com/video/1185581776?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+            frameborder="0"
+            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            title="ShowReel_2026"
+            loading="eager"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="project-player-overlay"
+      id="project-player-overlay"
+      aria-hidden="true"
+    >
+      <button
+        class="project-player-overlay-backdrop"
+        type="button"
+        aria-label="Fermer la vidéo du projet"
+        data-project-player-close
+      ></button>
+
+      <div
+        class="project-player-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Lecture du projet"
+      >
+        <div class="project-player-embed-shell"></div>
+      </div>
+    </div>
   </body>
 </html>

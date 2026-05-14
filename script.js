@@ -36,6 +36,14 @@ const motionDesignCardAspectRatios = {
   wide: 1920 / 803,
   landscape: 5 / 4,
 };
+const videoRoleMap = {
+  m: "Montage",
+  md: "Motion Design",
+  fx: "FX",
+  cg: "Étalonnage",
+  sd: "Sound Design",
+  dr: "Derush",
+};
 const projectPlayerAspectRatios = {
   vertical: 9 / 16,
   wide: 1920 / 803,
@@ -155,6 +163,31 @@ const getVideoProjectLinkCacheKey = (projectRoot, folderName) => {
   }
 
   return `${projectRoot || "./rsrc/montage-video"}::${folderName}`;
+};
+
+const getVideoVisualRoleLabel = (visual) => {
+  if (!visual || isMotionDesignPage) {
+    return "";
+  }
+
+  const folderName = getVideoVisualFolderName(visual);
+
+  if (!folderName) {
+    return "";
+  }
+
+  const folderParts = folderName.split("_");
+  const roleTokens = folderParts
+    .slice(2)
+    .join("_")
+    .split(" - ")
+    .map((token) => token.trim().toLowerCase())
+    .filter(Boolean);
+
+  return roleTokens
+    .map((token) => videoRoleMap[token])
+    .filter(Boolean)
+    .join(" · ");
 };
 
 const buildVideoProjectFileUrl = (projectRoot, folderName, fileName) => {
@@ -1031,8 +1064,16 @@ const initVideoHoverMedia = () => {
     }
 
     primeVideoVisualMedia(visual);
+    const roleLabel = getVideoVisualRoleLabel(visual);
 
     const video = visual.querySelector(".video-card-hover-video");
+
+    if (roleLabel && !visual.querySelector(".video-card-role-list")) {
+      const roleElement = document.createElement("p");
+      roleElement.className = "video-card-role-list";
+      roleElement.textContent = roleLabel;
+      visual.appendChild(roleElement);
+    }
 
     if (!video) {
       return;

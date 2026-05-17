@@ -248,6 +248,21 @@ body.is-media-overlay-open {
   transition-delay: 0s;
 }
 
+.photo-lightbox {
+  position: fixed;
+  inset: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 50;
+  transition: visibility 0s linear 540ms;
+}
+
+.photo-lightbox.is-visible {
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+
 .showreel-overlay-backdrop,
 .project-player-overlay-backdrop {
   position: absolute;
@@ -263,9 +278,29 @@ body.is-media-overlay-open {
   will-change: opacity;
 }
 
+.photo-lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  appearance: none;
+  border: 0;
+  background: rgba(255, 255, 255, 0.75);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 520ms ease;
+  will-change: opacity;
+}
+
 .showreel-overlay.is-visible .showreel-overlay-backdrop,
 .project-player-overlay.is-visible .project-player-overlay-backdrop {
   opacity: 1;
+}
+
+.photo-lightbox.is-visible .photo-lightbox-backdrop {
+  opacity: 1;
+}
+
+.photo-lightbox.is-closing .photo-lightbox-backdrop {
+  opacity: 0;
 }
 
 .showreel-dialog,
@@ -282,6 +317,20 @@ body.is-media-overlay-open {
   transition:
     opacity 320ms ease,
     transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.photo-lightbox-stage {
+  position: fixed;
+  z-index: 1;
+  margin: 0;
+  overflow: hidden;
+  transform: translateZ(0);
+  transition:
+    top 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    left 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: top, left, width, height;
 }
 
 .showreel-dialog {
@@ -339,6 +388,39 @@ body.is-media-overlay-open {
   border: 0;
   display: block;
   background: transparent;
+}
+
+.photo-lightbox-canvas-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  box-shadow: 0 22px 72px rgba(17, 17, 17, 0.16);
+}
+
+.photo-lightbox-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.photo-lightbox-canvas-lowres {
+  opacity: 1;
+}
+
+.photo-lightbox.is-highres-visible .photo-lightbox-canvas-highres {
+  opacity: 1;
+}
+
+.photo-lightbox.is-highres-visible .photo-lightbox-canvas-lowres {
+  opacity: 0;
 }
 
 .text-reveal-mask {
@@ -624,6 +706,7 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   overflow: hidden;
   position: relative;
   background: rgba(0, 0, 0, 0.04);
+  cursor: pointer;
   opacity: 0;
   transform: translate3d(0, 2.25rem, 0);
   transition:
@@ -637,12 +720,20 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   transform: translate3d(0, 0, 0);
 }
 
+.photo-tile:focus-visible {
+  outline: 2px solid #111111;
+  outline-offset: 0.25rem;
+}
+
 .photo-image {
   display: block;
   width: 100%;
   height: auto;
   opacity: 0;
   transition: opacity 0.45s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .photo-tile.is-loaded {
@@ -651,6 +742,62 @@ body.is-ready .text-reveal-mask .text-reveal-value {
 
 .photo-tile.is-loaded .photo-image {
   opacity: 1;
+}
+
+.photo-tile.is-lightbox-origin .photo-image {
+  opacity: 0;
+  transition: none;
+}
+
+.photo-tile,
+.photo-lightbox-stage {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.photo-lightbox-close {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  mix-blend-mode: difference;
+  padding: 0.45rem 0.7rem;
+  margin: -0.45rem -0.7rem;
+  font-family: "Neue Montreal", sans-serif;
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease 120ms;
+}
+
+.photo-lightbox-close img {
+  display: block;
+  width: 18px;
+  height: 18px;
+  filter: invert(1);
+}
+
+.photo-lightbox-close:hover {
+  opacity: 0.7;
+}
+
+.photo-lightbox.is-visible .photo-lightbox-close {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.photo-lightbox.is-closing .photo-lightbox-close {
+  opacity: 0;
+  transition-delay: 0s;
 }
 
 .video-page {
@@ -686,6 +833,14 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   text-align: center;
   z-index: 40;
   pointer-events: none;
+}
+
+.video-page .folio-title {
+  --folio-title-shift-y: 0px;
+  --folio-title-opacity: 1;
+  transform: translateX(-50%) translateY(var(--folio-title-shift-y));
+  opacity: var(--folio-title-opacity);
+  will-change: transform, opacity;
 }
 
 .timeline-kicker {
@@ -794,12 +949,75 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   cursor: grabbing;
 }
 
+.video-page .video-scrollbar {
+  top: 50%;
+  right: 1.2rem;
+  bottom: auto;
+  left: auto;
+  width: 20px;
+  height: min(420px, calc(100vh - 4rem));
+  transform: translateY(-50%);
+}
+
+.video-page .video-scrollbar-track {
+  width: 20px;
+  height: 100%;
+  transition:
+    width 180ms ease,
+    background-color 180ms ease;
+}
+
+.video-page .video-scrollbar-track::before {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  right: auto;
+  width: 2px;
+  height: 100%;
+  transform: translateX(-50%);
+  transition:
+    width 180ms ease,
+    background-color 180ms ease;
+}
+
+.video-page .video-scrollbar-thumb {
+  top: calc(var(--scrollbar-progress) * (100% - (var(--scrollbar-size) * 100%)));
+  left: 50%;
+  width: 2px;
+  height: calc(var(--scrollbar-size) * 100%);
+  transform: translateX(-50%);
+  transition: width 180ms ease;
+}
+
+.video-page .video-scrollbar.is-active .video-scrollbar-track,
+.video-page .video-scrollbar.is-dragging .video-scrollbar-track {
+  width: 24px;
+  height: 100%;
+}
+
+.video-page .video-scrollbar.is-active .video-scrollbar-track::before,
+.video-page .video-scrollbar.is-dragging .video-scrollbar-track::before {
+  width: 5px;
+  height: 100%;
+}
+
+.video-page .video-scrollbar.is-active .video-scrollbar-thumb,
+.video-page .video-scrollbar.is-dragging .video-scrollbar-thumb {
+  width: 5px;
+  height: calc(var(--scrollbar-size) * 100%);
+}
+
 .video-timeline {
-  --track-offset: 0px;
+  --track-offset-x: 0px;
+  --track-offset-y: 0px;
   position: relative;
   height: 100vh;
   min-width: 100vw;
-  transform: translate3d(calc(-1 * var(--track-offset)), 0, 0);
+  transform: translate3d(
+    calc(-1 * var(--track-offset-x)),
+    calc(-1 * var(--track-offset-y)),
+    0
+  );
   will-change: transform;
 }
 
@@ -1080,6 +1298,13 @@ body.is-ready .video-card-label-mask .video-card-label-value {
   .photo-image {
     transition: none;
   }
+
+  .photo-lightbox-backdrop,
+  .photo-lightbox-stage,
+  .photo-lightbox-canvas,
+  .photo-lightbox-close {
+    transition: none;
+  }
 }
 
 @media (max-width: 980px) {
@@ -1121,6 +1346,7 @@ body.is-ready .video-card-label-mask .video-card-label-value {
     left: 1.25rem;
   }
 
+  .photo-lightbox-close,
   .showreel-button {
     top: 1.25rem;
     right: 1.25rem;

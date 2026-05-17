@@ -7,12 +7,18 @@ const showreelIframe = document.querySelector(".showreel-iframe");
 const projectPlayerOverlay = document.querySelector(".project-player-overlay");
 const projectPlayerDialog = document.querySelector(".project-player-dialog");
 const projectPlayerEmbedShell = document.querySelector(".project-player-embed-shell");
+const photoLightbox = document.querySelector(".photo-lightbox");
+const photoLightboxStage = document.querySelector(".photo-lightbox-stage");
+let photoLightboxCanvasShell = document.querySelector(".photo-lightbox-canvas-shell");
+let photoLightboxLowResCanvas = document.querySelector(".photo-lightbox-canvas-lowres");
+let photoLightboxHighResCanvas = document.querySelector(".photo-lightbox-canvas-highres");
 const photoGrid = document.querySelector(".photo-grid");
 const videoTimeline = document.querySelector(".video-timeline");
 const timelineScrollArea = document.querySelector(".timeline-scroll-area");
 const videoScrollbar = document.querySelector(".video-scrollbar");
 const videoScrollbarTrack = document.querySelector(".video-scrollbar-track");
 const videoScrollbarThumb = document.querySelector(".video-scrollbar-thumb");
+const folioTitle = document.querySelector(".folio-title");
 const navigationEntry = performance.getEntriesByType("navigation")[0];
 const isBackForwardLoad = navigationEntry?.type === "back_forward";
 const isPhotographyPage = document.body.classList.contains("photography-page");
@@ -23,6 +29,7 @@ const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const videoProjectLinksCache = new Map();
 const videoLinkPriority = ["youtube", "tiktok", "instagram"];
 const videoOverlayTransitionDuration = 360;
+const photoLightboxTransitionDuration = 520;
 const videoHoverResumeRetentionDuration = 2000;
 const videoHoverResetTimers = new WeakMap();
 const videoHoverResumeTimes = new WeakMap();
@@ -53,6 +60,93 @@ let vimeoPlayerApiPromise = null;
 let showreelPlayer = null;
 let showreelPlayerInitPromise = null;
 let activeVideoOverlay = "none";
+let isPhotoLightboxActive = false;
+let isPhotoLightboxTransitioning = false;
+let isPhotoLightboxLoading = false;
+let activePhotoLightboxTile = null;
+let activePhotoLightboxImage = null;
+let activePhotoLightboxHighResDrawable = null;
+let activePhotoLightboxCanvasRenderToken = 0;
+let photoLightboxCleanupTimer = 0;
+
+const isPhotoLightboxOpen = () => isPhotoLightboxActive;
+
+const ensurePhotoLightboxCanvasDom = () => {
+  if (!photoLightboxStage) {
+    return false;
+  }
+
+  if (
+    !photoLightboxCanvasShell ||
+    !photoLightboxStage.contains(photoLightboxCanvasShell)
+  ) {
+    photoLightboxCanvasShell = photoLightboxStage.querySelector(
+      ".photo-lightbox-canvas-shell"
+    );
+  }
+
+  if (!photoLightboxCanvasShell) {
+    photoLightboxCanvasShell = document.createElement("div");
+    photoLightboxCanvasShell.className = "photo-lightbox-canvas-shell";
+    photoLightboxCanvasShell.setAttribute("aria-hidden", "true");
+    photoLightboxStage.replaceChildren(photoLightboxCanvasShell);
+  }
+
+  if (
+    !photoLightboxLowResCanvas ||
+    !photoLightboxCanvasShell.contains(photoLightboxLowResCanvas)
+  ) {
+    photoLightboxLowResCanvas = photoLightboxCanvasShell.querySelector(
+      ".photo-lightbox-canvas-lowres"
+    );
+  }
+
+  if (!photoLightboxLowResCanvas) {
+    photoLightboxLowResCanvas = document.createElement("canvas");
+    photoLightboxLowResCanvas.className =
+      "photo-lightbox-canvas photo-lightbox-canvas-lowres";
+    photoLightboxCanvasShell.appendChild(photoLightboxLowResCanvas);
+  }
+
+  if (
+    !photoLightboxHighResCanvas ||
+    !photoLightboxCanvasShell.contains(photoLightboxHighResCanvas)
+  ) {
+    photoLightboxHighResCanvas = photoLightboxCanvasShell.querySelector(
+      ".photo-lightbox-canvas-highres"
+    );
+  }
+
+  if (!photoLightboxHighResCanvas) {
+    photoLightboxHighResCanvas = document.createElement("canvas");
+    photoLightboxHighResCanvas.className =
+      "photo-lightbox-canvas photo-lightbox-canvas-highres";
+    photoLightboxCanvasShell.appendChild(photoLightboxHighResCanvas);
+  }
+
+  return Boolean(
+    photoLightboxCanvasShell &&
+      photoLightboxLowResCanvas &&
+      photoLightboxHighResCanvas
+  );
+};
+
+const syncSharedMediaOverlayState = () => {
+  const isOpen = activeVideoOverlay !== "none" || isPhotoLightboxOpen();
+  const scrollbarCompensation =
+    isPhotographyPage && isOpen
+      ? Math.max(window.innerWidth - document.documentElement.clientWidth, 0)
+      : 0;
+
+  document.documentElement.classList.toggle("is-media-overlay-open", isOpen);
+  document.body.classList.toggle("is-media-overlay-open", isOpen);
+
+  if (scrollbarCompensation > 0) {
+    document.body.style.paddingRight = `${scrollbarCompensation}px`;
+  } else {
+    document.body.style.removeProperty("padding-right");
+  }
+};
 
 const normalizeVisibleRoute = () => {
   if (window.location.protocol === "file:") {
@@ -68,6 +162,7 @@ const normalizeVisibleRoute = () => {
 };
 
 normalizeVisibleRoute();
+ensurePhotoLightboxCanvasDom();
 
 const getVideoVisualMediaSource = (visual) => {
   if (!visual) {
@@ -921,13 +1016,10 @@ const ensureShowreelPlayer = () => {
 
 const setActiveVideoOverlay = (overlayName) => {
   activeVideoOverlay = overlayName;
-  const isOpen = overlayName !== "none";
-
-  document.documentElement.classList.toggle("is-media-overlay-open", isOpen);
-  document.body.classList.toggle("is-media-overlay-open", isOpen);
+  syncSharedMediaOverlayState();
 
   if (showreelButton) {
-    showreelButton.setAttribute("aria-expanded", String(isOpen));
+    showreelButton.setAttribute("aria-expanded", String(overlayName !== "none"));
   }
 
   if (showreelOverlay) {
@@ -1051,6 +1143,253 @@ const closeActiveVideoOverlay = ({ restoreFocus = true } = {}) => {
   if (isShowreelOverlayOpen()) {
     closeShowreelOverlay({ restoreFocus });
   }
+};
+
+const clearPhotoLightboxCleanupTimer = () => {
+  if (!photoLightboxCleanupTimer) {
+    return;
+  }
+
+  window.clearTimeout(photoLightboxCleanupTimer);
+  photoLightboxCleanupTimer = 0;
+};
+
+const getPhotoLightboxImageAspectRatio = (image) => {
+  const width =
+    Number(image?.getAttribute("width")) || image?.naturalWidth || image?.width || 1;
+  const height =
+    Number(image?.getAttribute("height")) || image?.naturalHeight || image?.height || 1;
+
+  return width > 0 && height > 0 ? width / height : 1;
+};
+
+const getPhotoLightboxDrawableDimensions = (drawable) => {
+  const width =
+    Number(drawable?.naturalWidth) || Number(drawable?.videoWidth) || Number(drawable?.width) || 0;
+  const height =
+    Number(drawable?.naturalHeight) || Number(drawable?.videoHeight) || Number(drawable?.height) || 0;
+
+  return { width, height };
+};
+
+const setPhotoLightboxHighResVisible = (isVisible) => {
+  photoLightbox?.classList.toggle("is-highres-visible", Boolean(isVisible));
+};
+
+const clearPhotoLightboxCanvas = (canvas) => {
+  const context = canvas?.getContext("2d");
+
+  if (!context) {
+    return;
+  }
+
+  context.setTransform(1, 0, 0, 1, 0, 0);
+  context.clearRect(0, 0, canvas.width, canvas.height);
+};
+
+const resetPhotoLightboxCanvas = (canvas) => {
+  if (!canvas) {
+    return;
+  }
+
+  clearPhotoLightboxCanvas(canvas);
+  canvas.width = 1;
+  canvas.height = 1;
+};
+
+const drawPhotoLightboxCanvas = (canvas, drawable, rect) => {
+  if (!canvas || !drawable || !rect) {
+    return false;
+  }
+
+  const { width: sourceWidth, height: sourceHeight } =
+    getPhotoLightboxDrawableDimensions(drawable);
+
+  if (!(sourceWidth > 0) || !(sourceHeight > 0)) {
+    return false;
+  }
+
+  const dpr = clamp(window.devicePixelRatio || 1, 1, 2);
+  const pixelWidth = Math.max(Math.round(rect.width * dpr), 1);
+  const pixelHeight = Math.max(Math.round(rect.height * dpr), 1);
+
+  if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+    canvas.width = pixelWidth;
+    canvas.height = pixelHeight;
+  }
+
+  const context = canvas.getContext("2d");
+
+  if (!context) {
+    return false;
+  }
+
+  context.setTransform(1, 0, 0, 1, 0, 0);
+  context.clearRect(0, 0, pixelWidth, pixelHeight);
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+
+  const scale = Math.min(pixelWidth / sourceWidth, pixelHeight / sourceHeight);
+  const drawWidth = sourceWidth * scale;
+  const drawHeight = sourceHeight * scale;
+  const drawX = (pixelWidth - drawWidth) / 2;
+  const drawY = (pixelHeight - drawHeight) / 2;
+
+  context.drawImage(drawable, drawX, drawY, drawWidth, drawHeight);
+  return true;
+};
+
+const renderActivePhotoLightboxCanvases = ({ targetRect = null } = {}) => {
+  if (!ensurePhotoLightboxCanvasDom()) {
+    return false;
+  }
+
+  if (!activePhotoLightboxImage) {
+    return false;
+  }
+
+  const rect = targetRect || getPhotoLightboxTargetRect(activePhotoLightboxImage);
+
+  if (!rect) {
+    return false;
+  }
+
+  const didRenderLowRes = drawPhotoLightboxCanvas(
+    photoLightboxLowResCanvas,
+    activePhotoLightboxImage,
+    rect
+  );
+
+  if (activePhotoLightboxHighResDrawable) {
+    drawPhotoLightboxCanvas(
+      photoLightboxHighResCanvas,
+      activePhotoLightboxHighResDrawable,
+      rect
+    );
+  } else {
+    clearPhotoLightboxCanvas(photoLightboxHighResCanvas);
+  }
+
+  return didRenderLowRes;
+};
+
+const applyPhotoLightboxRect = (rect) => {
+  if (!photoLightboxStage || !rect) {
+    return;
+  }
+
+  photoLightboxStage.style.top = `${rect.top.toFixed(2)}px`;
+  photoLightboxStage.style.left = `${rect.left.toFixed(2)}px`;
+  photoLightboxStage.style.width = `${Math.max(rect.width, 1).toFixed(2)}px`;
+  photoLightboxStage.style.height = `${Math.max(rect.height, 1).toFixed(2)}px`;
+};
+
+const getPhotoLightboxTargetRect = (image) => {
+  const aspectRatio = getPhotoLightboxImageAspectRatio(image);
+  const maxWidth = Math.max(window.innerWidth * 0.85, 1);
+  const maxHeight = Math.max(window.innerHeight * 0.85, 1);
+  let width = maxWidth;
+  let height = width / aspectRatio;
+
+  if (height > maxHeight) {
+    height = maxHeight;
+    width = height * aspectRatio;
+  }
+
+  return {
+    left: (window.innerWidth - width) / 2,
+    top: (window.innerHeight - height) / 2,
+    width,
+    height,
+  };
+};
+
+const finishPhotoLightboxClose = ({ restoreFocus = true } = {}) => {
+  clearPhotoLightboxCleanupTimer();
+  activePhotoLightboxCanvasRenderToken += 1;
+
+  photoLightbox?.classList.remove(
+    "is-visible",
+    "is-closing",
+    "is-opening",
+    "is-highres-visible"
+  );
+  photoLightbox?.setAttribute("aria-hidden", "true");
+  photoLightboxStage?.removeAttribute("style");
+  resetPhotoLightboxCanvas(photoLightboxLowResCanvas);
+  resetPhotoLightboxCanvas(photoLightboxHighResCanvas);
+
+  const tileToRefocus = activePhotoLightboxTile;
+  const imageToRestore = activePhotoLightboxImage;
+
+  if (imageToRestore) {
+    imageToRestore.style.transition = "none";
+  }
+
+  activePhotoLightboxTile?.classList.remove("is-lightbox-origin");
+  activePhotoLightboxTile = null;
+  activePhotoLightboxImage = null;
+  activePhotoLightboxHighResDrawable = null;
+  isPhotoLightboxActive = false;
+  isPhotoLightboxTransitioning = false;
+  isPhotoLightboxLoading = false;
+  syncSharedMediaOverlayState();
+
+  if (imageToRestore) {
+    void imageToRestore.offsetWidth;
+    window.requestAnimationFrame(() => {
+      imageToRestore.style.removeProperty("transition");
+    });
+  }
+
+  if (restoreFocus && tileToRefocus?.isConnected) {
+    tileToRefocus.focus({ preventScroll: true });
+  }
+};
+
+const syncOpenPhotoLightboxLayout = () => {
+  if (
+    !isPhotoLightboxOpen() ||
+    isPhotoLightboxTransitioning ||
+    !activePhotoLightboxImage
+  ) {
+    return;
+  }
+
+  const targetRect = getPhotoLightboxTargetRect(activePhotoLightboxImage);
+  renderActivePhotoLightboxCanvases({ targetRect });
+  applyPhotoLightboxRect(targetRect);
+};
+
+const closePhotoLightbox = ({ restoreFocus = true } = {}) => {
+  if (
+    !photoLightbox ||
+    !photoLightboxStage ||
+    !isPhotoLightboxOpen() ||
+    isPhotoLightboxTransitioning
+  ) {
+    return;
+  }
+
+  const originRect = activePhotoLightboxImage?.getBoundingClientRect();
+
+  if (
+    prefersReducedMotion.matches ||
+    !originRect ||
+    !(originRect.width > 0) ||
+    !(originRect.height > 0)
+  ) {
+    finishPhotoLightboxClose({ restoreFocus });
+    return;
+  }
+
+  isPhotoLightboxTransitioning = true;
+  photoLightbox.classList.add("is-closing");
+  applyPhotoLightboxRect(originRect);
+  clearPhotoLightboxCleanupTimer();
+  photoLightboxCleanupTimer = window.setTimeout(() => {
+    finishPhotoLightboxClose({ restoreFocus });
+  }, photoLightboxTransitionDuration);
 };
 
 const initVideoHoverMedia = () => {
@@ -1329,15 +1668,6 @@ if (showreelOverlay) {
       closeShowreelOverlay();
     }
   });
-
-  window.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape" || activeVideoOverlay === "none") {
-      return;
-    }
-
-    event.preventDefault();
-    closeActiveVideoOverlay();
-  });
 }
 
 if (projectPlayerOverlay) {
@@ -1350,25 +1680,60 @@ if (projectPlayerOverlay) {
     });
 }
 
-window.addEventListener("resize", () => {
-  if (!isProjectPlayerOverlayOpen()) {
+if (photoLightbox) {
+  photoLightbox.querySelectorAll("[data-photo-lightbox-close]").forEach((element) => {
+    element.addEventListener("click", () => {
+      closePhotoLightbox();
+    });
+  });
+
+  photoLightbox.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+  });
+
+  photoLightbox.addEventListener("dragstart", (event) => {
+    event.preventDefault();
+  });
+}
+
+window.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") {
     return;
   }
 
-  const dialogFormat = projectPlayerDialog?.dataset.format;
-  const format =
-    dialogFormat === "vertical" || dialogFormat === "wide"
-      ? dialogFormat
-      : "landscape";
-  const customAspectRatio = Number.parseFloat(
-    projectPlayerDialog?.dataset.aspectRatio || ""
-  );
-  applyProjectPlayerDialogMetrics(
-    format,
-    Number.isFinite(customAspectRatio) && customAspectRatio > 0
-      ? customAspectRatio
-      : null
-  );
+  if (isPhotoLightboxOpen()) {
+    event.preventDefault();
+    closePhotoLightbox();
+    return;
+  }
+
+  if (activeVideoOverlay === "none") {
+    return;
+  }
+
+  event.preventDefault();
+  closeActiveVideoOverlay();
+});
+
+window.addEventListener("resize", () => {
+  if (!isProjectPlayerOverlayOpen()) {
+    syncOpenPhotoLightboxLayout();
+  } else {
+    const dialogFormat = projectPlayerDialog?.dataset.format;
+    const format =
+      dialogFormat === "vertical" || dialogFormat === "wide"
+        ? dialogFormat
+        : "landscape";
+    const customAspectRatio = Number.parseFloat(
+      projectPlayerDialog?.dataset.aspectRatio || ""
+    );
+    applyProjectPlayerDialogMetrics(
+      format,
+      Number.isFinite(customAspectRatio) && customAspectRatio > 0
+        ? customAspectRatio
+        : null
+    );
+  }
 });
 
 if (photoGrid) {
@@ -1376,6 +1741,7 @@ if (photoGrid) {
   let randomizedPhotoModels = [];
   let tileRevealObserver;
   let imageLoadObserver;
+  const photoFullResCache = new Map();
 
   const shuffleArray = (items) => {
     const shuffled = [...items];
@@ -1404,6 +1770,11 @@ if (photoGrid) {
         ratio < 0.9 ? "portrait" : ratio > 1.65 ? "wide" : "landscape";
 
       tile.style.setProperty("--tile-ratio", `${width} / ${height}`);
+      image.draggable = false;
+      tile.tabIndex = 0;
+      tile.setAttribute("role", "button");
+      tile.setAttribute("aria-haspopup", "dialog");
+      tile.setAttribute("aria-label", "Ouvrir la photo");
 
       return {
         tile,
@@ -1727,6 +2098,289 @@ if (photoGrid) {
     }
   };
 
+  const getPhotoFullResSource = (image) => {
+    const lowResSource =
+      image?.dataset.src?.trim() ||
+      image?.currentSrc ||
+      image?.getAttribute("src") ||
+      "";
+
+    if (!lowResSource) {
+      return "";
+    }
+
+    try {
+      const url = new URL(lowResSource, window.location.href);
+
+      if (!url.pathname.includes("/rsrc/photos/")) {
+        return url.toString();
+      }
+
+      url.pathname = url.pathname
+        .replace("/rsrc/photos/", "/rsrc/photos-fullres/")
+        .replace(/\.webp$/i, ".jpg");
+
+      return url.toString();
+    } catch {
+      return lowResSource
+        .replace("/rsrc/photos/", "/rsrc/photos-fullres/")
+        .replace(/\.webp$/i, ".jpg");
+    }
+  };
+
+  const preloadPhotoFullResSource = (source) => {
+    if (!source) {
+      return Promise.resolve(null);
+    }
+
+    if (photoFullResCache.has(source)) {
+      return photoFullResCache.get(source);
+    }
+
+    const preloadPromise = new Promise((resolve) => {
+      const preloader = new Image();
+      preloader.decoding = "async";
+      preloader.draggable = false;
+
+      const finalize = async () => {
+        try {
+          await preloader.decode();
+        } catch {}
+
+        resolve(preloader);
+      };
+
+      preloader.addEventListener(
+        "load",
+        () => {
+          void finalize();
+        },
+        { once: true }
+      );
+
+      preloader.addEventListener(
+        "error",
+        () => {
+          resolve(null);
+        },
+        { once: true }
+      );
+
+      preloader.src = source;
+
+      if (preloader.complete) {
+        if (preloader.naturalWidth > 0 && preloader.naturalHeight > 0) {
+          void finalize();
+        } else {
+          resolve(null);
+        }
+      }
+    });
+
+    photoFullResCache.set(source, preloadPromise);
+    return preloadPromise;
+  };
+
+  const waitForPhotoImageReady = (image) =>
+    new Promise((resolve) => {
+      if (!image) {
+        resolve(false);
+        return;
+      }
+
+      const finish = (didLoad) => {
+        image.removeEventListener("load", handleLoad);
+        image.removeEventListener("error", handleError);
+        resolve(didLoad);
+      };
+
+      const handleLoad = () => {
+        finish(image.naturalWidth > 0 && image.naturalHeight > 0);
+      };
+
+      const handleError = () => {
+        finish(false);
+      };
+
+      if (image.complete && image.naturalWidth > 0 && image.naturalHeight > 0) {
+        resolve(true);
+        return;
+      }
+
+      image.addEventListener("load", handleLoad, { once: true });
+      image.addEventListener("error", handleError, { once: true });
+      loadPhotoImage(image);
+
+      if (image.complete) {
+        handleLoad();
+      }
+    });
+
+  const openPhotoTileLightbox = async (tile, image) => {
+    if (
+      !tile ||
+      !image ||
+      !photoLightbox ||
+      !photoLightboxStage ||
+      isPhotoLightboxLoading ||
+      isPhotoLightboxOpen() ||
+      isPhotoLightboxTransitioning
+    ) {
+      return false;
+    }
+
+    if (!ensurePhotoLightboxCanvasDom()) {
+      return false;
+    }
+
+    isPhotoLightboxLoading = true;
+    const renderToken = activePhotoLightboxCanvasRenderToken + 1;
+    activePhotoLightboxCanvasRenderToken = renderToken;
+
+    const didLoad = await waitForPhotoImageReady(image);
+
+    if (!didLoad) {
+      isPhotoLightboxLoading = false;
+      return false;
+    }
+
+    const originRect = image.getBoundingClientRect();
+    const targetRect = getPhotoLightboxTargetRect(image);
+    const fullResSource = getPhotoFullResSource(image);
+    const fullResPromise = preloadPhotoFullResSource(fullResSource);
+
+    if (
+      !(originRect.width > 0) ||
+      !(originRect.height > 0) ||
+      !(targetRect.width > 0) ||
+      !(targetRect.height > 0)
+    ) {
+      isPhotoLightboxLoading = false;
+      return false;
+    }
+
+    clearPhotoLightboxCleanupTimer();
+
+    activePhotoLightboxTile?.classList.remove("is-lightbox-origin");
+    activePhotoLightboxTile = tile;
+    activePhotoLightboxImage = image;
+    activePhotoLightboxHighResDrawable = null;
+    isPhotoLightboxActive = true;
+    isPhotoLightboxTransitioning = !prefersReducedMotion.matches;
+    setPhotoLightboxHighResVisible(false);
+    renderActivePhotoLightboxCanvases({ targetRect });
+
+    photoLightbox.classList.remove("is-closing");
+    photoLightbox.classList.add("is-visible");
+    photoLightbox.setAttribute("aria-hidden", "false");
+
+    applyPhotoLightboxRect(originRect);
+    syncSharedMediaOverlayState();
+
+    if (prefersReducedMotion.matches) {
+      tile.classList.add("is-lightbox-origin");
+      applyPhotoLightboxRect(targetRect);
+      isPhotoLightboxTransitioning = false;
+      isPhotoLightboxLoading = false;
+    } else {
+      void photoLightboxStage.offsetWidth;
+
+      window.requestAnimationFrame(() => {
+        if (!isPhotoLightboxOpen() || activePhotoLightboxTile !== tile) {
+          return;
+        }
+
+        applyPhotoLightboxRect(targetRect);
+
+        window.requestAnimationFrame(() => {
+          if (!isPhotoLightboxOpen() || activePhotoLightboxTile !== tile) {
+            return;
+          }
+
+          tile.classList.add("is-lightbox-origin");
+        });
+      });
+
+      photoLightboxCleanupTimer = window.setTimeout(() => {
+        photoLightboxCleanupTimer = 0;
+
+        if (isPhotoLightboxOpen()) {
+          isPhotoLightboxTransitioning = false;
+        }
+      }, photoLightboxTransitionDuration);
+    }
+
+    isPhotoLightboxLoading = false;
+
+    void fullResPromise.then((fullResDrawable) => {
+      if (
+        !fullResDrawable ||
+        renderToken !== activePhotoLightboxCanvasRenderToken ||
+        !isPhotoLightboxOpen() ||
+        activePhotoLightboxTile !== tile
+      ) {
+        return;
+      }
+
+      activePhotoLightboxHighResDrawable = fullResDrawable;
+      renderActivePhotoLightboxCanvases({
+        targetRect: getPhotoLightboxTargetRect(image),
+      });
+
+      window.requestAnimationFrame(() => {
+        if (
+          renderToken !== activePhotoLightboxCanvasRenderToken ||
+          !isPhotoLightboxOpen() ||
+          activePhotoLightboxTile !== tile
+        ) {
+          return;
+        }
+
+        setPhotoLightboxHighResVisible(true);
+      });
+    });
+
+    return true;
+  };
+
+  const bindPhotoTileLightbox = (tile, image) => {
+    if (!tile || !image || tile.dataset.photoLightboxBound === "true") {
+      return;
+    }
+
+    const preloadFullRes = () => {
+      void preloadPhotoFullResSource(getPhotoFullResSource(image));
+    };
+
+    const openBoundPhotoLightbox = () => {
+      void openPhotoTileLightbox(tile, image);
+    };
+
+    tile.addEventListener("pointerenter", preloadFullRes);
+    tile.addEventListener("focus", preloadFullRes);
+    tile.addEventListener("pointerdown", preloadFullRes);
+    tile.addEventListener("pointerup", (event) => {
+      if (event.pointerType !== "touch" && event.button !== 0) {
+        return;
+      }
+
+      openBoundPhotoLightbox();
+    });
+
+    tile.addEventListener("click", openBoundPhotoLightbox);
+
+    tile.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+
+      event.preventDefault();
+      openBoundPhotoLightbox();
+    });
+
+    tile.dataset.photoLightboxBound = "true";
+  };
+
   const observePhotoTiles = () => {
     if (tileRevealObserver) {
       tileRevealObserver.disconnect();
@@ -1806,6 +2460,7 @@ if (photoGrid) {
       photoGrid.appendChild(element);
 
       column.items.forEach((model) => {
+        bindPhotoTileLightbox(model.tile, model.image);
         element.appendChild(model.tile);
       });
     });
@@ -1815,6 +2470,16 @@ if (photoGrid) {
 
   refreshRandomizedPhotoModels();
   rebuildPhotoColumns();
+  photoGrid.addEventListener("contextmenu", (event) => {
+    if (event.target.closest(".photo-tile")) {
+      event.preventDefault();
+    }
+  });
+  photoGrid.addEventListener("dragstart", (event) => {
+    if (event.target.closest(".photo-tile")) {
+      event.preventDefault();
+    }
+  });
   window.addEventListener("resize", rebuildPhotoColumns);
 }
 
@@ -1833,6 +2498,8 @@ const initVideoTimelineScene = () => {
 
   const videoCanHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   const videoIsMobileLayout = window.matchMedia("(max-width: 640px)");
+  const isVerticalDesktopTimeline = () =>
+    isVideoPage && !videoIsMobileLayout.matches;
   const videoPointer = { x: 0, y: 0, active: false };
   const pastelPalette = [
     "#e2b8b0",
@@ -1845,6 +2512,8 @@ const initVideoTimelineScene = () => {
     "#bfd7d9",
   ];
   const lanePattern = [0.08, 0.52, 0.18, 0.62, 0.14, 0.46, 0.24, 0.68];
+  const desktopHorizontalLanePattern = [0.04, 0.66, 0.14, 0.78, 0.08, 0.54, 0.24, 0.72];
+  const desktopHorizontalShiftPattern = [0, -0.92, 0.68, -0.42, 0.88, -0.28, 0.54, -0.74];
   const scalePattern = [0.84, 1.14, 0.94, 1.2, 0.8, 1.08, 0.9, 1.18];
   const gapPattern = [0.11, 0.14, 0.1, 0.15, 0.12, 0.13, 0.11];
   const wideCardSizeBoost = 1.5;
@@ -1871,10 +2540,14 @@ const initVideoTimelineScene = () => {
     const viewportHeight = window.innerHeight;
     const horizontalBuffer = videoIsMobileLayout.matches
       ? viewportWidth * 0.16
-      : viewportWidth * 0.8;
+      : isVerticalDesktopTimeline()
+        ? viewportWidth * 0.28
+        : viewportWidth * 0.8;
     const verticalBuffer = videoIsMobileLayout.matches
       ? viewportHeight * 0.42
-      : viewportHeight * 0.24;
+      : isVerticalDesktopTimeline()
+        ? viewportHeight * 0.82
+        : viewportHeight * 0.24;
     const priorityCardCount = videoIsMobileLayout.matches ? 3 : 4;
 
     videoCards.forEach((card, index) => {
@@ -1920,7 +2593,32 @@ const initVideoTimelineScene = () => {
   };
 
   const applyVideoTrackOffset = (offset) => {
-    videoTimeline.style.setProperty("--track-offset", `${offset.toFixed(2)}px`);
+    if (isVerticalDesktopTimeline()) {
+      videoTimeline.style.setProperty("--track-offset-x", "0px");
+      videoTimeline.style.setProperty("--track-offset-y", `${offset.toFixed(2)}px`);
+      return;
+    }
+
+    videoTimeline.style.setProperty("--track-offset-x", `${offset.toFixed(2)}px`);
+    videoTimeline.style.setProperty("--track-offset-y", "0px");
+  };
+
+  const updateVideoTitleVisibility = (offset = currentTrackOffset) => {
+    if (!folioTitle || !isVideoPage) {
+      return;
+    }
+
+    if (!isVerticalDesktopTimeline()) {
+      folioTitle.style.removeProperty("--folio-title-shift-y");
+      folioTitle.style.removeProperty("--folio-title-opacity");
+      return;
+    }
+
+    const fadeDistance = Math.max(Math.min(maxTrackOffset, window.innerHeight * 0.28), 1);
+    const progress = clamp(offset / fadeDistance, 0, 1);
+
+    folioTitle.style.setProperty("--folio-title-shift-y", `${(-32 * progress).toFixed(2)}px`);
+    folioTitle.style.setProperty("--folio-title-opacity", `${(1 - progress).toFixed(4)}`);
   };
 
   const syncVideoScrollbarState = () => {
@@ -1958,17 +2656,23 @@ const initVideoTimelineScene = () => {
     );
   };
 
-  const setVideoScrollbarActivityFromPointer = (clientY) => {
+  const setVideoScrollbarActivityFromPointer = (clientX, clientY) => {
     if (!videoScrollbar || videoIsMobileLayout.matches || maxTrackOffset <= 0) {
       return;
     }
 
     const rect = videoScrollbar.getBoundingClientRect();
+    const isVerticalScrollbar = isVerticalDesktopTimeline();
+    const nearRightZone = window.innerWidth - 96;
     const nearBottomZone = window.innerHeight - 96;
-    const isNearBottom = clientY >= nearBottomZone;
-    const isOverScrollbar = clientY >= rect.top - 10 && clientY <= rect.bottom + 10;
+    const isNearAxis = isVerticalScrollbar
+      ? clientX >= nearRightZone
+      : clientY >= nearBottomZone;
+    const isOverScrollbar = isVerticalScrollbar
+      ? clientX >= rect.left - 10 && clientX <= rect.right + 10
+      : clientY >= rect.top - 10 && clientY <= rect.bottom + 10;
 
-    isVideoScrollbarActive = isVideoScrollbarDragging || isNearBottom || isOverScrollbar;
+    isVideoScrollbarActive = isVideoScrollbarDragging || isNearAxis || isOverScrollbar;
     syncVideoScrollbarState();
   };
 
@@ -1980,17 +2684,28 @@ const initVideoTimelineScene = () => {
       currentTrackOffset = targetTrackOffset;
       applyVideoTrackOffset(currentTrackOffset);
       updateVideoScrollbar(currentTrackOffset);
+      updateVideoTitleVisibility(currentTrackOffset);
     }
   };
 
-  const syncTimelineOffsetFromPointerX = (clientX, { immediate = false } = {}) => {
+  const syncTimelineOffsetFromPointerPosition = (
+    clientX,
+    clientY,
+    { immediate = false } = {}
+  ) => {
     if (!videoScrollbarTrack || maxTrackOffset <= 0) {
       return;
     }
 
     const rect = videoScrollbarTrack.getBoundingClientRect();
-    const usableWidth = Math.max(rect.width, 1);
-    const nextProgress = (clientX - rect.left) / usableWidth;
+    const isVerticalScrollbar = isVerticalDesktopTimeline();
+    const usableSize = Math.max(
+      isVerticalScrollbar ? rect.height : rect.width,
+      1
+    );
+    const nextProgress = isVerticalScrollbar
+      ? (clientY - rect.top) / usableSize
+      : (clientX - rect.left) / usableSize;
 
     syncTimelineOffsetFromProgress(nextProgress, { immediate });
   };
@@ -2083,6 +2798,7 @@ const initVideoTimelineScene = () => {
 
       applyVideoTrackOffset(0);
       updateVideoScrollbar(0);
+      updateVideoTitleVisibility(0);
       return;
     }
 
@@ -2093,6 +2809,7 @@ const initVideoTimelineScene = () => {
       currentTrackOffset = targetTrackOffset;
       applyVideoTrackOffset(currentTrackOffset);
       updateVideoScrollbar(currentTrackOffset);
+      updateVideoTitleVisibility(currentTrackOffset);
     }
   };
 
@@ -2109,6 +2826,7 @@ const initVideoTimelineScene = () => {
 
     applyVideoTrackOffset(currentTrackOffset);
     updateVideoScrollbar(currentTrackOffset);
+    updateVideoTitleVisibility(currentTrackOffset);
 
     if (forceVideoMediaRefresh || timestamp - lastVideoMediaRefresh >= 120) {
       refreshVisibleVideoMedia();
@@ -2192,7 +2910,9 @@ const initVideoTimelineScene = () => {
           ? window.innerHeight
           : 1;
     const scrollDelta =
-      (event.deltaY + event.deltaX) * deltaScale * videoWheelSensitivity;
+      (isVerticalDesktopTimeline() ? event.deltaY : event.deltaY + event.deltaX) *
+      deltaScale *
+      videoWheelSensitivity;
 
     if (Math.abs(scrollDelta) < 0.1) {
       return;
@@ -2203,6 +2923,8 @@ const initVideoTimelineScene = () => {
     if (prefersReducedMotion.matches) {
       currentTrackOffset = targetTrackOffset;
       applyVideoTrackOffset(currentTrackOffset);
+      updateVideoScrollbar(currentTrackOffset);
+      updateVideoTitleVisibility(currentTrackOffset);
     }
   };
 
@@ -2232,6 +2954,7 @@ const initVideoTimelineScene = () => {
       targetTrackOffset = 0;
       applyVideoTrackOffset(0);
       updateVideoScrollbar(0);
+      updateVideoTitleVisibility(0);
 
       const mobileMetrics = timelineCards.map((card, index) => {
         const cardFormat = getVideoTimelineCardFormat(card);
@@ -2316,11 +3039,21 @@ const initVideoTimelineScene = () => {
     const rawBaseCardWidth =
       viewportWidth <= 640
         ? clamp(viewportWidth * 0.72, 220, 310)
-        : clamp(viewportWidth * 0.31, 280, 460);
+        : isVerticalDesktopTimeline()
+          ? clamp(viewportWidth * 0.265, 260, 420)
+          : clamp(viewportWidth * 0.31, 280, 460);
     const safeTop =
-      viewportWidth <= 640 ? 112 : clamp(viewportHeight * 0.145, 132, 160);
+      viewportWidth <= 640
+        ? 112
+        : isVerticalDesktopTimeline()
+          ? clamp(viewportHeight * 0.19, 154, 210)
+          : clamp(viewportHeight * 0.145, 132, 160);
     const safeBottom =
-      viewportWidth <= 640 ? 120 : clamp(viewportHeight * 0.086, 72, 92);
+      viewportWidth <= 640
+        ? 120
+        : isVerticalDesktopTimeline()
+          ? clamp(viewportHeight * 0.12, 92, 132)
+          : clamp(viewportHeight * 0.086, 72, 92);
     videoTimeline.style.setProperty(
       "--card-caption-size",
       `${(14 * captionScale).toFixed(2)}px`
@@ -2396,51 +3129,182 @@ const initVideoTimelineScene = () => {
       ...cardMetrics.map((metric) => metric.cardHeight),
       0
     );
-    const availableHeight = Math.max(
-      viewportHeight - safeTop - safeBottom - maxCardHeight,
-      120
-    );
-    let cursor = sidePadding;
-    let lastCardWidth = cardMetrics[0]?.cardWidth || rawBaseCardWidth;
+    if (isVerticalDesktopTimeline()) {
+      const topPadding = clamp(
+        Math.max(safeTop, viewportHeight * 0.22),
+        170,
+        250
+      );
+      const bottomPadding = clamp(viewportHeight * 0.18, 120, 220);
+      const desktopContentWidth = viewportWidth * 0.8;
+      const desktopContentLeft = (viewportWidth - desktopContentWidth) * 0.5;
+      const horizontalJitterLimit = clamp(viewportWidth * 0.018, 8, 22);
+      const overlapPattern = [0.78, 0.72, 0.84, 0.7, 0.8, 0.68, 0.82, 0.74];
+      const desktopMetrics = cardMetrics.map((metric) => ({
+        ...metric,
+        laneRatio:
+          desktopHorizontalLanePattern[
+            metric.index % desktopHorizontalLanePattern.length
+          ],
+        laneJitter:
+          desktopHorizontalShiftPattern[
+            metric.index % desktopHorizontalShiftPattern.length
+          ] * horizontalJitterLimit,
+      }));
+      const desktopPositions = [];
+      let cursor = topPadding;
+      let lastCardHeight = desktopMetrics[0]?.cardHeight || maxCardHeight;
 
-    cardMetrics.forEach((metric) => {
-      const { card, index, cardWidth, cardHeight, titleScale } = metric;
-      const gapRatio = gapPattern[(index - 1 + gapPattern.length) % gapPattern.length];
-      const gap = viewportWidth * gapRatio;
+      desktopMetrics.forEach((metric) => {
+        const { index, cardWidth, cardHeight, laneRatio, laneJitter } = metric;
+        const gapRatio = gapPattern[(index - 1 + gapPattern.length) % gapPattern.length];
+        const gap = clamp(viewportHeight * gapRatio * 0.16, 12, 38);
+        const overlapRatio =
+          overlapPattern[(index - 1 + overlapPattern.length) % overlapPattern.length];
 
-      if (index > 0) {
-        cursor += lastCardWidth + gap;
-      }
+        if (index > 0) {
+          cursor += Math.max(lastCardHeight * overlapRatio + gap, 92);
+        }
 
-      const lane = lanePattern[index % lanePattern.length];
-      const y =
-        safeTop + availableHeight * lane + (maxCardHeight - cardHeight) * 0.5;
+        const centeredBaseX =
+          desktopContentLeft + (desktopContentWidth - cardWidth) * laneRatio;
+        const x = clamp(
+          centeredBaseX + laneJitter,
+          desktopContentLeft,
+          desktopContentLeft + desktopContentWidth - cardWidth
+        );
 
-      card.style.setProperty("--card-width", `${cardWidth.toFixed(2)}px`);
-      card.style.setProperty("--card-title-scale", titleScale.toFixed(3));
-      card.style.setProperty("--mobile-shift", "0px");
-      card.style.setProperty("--card-x", `${cursor.toFixed(2)}px`);
-      card.style.setProperty("--card-y", `${y.toFixed(2)}px`);
-      card.style.setProperty("--entry-delay", `${(0.1 + index * 0.09).toFixed(2)}s`);
-      card.style.setProperty("--card-color", pastelPalette[index % pastelPalette.length]);
+        desktopPositions.push({
+          x,
+          y: cursor,
+          width: cardWidth,
+        });
 
-      lastCardWidth = cardWidth;
-    });
+        lastCardHeight = cardHeight;
+      });
 
-    const lastCardX =
-      Number.parseFloat(
-        timelineCards[timelineCards.length - 1]?.style.getPropertyValue("--card-x")
-      ) || 0;
-    const lastWidth =
-      Number.parseFloat(
-        timelineCards[timelineCards.length - 1]?.style.getPropertyValue("--card-width")
-      ) || rawBaseCardWidth;
-    const trackWidth = lastCardX + lastWidth + trailingPadding;
+      const desktopBounds = desktopPositions.reduce(
+        (bounds, position) => ({
+          minLeft: Math.min(bounds.minLeft, position.x),
+          maxRight: Math.max(bounds.maxRight, position.x + position.width),
+        }),
+        {
+          minLeft: Number.POSITIVE_INFINITY,
+          maxRight: Number.NEGATIVE_INFINITY,
+        }
+      );
+      const contentCenterX = desktopContentLeft + desktopContentWidth * 0.5;
+      const groupCenterX =
+        Number.isFinite(desktopBounds.minLeft) &&
+        Number.isFinite(desktopBounds.maxRight)
+          ? (desktopBounds.minLeft + desktopBounds.maxRight) * 0.5
+          : contentCenterX;
+      const desktopBalanceShift = contentCenterX - groupCenterX;
 
-    maxTrackOffset = Math.max(trackWidth - viewportWidth, 0);
-    scrollbarThumbRatio = clamp(viewportWidth / Math.max(trackWidth, viewportWidth), 0.12, 0.42);
-    videoTimeline.style.width = `${trackWidth.toFixed(2)}px`;
-    timelineScrollArea.style.minHeight = `${viewportHeight.toFixed(2)}px`;
+      desktopMetrics.forEach((metric, index) => {
+        const { card, titleScale } = metric;
+        const position = desktopPositions[index];
+        const balancedX = clamp(
+          position.x + desktopBalanceShift,
+          desktopContentLeft,
+          desktopContentLeft + desktopContentWidth - position.width
+        );
+
+        card.style.setProperty("--card-width", `${position.width.toFixed(2)}px`);
+        card.style.setProperty("--card-title-scale", titleScale.toFixed(3));
+        card.style.setProperty("--mobile-shift", "0px");
+        card.style.setProperty("--card-x", `${balancedX.toFixed(2)}px`);
+        card.style.setProperty("--card-y", `${position.y.toFixed(2)}px`);
+        card.style.setProperty(
+          "--entry-delay",
+          `${(0.1 + metric.index * 0.09).toFixed(2)}s`
+        );
+        card.style.setProperty(
+          "--card-color",
+          pastelPalette[metric.index % pastelPalette.length]
+        );
+      });
+
+      const lastCardY =
+        Number.parseFloat(
+          timelineCards[timelineCards.length - 1]?.style.getPropertyValue("--card-y")
+        ) || 0;
+      const lastHeight =
+        Number.parseFloat(
+          timelineCards[timelineCards.length - 1]?.style.getPropertyValue("--card-width")
+        ) /
+          getVideoTimelineCardAspectRatio(
+            timelineCards[timelineCards.length - 1]
+          ) || maxCardHeight;
+      const trackHeight = lastCardY + lastHeight + bottomPadding;
+
+      maxTrackOffset = Math.max(trackHeight - viewportHeight, 0);
+      scrollbarThumbRatio = clamp(
+        viewportHeight / Math.max(trackHeight, viewportHeight),
+        0.08,
+        0.42
+      );
+      videoTimeline.style.width = `${viewportWidth.toFixed(2)}px`;
+      videoTimeline.style.height = `${trackHeight.toFixed(2)}px`;
+      timelineScrollArea.style.minHeight = `${viewportHeight.toFixed(2)}px`;
+    } else {
+      const availableHeight = Math.max(
+        viewportHeight - safeTop - safeBottom - maxCardHeight,
+        120
+      );
+      let cursor = sidePadding;
+      let lastCardWidth = cardMetrics[0]?.cardWidth || rawBaseCardWidth;
+
+      cardMetrics.forEach((metric) => {
+        const { card, index, cardWidth, cardHeight, titleScale } = metric;
+        const gapRatio = gapPattern[(index - 1 + gapPattern.length) % gapPattern.length];
+        const gap = viewportWidth * gapRatio;
+
+        if (index > 0) {
+          cursor += lastCardWidth + gap;
+        }
+
+        const lane = lanePattern[index % lanePattern.length];
+        const y =
+          safeTop + availableHeight * lane + (maxCardHeight - cardHeight) * 0.5;
+
+        card.style.setProperty("--card-width", `${cardWidth.toFixed(2)}px`);
+        card.style.setProperty("--card-title-scale", titleScale.toFixed(3));
+        card.style.setProperty("--mobile-shift", "0px");
+        card.style.setProperty("--card-x", `${cursor.toFixed(2)}px`);
+        card.style.setProperty("--card-y", `${y.toFixed(2)}px`);
+        card.style.setProperty(
+          "--entry-delay",
+          `${(0.1 + index * 0.09).toFixed(2)}s`
+        );
+        card.style.setProperty(
+          "--card-color",
+          pastelPalette[index % pastelPalette.length]
+        );
+
+        lastCardWidth = cardWidth;
+      });
+
+      const lastCardX =
+        Number.parseFloat(
+          timelineCards[timelineCards.length - 1]?.style.getPropertyValue("--card-x")
+        ) || 0;
+      const lastWidth =
+        Number.parseFloat(
+          timelineCards[timelineCards.length - 1]?.style.getPropertyValue("--card-width")
+        ) || rawBaseCardWidth;
+      const trackWidth = lastCardX + lastWidth + trailingPadding;
+
+      maxTrackOffset = Math.max(trackWidth - viewportWidth, 0);
+      scrollbarThumbRatio = clamp(
+        viewportWidth / Math.max(trackWidth, viewportWidth),
+        0.12,
+        0.42
+      );
+      videoTimeline.style.width = `${trackWidth.toFixed(2)}px`;
+      videoTimeline.style.height = `${viewportHeight.toFixed(2)}px`;
+      timelineScrollArea.style.minHeight = `${viewportHeight.toFixed(2)}px`;
+    }
 
     syncVideoTimelineScroll({ snap: true });
     forceVideoMediaRefresh = true;
@@ -2452,10 +3316,10 @@ const initVideoTimelineScene = () => {
       videoPointer.x = event.clientX;
       videoPointer.y = event.clientY;
       videoPointer.active = true;
-      setVideoScrollbarActivityFromPointer(event.clientY);
+      setVideoScrollbarActivityFromPointer(event.clientX, event.clientY);
 
       if (isVideoScrollbarDragging) {
-        syncTimelineOffsetFromPointerX(event.clientX);
+        syncTimelineOffsetFromPointerPosition(event.clientX, event.clientY);
       }
     });
 
@@ -2475,7 +3339,7 @@ const initVideoTimelineScene = () => {
 
       isVideoScrollbarDragging = false;
       if (videoPointer.active) {
-        setVideoScrollbarActivityFromPointer(videoPointer.y);
+        setVideoScrollbarActivityFromPointer(videoPointer.x, videoPointer.y);
         return;
       }
 
@@ -2489,7 +3353,7 @@ const initVideoTimelineScene = () => {
 
       isVideoScrollbarDragging = false;
       if (videoPointer.active) {
-        setVideoScrollbarActivityFromPointer(videoPointer.y);
+        setVideoScrollbarActivityFromPointer(videoPointer.x, videoPointer.y);
         return;
       }
 
@@ -2507,7 +3371,7 @@ const initVideoTimelineScene = () => {
       isVideoScrollbarDragging = true;
       isVideoScrollbarActive = true;
       syncVideoScrollbarState();
-      syncTimelineOffsetFromPointerX(event.clientX);
+      syncTimelineOffsetFromPointerPosition(event.clientX, event.clientY);
     });
   }
 

@@ -273,6 +273,39 @@
           <img src="./rsrc/social-icons/mail.svg" alt="" />
         </a>
       </nav>
+
+      <div
+        class="photo-lightbox"
+        aria-hidden="true"
+      >
+        <button
+          class="photo-lightbox-backdrop"
+          type="button"
+          aria-label="Fermer la photo"
+          data-photo-lightbox-close
+        ></button>
+
+        <div
+          class="photo-lightbox-stage"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Photo agrandie"
+        >
+          <div class="photo-lightbox-canvas-shell" aria-hidden="true">
+            <canvas class="photo-lightbox-canvas photo-lightbox-canvas-lowres"></canvas>
+            <canvas class="photo-lightbox-canvas photo-lightbox-canvas-highres"></canvas>
+          </div>
+        </div>
+
+        <button
+          class="photo-lightbox-close"
+          type="button"
+          aria-label="Fermer la photo"
+          data-photo-lightbox-close
+        >
+          <img src="./rsrc/Croix.svg" alt="" />
+        </button>
+      </div>
     </main>
   </body>
 </html>

@@ -3138,14 +3138,38 @@ const initVideoTimelineScene = () => {
       const bottomPadding = clamp(viewportHeight * 0.18, 120, 220);
       const desktopContentWidth = viewportWidth * 0.8;
       const desktopContentLeft = (viewportWidth - desktopContentWidth) * 0.5;
-      const horizontalJitterLimit = clamp(viewportWidth * 0.018, 8, 22);
+      const desktopAnchorCount =
+        viewportWidth >= 1560 ? 6 : viewportWidth >= 1180 ? 5 : 4;
+      const desktopAnchorRatios = Array.from(
+        { length: desktopAnchorCount },
+        (_, anchorIndex) =>
+          desktopAnchorCount === 1
+            ? 0.5
+            : 0.08 + (anchorIndex / (desktopAnchorCount - 1)) * 0.84
+      );
+      const horizontalJitterLimit = clamp(viewportWidth * 0.012, 5, 14);
+      const horizontalCollisionPadding = clamp(viewportWidth * 0.012, 14, 24);
+      const verticalCollisionPadding = clamp(viewportHeight * 0.01, 6, 16);
+      const verticalRetryStep = clamp(viewportHeight * 0.032, 24, 42);
       const overlapPattern = [0.78, 0.72, 0.84, 0.7, 0.8, 0.68, 0.82, 0.74];
       const desktopMetrics = cardMetrics.map((metric) => ({
         ...metric,
-        laneRatio:
-          desktopHorizontalLanePattern[
-            metric.index % desktopHorizontalLanePattern.length
-          ],
+        preferredLaneIndex: clamp(
+          Math.round(
+            desktopHorizontalLanePattern[
+              metric.index % desktopHorizontalLanePattern.length
+            ] *
+              (desktopAnchorCount - 1)
+          ),
+          0,
+          desktopAnchorCount - 1
+        ),
+        preferredLaneDirection:
+          desktopHorizontalShiftPattern[
+            metric.index % desktopHorizontalShiftPattern.length
+          ] >= 0
+            ? 1
+            : -1,
         laneJitter:
           desktopHorizontalShiftPattern[
             metric.index % desktopHorizontalShiftPattern.length
@@ -3155,8 +3179,69 @@ const initVideoTimelineScene = () => {
       let cursor = topPadding;
       let lastCardHeight = desktopMetrics[0]?.cardHeight || maxCardHeight;
 
+      const getDesktopLaneOrder = (preferredLaneIndex, preferredLaneDirection) => {
+        const order = [];
+        const seen = new Set();
+        const pushLane = (laneIndex) => {
+          if (
+            laneIndex < 0 ||
+            laneIndex >= desktopAnchorCount ||
+            seen.has(laneIndex)
+          ) {
+            return;
+          }
+
+          seen.add(laneIndex);
+          order.push(laneIndex);
+        };
+
+        pushLane(preferredLaneIndex);
+
+        for (let distance = 1; distance < desktopAnchorCount; distance += 1) {
+          pushLane(preferredLaneIndex + distance * preferredLaneDirection);
+          pushLane(preferredLaneIndex - distance * preferredLaneDirection);
+        }
+
+        for (let laneIndex = 0; laneIndex < desktopAnchorCount; laneIndex += 1) {
+          pushLane(laneIndex);
+        }
+
+        return order;
+      };
+
+      const resolveDesktopCardX = (anchorRatio, cardWidth, laneJitter) => {
+        const anchorCenterX = desktopContentLeft + desktopContentWidth * anchorRatio;
+        return clamp(
+          anchorCenterX - cardWidth * 0.5 + laneJitter,
+          desktopContentLeft,
+          desktopContentLeft + desktopContentWidth - cardWidth
+        );
+      };
+
+      const doDesktopCardsOverlap = (
+        candidateX,
+        candidateY,
+        candidateWidth,
+        candidateHeight,
+        placedCard
+      ) =>
+        candidateX - horizontalCollisionPadding <
+          placedCard.x + placedCard.width &&
+        candidateX + candidateWidth + horizontalCollisionPadding >
+          placedCard.x &&
+        candidateY - verticalCollisionPadding <
+          placedCard.y + placedCard.height &&
+        candidateY + candidateHeight + verticalCollisionPadding > placedCard.y;
+
       desktopMetrics.forEach((metric) => {
-        const { index, cardWidth, cardHeight, laneRatio, laneJitter } = metric;
+        const {
+          index,
+          cardWidth,
+          cardHeight,
+          preferredLaneIndex,
+          preferredLaneDirection,
+          laneJitter,
+        } = metric;
         const gapRatio = gapPattern[(index - 1 + gapPattern.length) % gapPattern.length];
         const gap = clamp(viewportHeight * gapRatio * 0.16, 12, 38);
         const overlapRatio =
@@ -3166,19 +3251,72 @@ const initVideoTimelineScene = () => {
           cursor += Math.max(lastCardHeight * overlapRatio + gap, 92);
         }
 
-        const centeredBaseX =
-          desktopContentLeft + (desktopContentWidth - cardWidth) * laneRatio;
-        const x = clamp(
-          centeredBaseX + laneJitter,
-          desktopContentLeft,
-          desktopContentLeft + desktopContentWidth - cardWidth
+        let resolvedY = cursor;
+        let resolvedPosition = null;
+        const laneOrder = getDesktopLaneOrder(
+          preferredLaneIndex,
+          preferredLaneDirection
         );
 
-        desktopPositions.push({
-          x,
-          y: cursor,
-          width: cardWidth,
-        });
+        for (let attempt = 0; attempt < 10 && !resolvedPosition; attempt += 1) {
+          const nearbyPositions = desktopPositions.filter(
+            (placedCard) =>
+              placedCard.y < resolvedY + cardHeight + verticalRetryStep &&
+              placedCard.y + placedCard.height > resolvedY - verticalRetryStep
+          );
+
+          for (const laneIndex of laneOrder) {
+            const anchorRatio = desktopAnchorRatios[laneIndex];
+            const anchorJitter =
+              laneJitter *
+              (desktopAnchorCount > 4
+                ? 0.45
+                : laneIndex === preferredLaneIndex
+                  ? 0.35
+                  : 0.2);
+            const candidateX = resolveDesktopCardX(
+              anchorRatio,
+              cardWidth,
+              anchorJitter
+            );
+            const collides = nearbyPositions.some((placedCard) =>
+              doDesktopCardsOverlap(
+                candidateX,
+                resolvedY,
+                cardWidth,
+                cardHeight,
+                placedCard
+              )
+            );
+
+            if (!collides) {
+              resolvedPosition = {
+                x: candidateX,
+                y: resolvedY,
+                width: cardWidth,
+                height: cardHeight,
+              };
+              break;
+            }
+          }
+
+          if (!resolvedPosition) {
+            resolvedY += verticalRetryStep;
+          }
+        }
+
+        if (!resolvedPosition) {
+          const fallbackAnchorRatio = desktopAnchorRatios[preferredLaneIndex];
+          resolvedPosition = {
+            x: resolveDesktopCardX(fallbackAnchorRatio, cardWidth, laneJitter * 0.2),
+            y: resolvedY,
+            width: cardWidth,
+            height: cardHeight,
+          };
+        }
+
+        desktopPositions.push(resolvedPosition);
+        cursor = resolvedPosition.y;
 
         lastCardHeight = cardHeight;
       });
@@ -3199,16 +3337,30 @@ const initVideoTimelineScene = () => {
         Number.isFinite(desktopBounds.maxRight)
           ? (desktopBounds.minLeft + desktopBounds.maxRight) * 0.5
           : contentCenterX;
-      const desktopBalanceShift = contentCenterX - groupCenterX;
+      const desiredDesktopBalanceShift = contentCenterX - groupCenterX;
+      const desktopMinBalanceShift = desktopPositions.reduce(
+        (minShift, position) =>
+          Math.max(minShift, desktopContentLeft - position.x),
+        Number.NEGATIVE_INFINITY
+      );
+      const desktopMaxBalanceShift = desktopPositions.reduce(
+        (maxShift, position) =>
+          Math.min(
+            maxShift,
+            desktopContentLeft + desktopContentWidth - position.width - position.x
+          ),
+        Number.POSITIVE_INFINITY
+      );
+      const desktopBalanceShift = clamp(
+        desiredDesktopBalanceShift,
+        desktopMinBalanceShift,
+        desktopMaxBalanceShift
+      );
 
       desktopMetrics.forEach((metric, index) => {
         const { card, titleScale } = metric;
         const position = desktopPositions[index];
-        const balancedX = clamp(
-          position.x + desktopBalanceShift,
-          desktopContentLeft,
-          desktopContentLeft + desktopContentWidth - position.width
-        );
+        const balancedX = position.x + desktopBalanceShift;
 
         card.style.setProperty("--card-width", `${position.width.toFixed(2)}px`);
         card.style.setProperty("--card-title-scale", titleScale.toFixed(3));
@@ -3228,14 +3380,8 @@ const initVideoTimelineScene = () => {
       const lastCardY =
         Number.parseFloat(
           timelineCards[timelineCards.length - 1]?.style.getPropertyValue("--card-y")
-        ) || 0;
-      const lastHeight =
-        Number.parseFloat(
-          timelineCards[timelineCards.length - 1]?.style.getPropertyValue("--card-width")
-        ) /
-          getVideoTimelineCardAspectRatio(
-            timelineCards[timelineCards.length - 1]
-          ) || maxCardHeight;
+        ) || desktopPositions[desktopPositions.length - 1]?.y || 0;
+      const lastHeight = desktopPositions[desktopPositions.length - 1]?.height || maxCardHeight;
       const trackHeight = lastCardY + lastHeight + bottomPadding;
 
       maxTrackOffset = Math.max(trackHeight - viewportHeight, 0);
@@ -3402,7 +3548,6 @@ const isMobileLayout = window.matchMedia("(max-width: 640px)");
 const landing = document.querySelector(".landing");
 const intro = document.querySelector(".intro");
 const locationBlock = document.querySelector(".location");
-const shopButton = document.querySelector(".shop-button");
 
 if (categorySection && categoryCards.length) {
   const pointer = { x: 0, y: 0, active: false };
@@ -3427,10 +3572,9 @@ if (categorySection && categoryCards.length) {
 
     const sidePadding = Math.max(window.innerWidth * 0.15, 20);
     const introHeight = intro ? intro.offsetHeight : 0;
-    const shopHeight = shopButton ? shopButton.offsetHeight : 0;
     const footerHeight = locationBlock ? locationBlock.offsetHeight : 0;
 
-    const topZone = Math.max(introHeight, shopHeight) + 36;
+    const topZone = introHeight + 36;
     const bottomZone = footerHeight + 36;
     const availableHeight = window.innerHeight - topZone - bottomZone - 28;
     const mobileGap = clamp(availableHeight * 0.055, 12, 22);

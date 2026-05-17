@@ -67,56 +67,6 @@ button {
   padding: 2rem;
 }
 
-.shop-button {
-  position: absolute;
-  top: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  appearance: none;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  padding: 0.45rem 0.7rem;
-  margin: -0.45rem -0.7rem;
-  font-family: "Neue Montreal", sans-serif;
-  font-size: 20px;
-  line-height: 1;
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  cursor: pointer;
-  z-index: 2;
-}
-
-.shop-button.text-reveal-mask {
-  overflow: hidden;
-}
-
-.shop-button .text-reveal-value {
-  position: relative;
-  display: inline-grid;
-  align-items: center;
-}
-
-.shop-button-label,
-.shop-button-status {
-  grid-area: 1 / 1;
-  transition:
-    opacity 220ms ease,
-    transform 220ms ease;
-}
-
-.shop-button-status {
-  opacity: 0;
-}
-
-.shop-button:hover .shop-button-label {
-  opacity: 0;
-}
-
-.shop-button:hover .shop-button-status {
-  opacity: 1;
-}
-
 .social-links {
   display: flex;
   align-items: center;
@@ -283,7 +233,7 @@ body.is-media-overlay-open {
   inset: 0;
   appearance: none;
   border: 0;
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.95);
   opacity: 0;
   cursor: pointer;
   transition: opacity 520ms ease;
@@ -730,7 +680,10 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   width: 100%;
   height: auto;
   opacity: 0;
-  transition: opacity 0.45s ease;
+  transform: scale(1);
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.45s ease;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
@@ -742,6 +695,12 @@ body.is-ready .text-reveal-mask .text-reveal-value {
 
 .photo-tile.is-loaded .photo-image {
   opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .photo-tile.is-loaded:hover .photo-image {
+    transform: scale(1.03);
+  }
 }
 
 .photo-tile.is-lightbox-origin .photo-image {
@@ -1331,14 +1290,6 @@ body.is-ready .video-card-label-mask .video-card-label-value {
     --mobile-card-gap: 1.25rem;
     --mobile-card-width: min(264px, 63vw);
     padding: 1.25rem 1.25rem 5rem;
-  }
-
-  .shop-button {
-    top: 1.25rem;
-    left: auto;
-    right: 1.25rem;
-    bottom: auto;
-    transform: none;
   }
 
   .back-button {

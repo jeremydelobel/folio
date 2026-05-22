@@ -81,6 +81,11 @@ button {
   bottom: 2rem;
 }
 
+.video-page .social-links-video {
+  padding: 0.45rem 0.7rem;
+  margin: -0.45rem -0.7rem;
+}
+
 .social-links-inline {
   width: fit-content;
   margin: 2.5rem auto 0 0;
@@ -765,9 +770,91 @@ body.is-ready .text-reveal-mask .text-reveal-value {
 }
 
 .video-page .video-page-shell {
+  --motif-focus-x: 50vw;
+  --motif-focus-y: 50vh;
+  --motif-focus-opacity: 0;
   min-height: 100vh;
   padding: 0;
   padding-bottom: 0;
+}
+
+.video-page .video-page-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04)),
+    linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04)),
+    linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04)),
+    linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04)),
+    linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04));
+  background-repeat: no-repeat;
+  background-size:
+    1px 100%,
+    1px 100%,
+    1px 100%,
+    1px 100%,
+    1px 100%;
+  background-position:
+    calc(100% / 6) 0,
+    calc(100% / 3) 0,
+    50% 0,
+    calc(100% * 2 / 3) 0,
+    calc(100% * 5 / 6) 0;
+}
+
+.video-page .video-page-shell::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--motif-focus-opacity);
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+  background-repeat: no-repeat;
+  background-size:
+    1px 100%,
+    1px 100%,
+    1px 100%,
+    1px 100%,
+    1px 100%;
+  background-position:
+    calc(100% / 6) 0,
+    calc(100% / 3) 0,
+    50% 0,
+    calc(100% * 2 / 3) 0,
+    calc(100% * 5 / 6) 0;
+  -webkit-mask-image: radial-gradient(
+    circle at var(--motif-focus-x) var(--motif-focus-y),
+    rgba(0, 0, 0, 1) 0,
+    rgba(0, 0, 0, 1) 18px,
+    rgba(0, 0, 0, 0.84) 48px,
+    rgba(0, 0, 0, 0.42) 132px,
+    rgba(0, 0, 0, 0.12) 248px,
+    rgba(0, 0, 0, 0) 380px
+  );
+  mask-image: radial-gradient(
+    circle at var(--motif-focus-x) var(--motif-focus-y),
+    rgba(0, 0, 0, 1) 0,
+    rgba(0, 0, 0, 1) 18px,
+    rgba(0, 0, 0, 0.84) 48px,
+    rgba(0, 0, 0, 0.42) 132px,
+    rgba(0, 0, 0, 0.12) 248px,
+    rgba(0, 0, 0, 0) 380px
+  );
+  transition: opacity 220ms ease;
+}
+
+.video-page .video-page-content {
+  position: relative;
+  z-index: 1;
 }
 
 .video-page .back-button,
@@ -980,6 +1067,64 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   will-change: transform;
 }
 
+.video-timeline-pattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  transform: translate3d(0, calc(var(--track-offset-y) * 0.5), 0);
+  will-change: transform;
+}
+
+.video-timeline-pattern-focus {
+  opacity: var(--motif-focus-opacity);
+  -webkit-mask-image: radial-gradient(
+    circle at var(--pattern-focus-x, 50%) var(--pattern-focus-y, 50%),
+    rgba(0, 0, 0, 1) 0,
+    rgba(0, 0, 0, 1) 18px,
+    rgba(0, 0, 0, 0.84) 48px,
+    rgba(0, 0, 0, 0.42) 132px,
+    rgba(0, 0, 0, 0.12) 248px,
+    rgba(0, 0, 0, 0) 380px
+  );
+  mask-image: radial-gradient(
+    circle at var(--pattern-focus-x, 50%) var(--pattern-focus-y, 50%),
+    rgba(0, 0, 0, 1) 0,
+    rgba(0, 0, 0, 1) 18px,
+    rgba(0, 0, 0, 0.84) 48px,
+    rgba(0, 0, 0, 0.42) 132px,
+    rgba(0, 0, 0, 0.12) 248px,
+    rgba(0, 0, 0, 0) 380px
+  );
+  transition: opacity 220ms ease;
+}
+
+.video-timeline-pattern-focus .video-timeline-pattern-icon {
+  opacity: 0.2;
+}
+
+.video-timeline-pattern-line {
+  position: absolute;
+  top: 0;
+  left: var(--pattern-x, 50%);
+  width: 0;
+  height: 100%;
+}
+
+.video-timeline-pattern-icon {
+  position: absolute;
+  top: var(--pattern-y, 0px);
+  left: 50%;
+  display: block;
+  width: clamp(11.25px, 0.9vw, 15px);
+  height: auto;
+  opacity: 1;
+  transform: translateX(-50%);
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}
+
 .video-timeline-empty {
   display: flex;
   align-items: center;
@@ -1038,6 +1183,7 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 1;
   width: var(--card-width, clamp(280px, 31vw, 460px));
   transform: translate3d(
     calc(var(--card-x) + var(--card-fx)),
@@ -1308,12 +1454,20 @@ body.is-ready .video-card-label-mask .video-card-label-value {
     bottom: 1.25rem;
   }
 
-  .social-links-video,
+  .video-page .social-links-video,
   .social-links-inline {
     position: static;
     width: fit-content;
-    margin: 2rem auto 0 0;
     padding-bottom: 0;
+  }
+
+  .video-page .social-links-video {
+    padding: 0.45rem 0.7rem;
+    margin: calc(2rem - 0.45rem) -0.7rem -0.45rem calc(1.25rem - 0.7rem);
+  }
+
+  .social-links-inline {
+    margin: 2rem auto 0 0;
   }
 
   .intro {
@@ -1405,6 +1559,43 @@ body.is-ready .video-card-label-mask .video-card-label-value {
     height: auto;
     padding: 7.2rem var(--mobile-side-padding, clamp(2.75rem, 14vw, 4.75rem)) 2.8rem;
     transform: none;
+    overflow-x: visible;
+    overflow-y: hidden;
+  }
+
+  .video-page .video-page-shell::before,
+  .video-page .video-page-shell::after {
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04)),
+      linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04)),
+      linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04));
+    background-size:
+      1px 100%,
+      1px 100%,
+      1px 100%;
+    background-position:
+      25% 0,
+      50% 0,
+      75% 0;
+  }
+
+  .video-page .video-page-shell::after {
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+      linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+      linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+  }
+
+  .video-page .video-timeline-pattern-focus {
+    display: none;
+  }
+
+  .video-page .video-timeline-pattern-base {
+    transform: translate3d(
+      0,
+      calc(var(--mobile-pattern-scroll-offset, 0px) * 0.5),
+      0
+    );
   }
 
   .video-timeline-empty {

@@ -2488,9 +2488,18 @@ const initVideoTimelineScene = () => {
     return;
   }
 
+  const videoPageShell = document.querySelector(".video-page-shell");
   const timelineCards = Array.from(
     videoTimeline.querySelectorAll(".video-timeline-card")
   );
+  const videoTimelinePatternBase =
+    isVideoPage
+      ? videoTimeline.querySelector(".video-timeline-pattern-base")
+      : null;
+  const videoTimelinePatternFocus =
+    isVideoPage
+      ? videoTimeline.querySelector(".video-timeline-pattern-focus")
+      : null;
 
   if (!timelineCards.length) {
     return;
@@ -2516,6 +2525,12 @@ const initVideoTimelineScene = () => {
   const desktopHorizontalShiftPattern = [0, -0.92, 0.68, -0.42, 0.88, -0.28, 0.54, -0.74];
   const scalePattern = [0.84, 1.14, 0.94, 1.2, 0.8, 1.08, 0.9, 1.18];
   const gapPattern = [0.11, 0.14, 0.1, 0.15, 0.12, 0.13, 0.11];
+  const desktopTimelinePatternLineRatios = [1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6];
+  const desktopTimelinePatternLineOffsets = [320, 720, 450, 200, 900];
+  const mobileTimelinePatternLineRatios = [1 / 4, 2 / 4, 3 / 4];
+  const mobileTimelinePatternLineOffsets = [160, 360, 225];
+  const desktopTimelinePatternVerticalStep = 1080;
+  const mobileTimelinePatternVerticalStep = 540;
   const wideCardSizeBoost = 1.5;
   const videoWheelSensitivity = 1.35;
   const videoCards = timelineCards.map((card, index) => ({
@@ -2534,6 +2549,119 @@ const initVideoTimelineScene = () => {
   let videoSceneFrame = 0;
   let lastVideoMediaRefresh = -Infinity;
   let forceVideoMediaRefresh = true;
+
+  const syncMobileVideoTimelinePattern = () => {
+    if (!videoTimelinePatternBase) {
+      return;
+    }
+
+    if (!videoIsMobileLayout.matches) {
+      videoTimelinePatternBase.style.removeProperty("--mobile-pattern-scroll-offset");
+      return;
+    }
+
+    videoTimelinePatternBase.style.setProperty(
+      "--mobile-pattern-scroll-offset",
+      `${(window.scrollY || window.pageYOffset || 0).toFixed(2)}px`
+    );
+  };
+
+  const syncVideoTimelinePatternFocus = () => {
+    if (!videoPageShell || !isVideoPage) {
+      return;
+    }
+
+    const isFocusActive = videoCanHover && videoPointer.active && !videoIsMobileLayout.matches;
+    const focusOpacity = isFocusActive ? 1 : 0;
+
+    videoPageShell.style.setProperty(
+      "--motif-focus-opacity",
+      focusOpacity.toFixed(3)
+    );
+
+    if (!isFocusActive || !videoTimelinePatternFocus) {
+      return;
+    }
+
+    videoPageShell.style.setProperty("--motif-focus-x", `${videoPointer.x.toFixed(2)}px`);
+    videoPageShell.style.setProperty("--motif-focus-y", `${videoPointer.y.toFixed(2)}px`);
+    videoTimelinePatternFocus.style.setProperty(
+      "--motif-focus-opacity",
+      focusOpacity.toFixed(3)
+    );
+    videoTimelinePatternFocus.style.setProperty(
+      "--pattern-focus-x",
+      `${videoPointer.x.toFixed(2)}px`
+    );
+    videoTimelinePatternFocus.style.setProperty(
+      "--pattern-focus-y",
+      `${(currentTrackOffset * 0.5 + videoPointer.y).toFixed(2)}px`
+    );
+  };
+
+  const syncVideoTimelinePatternLayer = (patternContainer, iconSrc, trackHeight) => {
+    if (!patternContainer) {
+      return;
+    }
+
+    const iconLimit = Math.max(
+      videoIsMobileLayout.matches ? trackHeight : trackHeight + 320,
+      0
+    );
+    const fragment = document.createDocumentFragment();
+    const patternVerticalStep = videoIsMobileLayout.matches
+      ? mobileTimelinePatternVerticalStep
+      : desktopTimelinePatternVerticalStep;
+    const lineRatios = videoIsMobileLayout.matches
+      ? mobileTimelinePatternLineRatios
+      : desktopTimelinePatternLineRatios;
+    const lineOffsets = videoIsMobileLayout.matches
+      ? mobileTimelinePatternLineOffsets
+      : desktopTimelinePatternLineOffsets;
+
+    lineRatios.forEach((lineRatio, lineIndex) => {
+      const line = document.createElement("div");
+      line.className = "video-timeline-pattern-line";
+      line.style.setProperty("--pattern-x", `${(lineRatio * 100).toFixed(4)}%`);
+
+      const firstOffset = lineOffsets[lineIndex] || 0;
+
+      for (
+        let iconY = firstOffset;
+        iconY <= iconLimit;
+        iconY += patternVerticalStep
+      ) {
+        const icon = document.createElement("img");
+        icon.className = "video-timeline-pattern-icon";
+        icon.src = iconSrc;
+        icon.alt = "";
+        icon.decoding = "async";
+        icon.draggable = false;
+        icon.setAttribute("aria-hidden", "true");
+        icon.style.setProperty("--pattern-y", `${iconY}px`);
+        line.appendChild(icon);
+      }
+
+      fragment.appendChild(line);
+    });
+
+    patternContainer.replaceChildren(fragment);
+  };
+
+  const syncVideoTimelinePattern = (trackHeight) => {
+    syncVideoTimelinePatternLayer(
+      videoTimelinePatternBase,
+      "./rsrc/Keyframe-Grise.svg",
+      trackHeight
+    );
+    syncVideoTimelinePatternLayer(
+      videoTimelinePatternFocus,
+      "./rsrc/Keyframe.svg",
+      trackHeight
+    );
+    syncMobileVideoTimelinePattern();
+    syncVideoTimelinePatternFocus();
+  };
 
   const refreshVisibleVideoMedia = () => {
     const viewportWidth = window.innerWidth;
@@ -2596,11 +2724,13 @@ const initVideoTimelineScene = () => {
     if (isVerticalDesktopTimeline()) {
       videoTimeline.style.setProperty("--track-offset-x", "0px");
       videoTimeline.style.setProperty("--track-offset-y", `${offset.toFixed(2)}px`);
+      syncVideoTimelinePatternFocus();
       return;
     }
 
     videoTimeline.style.setProperty("--track-offset-x", `${offset.toFixed(2)}px`);
     videoTimeline.style.setProperty("--track-offset-y", "0px");
+    syncVideoTimelinePatternFocus();
   };
 
   const updateVideoTitleVisibility = (offset = currentTrackOffset) => {
@@ -3026,6 +3156,17 @@ const initVideoTimelineScene = () => {
         metric.card.style.removeProperty("--card-y");
       });
 
+      const timelineRect = videoTimeline.getBoundingClientRect();
+      const mobileTrackHeight = Math.max(
+        timelineCards.reduce((maxBottom, card) => {
+          const cardRect = card.getBoundingClientRect();
+          return Math.max(maxBottom, cardRect.bottom - timelineRect.top);
+        }, 0) +
+          (Number.parseFloat(window.getComputedStyle(videoTimeline).paddingBottom) || 0),
+        viewportHeight
+      );
+      syncVideoTimelinePattern(mobileTrackHeight);
+
       return;
     }
 
@@ -3393,6 +3534,7 @@ const initVideoTimelineScene = () => {
       videoTimeline.style.width = `${viewportWidth.toFixed(2)}px`;
       videoTimeline.style.height = `${trackHeight.toFixed(2)}px`;
       timelineScrollArea.style.minHeight = `${viewportHeight.toFixed(2)}px`;
+      syncVideoTimelinePattern(trackHeight);
     } else {
       const availableHeight = Math.max(
         viewportHeight - safeTop - safeBottom - maxCardHeight,
@@ -3450,11 +3592,13 @@ const initVideoTimelineScene = () => {
       videoTimeline.style.width = `${trackWidth.toFixed(2)}px`;
       videoTimeline.style.height = `${viewportHeight.toFixed(2)}px`;
       timelineScrollArea.style.minHeight = `${viewportHeight.toFixed(2)}px`;
+      syncVideoTimelinePattern(viewportHeight);
     }
 
     syncVideoTimelineScroll({ snap: true });
     forceVideoMediaRefresh = true;
     refreshVisibleVideoMedia();
+    syncMobileVideoTimelinePattern();
   };
 
   if (videoCanHover) {
@@ -3462,6 +3606,7 @@ const initVideoTimelineScene = () => {
       videoPointer.x = event.clientX;
       videoPointer.y = event.clientY;
       videoPointer.active = true;
+      syncVideoTimelinePatternFocus();
       setVideoScrollbarActivityFromPointer(event.clientX, event.clientY);
 
       if (isVideoScrollbarDragging) {
@@ -3471,6 +3616,7 @@ const initVideoTimelineScene = () => {
 
     window.addEventListener("pointerleave", () => {
       videoPointer.active = false;
+      syncVideoTimelinePatternFocus();
 
       if (!isVideoScrollbarDragging) {
         isVideoScrollbarActive = false;
@@ -3523,6 +3669,9 @@ const initVideoTimelineScene = () => {
 
   layoutVideoTimeline();
   window.addEventListener("resize", layoutVideoTimeline);
+  window.addEventListener("scroll", syncMobileVideoTimelinePattern, {
+    passive: true,
+  });
   timelineScrollArea.addEventListener("wheel", handleVideoWheel, { passive: false });
   startVideoScene();
 };

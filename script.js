@@ -1742,6 +1742,10 @@ if (photoGrid) {
   let tileRevealObserver;
   let imageLoadObserver;
   const photoFullResCache = new Map();
+  const pendingPhotoReloadScrollY = Number.isFinite(window.__photoReloadScrollY)
+    ? window.__photoReloadScrollY
+    : null;
+  let hasRestoredPhotoReloadScroll = false;
 
   const shuffleArray = (items) => {
     const shuffled = [...items];
@@ -2439,6 +2443,35 @@ if (photoGrid) {
     images.forEach((image) => imageLoadObserver.observe(image));
   };
 
+  const restorePhotoReloadScroll = () => {
+    if (hasRestoredPhotoReloadScroll || pendingPhotoReloadScrollY === null) {
+      return;
+    }
+
+    hasRestoredPhotoReloadScroll = true;
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const maxScrollY = Math.max(
+          document.documentElement.scrollHeight - window.innerHeight,
+          0
+        );
+        const nextScrollY = clamp(pendingPhotoReloadScrollY, 0, maxScrollY);
+
+        window.scrollTo({
+          top: nextScrollY,
+          behavior: "auto",
+        });
+
+        window.__photoReloadScrollY = null;
+
+        try {
+          window.sessionStorage.removeItem("photo-page-scroll-y");
+        } catch {}
+      });
+    });
+  };
+
   const rebuildPhotoColumns = () => {
     const nextColumns = window.innerWidth <= 980 ? 2 : 4;
 
@@ -2470,6 +2503,7 @@ if (photoGrid) {
 
   refreshRandomizedPhotoModels();
   rebuildPhotoColumns();
+  restorePhotoReloadScroll();
   photoGrid.addEventListener("contextmenu", (event) => {
     if (event.target.closest(".photo-tile")) {
       event.preventDefault();
@@ -2481,6 +2515,11 @@ if (photoGrid) {
     }
   });
   window.addEventListener("resize", rebuildPhotoColumns);
+  window.addEventListener("pagehide", () => {
+    try {
+      window.sessionStorage.setItem("photo-page-scroll-y", `${window.scrollY}`);
+    } catch {}
+  });
 }
 
 const initVideoTimelineScene = () => {

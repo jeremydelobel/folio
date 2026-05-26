@@ -658,6 +658,7 @@ body.is-ready .text-reveal-mask .text-reveal-value {
 }
 
 .photo-tile {
+  aspect-ratio: var(--tile-ratio, auto);
   overflow: hidden;
   position: relative;
   background: rgba(0, 0, 0, 0.04);
@@ -785,11 +786,11 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   pointer-events: none;
   z-index: 0;
   background-image:
-    linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04)),
-    linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04)),
-    linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04)),
-    linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04)),
-    linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04));
+    linear-gradient(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.06)),
+    linear-gradient(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.06)),
+    linear-gradient(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.06)),
+    linear-gradient(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.06)),
+    linear-gradient(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.06));
   background-repeat: no-repeat;
   background-size:
     1px 100%,
@@ -1566,9 +1567,9 @@ body.is-ready .video-card-label-mask .video-card-label-value {
   .video-page .video-page-shell::before,
   .video-page .video-page-shell::after {
     background-image:
-      linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04)),
-      linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04)),
-      linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04));
+      linear-gradient(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.06)),
+      linear-gradient(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.06)),
+      linear-gradient(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.06));
     background-size:
       1px 100%,
       1px 100%,

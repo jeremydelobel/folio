@@ -7,25 +7,22 @@
     <script>
       (() => {
         const navigationEntry = performance.getEntriesByType("navigation")[0];
-        const isReload = navigationEntry?.type === "reload";
+        const isBackForwardLoad = navigationEntry?.type === "back_forward";
 
-        if (!isReload) {
+        if (isBackForwardLoad) {
           return;
         }
 
-        const savedScrollY = Number.parseFloat(
-          window.sessionStorage?.getItem("photo-page-scroll-y") || ""
-        );
+        const scrollToTop = () => {
+          window.scrollTo(0, 0);
+        };
 
-        if (!Number.isFinite(savedScrollY) || savedScrollY < 0) {
-          return;
+        if ("scrollRestoration" in history) {
+          history.scrollRestoration = "manual";
         }
 
-        window.__photoReloadScrollY = savedScrollY;
-
-        if ("scrollRestoration" in window.history) {
-          window.history.scrollRestoration = "manual";
-        }
+        scrollToTop();
+        window.addEventListener("load", scrollToTop, { once: true });
       })();
     </script>
     <link rel="stylesheet" href="./styles.css" />

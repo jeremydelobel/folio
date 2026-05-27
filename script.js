@@ -12,6 +12,7 @@ const photoLightboxStage = document.querySelector(".photo-lightbox-stage");
 let photoLightboxCanvasShell = document.querySelector(".photo-lightbox-canvas-shell");
 let photoLightboxLowResCanvas = document.querySelector(".photo-lightbox-canvas-lowres");
 let photoLightboxHighResCanvas = document.querySelector(".photo-lightbox-canvas-highres");
+let photoLightboxCaption = document.querySelector(".photo-lightbox-caption");
 const photoGrid = document.querySelector(".photo-grid");
 const videoTimeline = document.querySelector(".video-timeline");
 const timelineScrollArea = document.querySelector(".timeline-scroll-area");
@@ -33,6 +34,14 @@ const photoLightboxTransitionDuration = 520;
 const videoHoverResumeRetentionDuration = 2000;
 const videoHoverResetTimers = new WeakMap();
 const videoHoverResumeTimes = new WeakMap();
+const photoEventLabelMap = Object.freeze({
+  "telethon-gaming-2025": "Telethon Gaming 2025",
+  "living-the-dream-2026": "Living The Dream 2026",
+  "coupe-de-france-slash-2025": "Coupe de France Slash 2025",
+  "editing-con-paris-2026": "Editing Con Paris 2026",
+  "rlcs-paris-major-2026": "RLCS Paris Major 2026",
+  "paris-games-week-2025": "Paris Games Week 2025",
+});
 const videoCardAspectRatios = {
   vertical: 2 / 3,
   wide: 1920 / 803,
@@ -68,8 +77,28 @@ let activePhotoLightboxImage = null;
 let activePhotoLightboxHighResDrawable = null;
 let activePhotoLightboxCanvasRenderToken = 0;
 let photoLightboxCleanupTimer = 0;
+let photoLightboxCaptionTimer = 0;
 
 const isPhotoLightboxOpen = () => isPhotoLightboxActive;
+
+const ensurePhotoLightboxCaptionDom = () => {
+  if (!photoLightboxStage) {
+    return false;
+  }
+
+  if (!photoLightboxCaption || !photoLightboxStage.contains(photoLightboxCaption)) {
+    photoLightboxCaption = photoLightboxStage.querySelector(".photo-lightbox-caption");
+  }
+
+  if (!photoLightboxCaption) {
+    photoLightboxCaption = document.createElement("p");
+    photoLightboxCaption.className = "photo-lightbox-caption";
+    photoLightboxCaption.hidden = true;
+    photoLightboxStage.appendChild(photoLightboxCaption);
+  }
+
+  return Boolean(photoLightboxCaption);
+};
 
 const ensurePhotoLightboxCanvasDom = () => {
   if (!photoLightboxStage) {
@@ -89,7 +118,7 @@ const ensurePhotoLightboxCanvasDom = () => {
     photoLightboxCanvasShell = document.createElement("div");
     photoLightboxCanvasShell.className = "photo-lightbox-canvas-shell";
     photoLightboxCanvasShell.setAttribute("aria-hidden", "true");
-    photoLightboxStage.replaceChildren(photoLightboxCanvasShell);
+    photoLightboxStage.appendChild(photoLightboxCanvasShell);
   }
 
   if (
@@ -163,6 +192,7 @@ const normalizeVisibleRoute = () => {
 
 normalizeVisibleRoute();
 ensurePhotoLightboxCanvasDom();
+ensurePhotoLightboxCaptionDom();
 
 const getVideoVisualMediaSource = (visual) => {
   if (!visual) {
@@ -1154,6 +1184,90 @@ const clearPhotoLightboxCleanupTimer = () => {
   photoLightboxCleanupTimer = 0;
 };
 
+const clearPhotoLightboxCaptionTimer = () => {
+  if (!photoLightboxCaptionTimer) {
+    return;
+  }
+
+  window.clearTimeout(photoLightboxCaptionTimer);
+  photoLightboxCaptionTimer = 0;
+};
+
+const setPhotoLightboxCaptionVisible = (isVisible) => {
+  photoLightbox?.classList.toggle("is-caption-visible", Boolean(isVisible));
+};
+
+const setPhotoLightboxCaptionLabel = (label = "") => {
+  if (!ensurePhotoLightboxCaptionDom()) {
+    return;
+  }
+
+  const normalizedLabel =
+    typeof label === "string" ? label.trim() : "";
+
+  photoLightboxCaption.textContent = normalizedLabel;
+  photoLightboxCaption.hidden = !normalizedLabel;
+
+  if (!normalizedLabel) {
+    setPhotoLightboxCaptionVisible(false);
+  }
+};
+
+const getPhotoEventLabelFromSource = (source) => {
+  if (!source) {
+    return "";
+  }
+
+  const getLabelFromRelativePath = (relativePath) => {
+    const trimmedPath =
+      typeof relativePath === "string" ? relativePath.trim().replace(/^\/+/, "") : "";
+
+    if (!trimmedPath) {
+      return "";
+    }
+
+    const [folderSlug] = trimmedPath.split("/");
+
+    if (!folderSlug || !trimmedPath.includes("/")) {
+      return "";
+    }
+
+    return photoEventLabelMap[folderSlug] || "";
+  };
+
+  try {
+    const url = new URL(source, window.location.href);
+    const marker = "/rsrc/photos/";
+    const markerIndex = url.pathname.indexOf(marker);
+
+    if (markerIndex === -1) {
+      return "";
+    }
+
+    const relativePath = decodeURIComponent(
+      url.pathname.slice(markerIndex + marker.length)
+    );
+
+    return getLabelFromRelativePath(relativePath);
+  } catch {
+    const relativePath = source
+      .replace(/^[./]+/, "")
+      .replace(/^rsrc\/photos\//, "");
+
+    return getLabelFromRelativePath(relativePath);
+  }
+};
+
+const getPhotoLightboxEventLabel = (image) => {
+  const source =
+    image?.dataset.src?.trim() ||
+    image?.currentSrc ||
+    image?.getAttribute("src") ||
+    "";
+
+  return getPhotoEventLabelFromSource(source);
+};
+
 const getPhotoLightboxImageAspectRatio = (image) => {
   const width =
     Number(image?.getAttribute("width")) || image?.naturalWidth || image?.width || 1;
@@ -1306,18 +1420,21 @@ const getPhotoLightboxTargetRect = (image) => {
 
 const finishPhotoLightboxClose = ({ restoreFocus = true } = {}) => {
   clearPhotoLightboxCleanupTimer();
+  clearPhotoLightboxCaptionTimer();
   activePhotoLightboxCanvasRenderToken += 1;
 
   photoLightbox?.classList.remove(
     "is-visible",
     "is-closing",
     "is-opening",
-    "is-highres-visible"
+    "is-highres-visible",
+    "is-caption-visible"
   );
   photoLightbox?.setAttribute("aria-hidden", "true");
   photoLightboxStage?.removeAttribute("style");
   resetPhotoLightboxCanvas(photoLightboxLowResCanvas);
   resetPhotoLightboxCanvas(photoLightboxHighResCanvas);
+  setPhotoLightboxCaptionLabel("");
 
   const tileToRefocus = activePhotoLightboxTile;
   const imageToRestore = activePhotoLightboxImage;
@@ -1370,6 +1487,9 @@ const closePhotoLightbox = ({ restoreFocus = true } = {}) => {
   ) {
     return;
   }
+
+  clearPhotoLightboxCaptionTimer();
+  setPhotoLightboxCaptionVisible(false);
 
   const originRect = activePhotoLightboxImage?.getBoundingClientRect();
 
@@ -2248,6 +2368,7 @@ if (photoGrid) {
     const targetRect = getPhotoLightboxTargetRect(image);
     const fullResSource = getPhotoFullResSource(image);
     const fullResPromise = preloadPhotoFullResSource(fullResSource);
+    const photoEventLabel = getPhotoLightboxEventLabel(image);
 
     if (
       !(originRect.width > 0) ||
@@ -2260,6 +2381,7 @@ if (photoGrid) {
     }
 
     clearPhotoLightboxCleanupTimer();
+    clearPhotoLightboxCaptionTimer();
 
     activePhotoLightboxTile?.classList.remove("is-lightbox-origin");
     activePhotoLightboxTile = tile;
@@ -2268,6 +2390,8 @@ if (photoGrid) {
     isPhotoLightboxActive = true;
     isPhotoLightboxTransitioning = !prefersReducedMotion.matches;
     setPhotoLightboxHighResVisible(false);
+    setPhotoLightboxCaptionVisible(false);
+    setPhotoLightboxCaptionLabel(photoEventLabel);
     renderActivePhotoLightboxCanvases({ targetRect });
 
     photoLightbox.classList.remove("is-closing");
@@ -2280,6 +2404,9 @@ if (photoGrid) {
     if (prefersReducedMotion.matches) {
       tile.classList.add("is-lightbox-origin");
       applyPhotoLightboxRect(targetRect);
+      if (photoEventLabel) {
+        setPhotoLightboxCaptionVisible(true);
+      }
       isPhotoLightboxTransitioning = false;
       isPhotoLightboxLoading = false;
     } else {
@@ -2308,6 +2435,18 @@ if (photoGrid) {
           isPhotoLightboxTransitioning = false;
         }
       }, photoLightboxTransitionDuration);
+
+      if (photoEventLabel) {
+        photoLightboxCaptionTimer = window.setTimeout(() => {
+          photoLightboxCaptionTimer = 0;
+
+          if (!isPhotoLightboxOpen() || activePhotoLightboxTile !== tile) {
+            return;
+          }
+
+          setPhotoLightboxCaptionVisible(true);
+        }, photoLightboxTransitionDuration);
+      }
     }
 
     isPhotoLightboxLoading = false;

@@ -378,6 +378,34 @@ body.is-media-overlay-open {
   opacity: 0;
 }
 
+.photo-lightbox-caption {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 1;
+  max-width: calc(100% - 2rem);
+  margin: 0;
+  padding: 0.45rem 0.7rem;
+  background: rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  font-family: "Neue Montreal", sans-serif;
+  font-size: 16.25px;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 90ms ease;
+}
+
+.photo-lightbox.is-caption-visible .photo-lightbox-caption {
+  opacity: 1;
+  transition-duration: 208ms;
+}
+
 .text-reveal-mask {
   display: inline-flex;
   overflow: hidden;
@@ -1408,7 +1436,8 @@ body.is-ready .video-card-label-mask .video-card-label-value {
   .photo-lightbox-backdrop,
   .photo-lightbox-stage,
   .photo-lightbox-canvas,
-  .photo-lightbox-close {
+  .photo-lightbox-close,
+  .photo-lightbox-caption {
     transition: none;
   }
 }
@@ -1448,6 +1477,13 @@ body.is-ready .video-card-label-mask .video-card-label-value {
   .showreel-button {
     top: 1.25rem;
     right: 1.25rem;
+  }
+
+  .photo-lightbox-caption {
+    left: 0.75rem;
+    bottom: 0.75rem;
+    max-width: calc(100% - 1.5rem);
+    font-size: 15px;
   }
 
   .social-links-fixed {

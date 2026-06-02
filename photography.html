@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jérémy Delobel - Monteur vidéo / Photographe</title>
+    <title>Jérémy Delobel - Photographie</title>
     <script>
       (() => {
         const navigationEntry = performance.getEntriesByType("navigation")[0];
@@ -31,7 +31,16 @@
   <body class="photography-page">
     <div class="page-transition is-visible" aria-hidden="true"></div>
 
-    <main class="folio-page">
+    <main class="folio-page photography-page-shell">
+      <div
+        class="photography-pattern video-timeline-pattern photography-pattern-base"
+        aria-hidden="true"
+      ></div>
+      <div
+        class="photography-pattern video-timeline-pattern video-timeline-pattern-focus photography-pattern-focus"
+        aria-hidden="true"
+      ></div>
+
       <button class="back-button text-reveal-mask text-line-1" type="button">
         <span class="text-reveal-value">
           <span class="back-button-label" data-i18n="backButton">Menu</span>
@@ -263,6 +272,12 @@
           <img class="photo-image" src="data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=" data-src="./rsrc/photos/JérémyDelobel_2025_155301.webp" alt="" width="1000" height="800" loading="lazy" decoding="async" />
         </article>
       </section>
+
+      <div class="video-scrollbar" aria-hidden="true">
+        <div class="video-scrollbar-track">
+          <span class="video-scrollbar-thumb"></span>
+        </div>
+      </div>
 
       <nav class="social-links social-links-inline" aria-label="Réseaux sociaux">
         <a

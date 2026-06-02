@@ -988,7 +988,6 @@ body.is-photography-native-scroll::-webkit-scrollbar {
   --motif-focus-x: 50vw;
   --motif-focus-y: 50vh;
   --motif-focus-opacity: 0;
-  isolation: isolate;
   min-height: 100vh;
   padding: 0;
   padding-bottom: 0;
@@ -998,7 +997,6 @@ body.is-photography-native-scroll::-webkit-scrollbar {
   --motif-focus-x: 50vw;
   --motif-focus-y: 50vh;
   --motif-focus-opacity: 0;
-  isolation: isolate;
   min-height: 100vh;
 }
 

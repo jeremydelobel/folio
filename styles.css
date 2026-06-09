@@ -280,7 +280,7 @@ button {
   padding: 0.45rem 0.7rem;
   margin: -0.45rem -0.7rem;
   font-family: "Neue Montreal", sans-serif;
-  font-size: 20px;
+  font-size: var(--project-header-control-size, 20px);
   line-height: 1;
   font-weight: 500;
   letter-spacing: -0.01em;
@@ -329,6 +329,41 @@ body.is-media-overlay-open .showreel-button-label-open {
 }
 
 body.is-media-overlay-open .showreel-button-label-close {
+  opacity: 1;
+}
+
+.video-page,
+.photography-page {
+  --project-header-inset: 2rem;
+  --project-header-control-size: 20px;
+  --project-header-title-size: 25px;
+  --project-title-mask-padding-top: 0.2rem;
+  --project-header-text-height: var(--project-header-control-size);
+  --project-header-height: calc(
+    var(--project-header-inset) * 2 + var(--project-header-text-height)
+  );
+}
+
+.video-page::before,
+.photography-page::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--project-header-height);
+  pointer-events: none;
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(27px);
+  backdrop-filter: blur(27px);
+  border-bottom: 1px solid #f5f5f5;
+  opacity: 0;
+  transition: opacity 320ms ease;
+}
+
+.video-page.is-project-header-glass-visible::before,
+.photography-page.is-project-header-glass-visible::before {
   opacity: 1;
 }
 
@@ -1084,39 +1119,43 @@ body.is-photography-native-scroll::-webkit-scrollbar {
 
 .video-page .video-page-content {
   position: relative;
-  z-index: 1;
+  z-index: auto;
 }
 
 .video-page .back-button,
 .video-page .showreel-button,
 .photography-page .back-button {
+  top: var(--project-header-inset);
   z-index: 40;
-  color: #ffffff;
-  mix-blend-mode: difference;
+  color: #111111;
+  mix-blend-mode: normal;
 }
 
-.video-page .folio-title {
-  z-index: 40;
-}
-
-.video-page .folio-title {
-  position: absolute;
-  top: 2rem;
+.video-page .folio-title,
+.photography-page .folio-title {
+  --folio-title-shift-y: 0px;
+  --folio-title-opacity: 1;
+  position: fixed;
+  top: calc(
+    var(--project-header-inset) + var(--project-header-control-size) -
+      var(--project-header-title-size) - var(--project-title-mask-padding-top)
+  );
   left: 50%;
   width: max-content;
   max-width: calc(100vw - 12rem);
-  transform: translateX(-50%);
+  font-size: var(--project-header-title-size);
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transform: translateX(-50%) translateY(var(--folio-title-shift-y));
+  opacity: var(--folio-title-opacity);
   text-align: center;
   z-index: 40;
   pointer-events: none;
-}
-
-.video-page .folio-title {
-  --folio-title-shift-y: 0px;
-  --folio-title-opacity: 1;
-  transform: translateX(-50%) translateY(var(--folio-title-shift-y));
-  opacity: var(--folio-title-opacity);
   will-change: transform, opacity;
+  transition:
+    opacity 260ms ease,
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .timeline-kicker {
@@ -1625,6 +1664,13 @@ body.is-ready .video-card-label-mask .video-card-label-value {
     transition: none;
   }
 
+  .video-page::before,
+  .photography-page::before,
+  .video-page .folio-title,
+  .photography-page .folio-title {
+    transition: none;
+  }
+
   .video-timeline {
     transform: none;
   }
@@ -1665,9 +1711,14 @@ body.is-ready .video-card-label-mask .video-card-label-value {
 
 @media (max-width: 640px) {
   .video-page {
+    --project-header-inset: 1.25rem;
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: auto;
+  }
+
+  .photography-page {
+    --project-header-inset: 1.25rem;
   }
 
   .landing {
@@ -1742,9 +1793,12 @@ body.is-ready .video-card-label-mask .video-card-label-value {
   }
 
   .intro {
-    position: static;
+    position: relative;
+    top: auto;
+    left: auto;
     align-items: flex-start;
     width: calc(100% - 5.5rem);
+    z-index: 5;
   }
 
   .location {
@@ -1760,7 +1814,9 @@ body.is-ready .video-card-label-mask .video-card-label-value {
   }
 
   .categories {
-    position: static;
+    position: relative;
+    top: auto;
+    left: auto;
     width: 100%;
     height: auto;
     margin-top: 2.25rem;
@@ -1769,6 +1825,7 @@ body.is-ready .video-card-label-mask .video-card-label-value {
     gap: var(--mobile-card-gap);
     transform: none;
     align-items: center;
+    z-index: 4;
   }
 
   .category-card {
@@ -1786,9 +1843,14 @@ body.is-ready .video-card-label-mask .video-card-label-value {
     font-size: 32px;
   }
 
-  .video-page .folio-title {
-    top: 1.25rem;
+  .video-page .folio-title,
+  .photography-page .folio-title {
+    top: calc(
+      var(--project-header-inset) + var(--project-header-control-size) -
+        var(--project-header-title-size) - var(--project-title-mask-padding-top)
+    );
     max-width: calc(100vw - 7.5rem);
+    font-size: var(--project-header-title-size);
   }
 
   .timeline-kicker {

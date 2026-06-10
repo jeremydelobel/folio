@@ -1003,22 +1003,6 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   overscroll-behavior: none;
 }
 
-html.is-video-native-scroll,
-body.is-video-native-scroll,
-html.is-photography-native-scroll,
-body.is-photography-native-scroll {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-html.is-video-native-scroll::-webkit-scrollbar,
-body.is-video-native-scroll::-webkit-scrollbar,
-html.is-photography-native-scroll::-webkit-scrollbar,
-body.is-photography-native-scroll::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
 .video-page .video-page-shell {
   --motif-focus-x: 50vw;
   --motif-focus-y: 50vh;
@@ -1181,155 +1165,6 @@ body.is-photography-native-scroll::-webkit-scrollbar {
   position: static;
   height: auto;
   overflow: visible;
-}
-
-.video-scrollbar {
-  position: fixed;
-  left: 50%;
-  bottom: 1.2rem;
-  width: min(420px, calc(100vw - 4rem));
-  transform: translateX(-50%);
-  z-index: 4;
-  pointer-events: none;
-  opacity: 0.62;
-  transition:
-    opacity 180ms ease,
-    transform 180ms ease;
-}
-
-.video-scrollbar.is-active,
-.video-scrollbar.is-dragging {
-  pointer-events: auto;
-  opacity: 1;
-}
-
-.video-scrollbar-track {
-  position: relative;
-  width: 100%;
-  height: 20px;
-  touch-action: none;
-  transition:
-    height 180ms ease,
-    background-color 180ms ease;
-  cursor: grab;
-}
-
-.video-scrollbar-track::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 2px;
-  background: rgba(17, 17, 17, 0.16);
-  transform: translateY(-50%);
-  transition:
-    height 180ms ease,
-    background-color 180ms ease;
-}
-
-.video-scrollbar-thumb {
-  --scrollbar-progress: 0;
-  --scrollbar-size: 0.18;
-  position: absolute;
-  top: 50%;
-  left: calc(var(--scrollbar-progress) * (100% - (var(--scrollbar-size) * 100%)));
-  width: calc(var(--scrollbar-size) * 100%);
-  height: 2px;
-  background: #111111;
-  transform: translateY(-50%);
-  cursor: inherit;
-  transition: height 180ms ease;
-}
-
-.video-scrollbar.is-active .video-scrollbar-track,
-.video-scrollbar.is-dragging .video-scrollbar-track {
-  height: 24px;
-}
-
-.video-scrollbar.is-active .video-scrollbar-track::before,
-.video-scrollbar.is-dragging .video-scrollbar-track::before {
-  height: 5px;
-  background: rgba(17, 17, 17, 0.2);
-}
-
-.video-scrollbar.is-active .video-scrollbar-thumb,
-.video-scrollbar.is-dragging .video-scrollbar-thumb {
-  height: 5px;
-}
-
-.video-scrollbar.is-dragging .video-scrollbar-track,
-.video-scrollbar.is-dragging .video-scrollbar-track::before,
-.video-scrollbar.is-dragging .video-scrollbar-thumb {
-  cursor: grabbing;
-}
-
-.video-page .video-scrollbar,
-.photography-page .video-scrollbar {
-  top: 50%;
-  right: 1.2rem;
-  bottom: auto;
-  left: auto;
-  width: 20px;
-  height: min(420px, calc(100vh - 4rem));
-  transform: translateY(-50%);
-}
-
-.video-page .video-scrollbar-track,
-.photography-page .video-scrollbar-track {
-  width: 20px;
-  height: 100%;
-  transition:
-    width 180ms ease,
-    background-color 180ms ease;
-}
-
-.video-page .video-scrollbar-track::before,
-.photography-page .video-scrollbar-track::before {
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  right: auto;
-  width: 2px;
-  height: 100%;
-  transform: translateX(-50%);
-  transition:
-    width 180ms ease,
-    background-color 180ms ease;
-}
-
-.video-page .video-scrollbar-thumb,
-.photography-page .video-scrollbar-thumb {
-  top: calc(var(--scrollbar-progress) * (100% - (var(--scrollbar-size) * 100%)));
-  left: 50%;
-  width: 2px;
-  height: calc(var(--scrollbar-size) * 100%);
-  transform: translateX(-50%);
-  transition: width 180ms ease;
-}
-
-.video-page .video-scrollbar.is-active .video-scrollbar-track,
-.video-page .video-scrollbar.is-dragging .video-scrollbar-track,
-.photography-page .video-scrollbar.is-active .video-scrollbar-track,
-.photography-page .video-scrollbar.is-dragging .video-scrollbar-track {
-  width: 24px;
-  height: 100%;
-}
-
-.video-page .video-scrollbar.is-active .video-scrollbar-track::before,
-.video-page .video-scrollbar.is-dragging .video-scrollbar-track::before,
-.photography-page .video-scrollbar.is-active .video-scrollbar-track::before,
-.photography-page .video-scrollbar.is-dragging .video-scrollbar-track::before {
-  width: 5px;
-  height: 100%;
-}
-
-.video-page .video-scrollbar.is-active .video-scrollbar-thumb,
-.video-page .video-scrollbar.is-dragging .video-scrollbar-thumb,
-.photography-page .video-scrollbar.is-active .video-scrollbar-thumb,
-.photography-page .video-scrollbar.is-dragging .video-scrollbar-thumb {
-  width: 5px;
-  height: calc(var(--scrollbar-size) * 100%);
 }
 
 .video-timeline {
@@ -1876,10 +1711,6 @@ body.is-ready .video-timeline-card.is-revealed .video-card-label-mask .video-car
 
   .timeline-scroll-area {
     min-height: auto;
-  }
-
-  .video-scrollbar {
-    display: none;
   }
 
   .showreel-dialog {

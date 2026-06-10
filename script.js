@@ -167,7 +167,7 @@ const ensurePhotoLightboxCanvasDom = () => {
 const syncSharedMediaOverlayState = () => {
   const isOpen = activeVideoOverlay !== "none" || isPhotoLightboxOpen();
   const scrollbarCompensation =
-    isPhotographyPage && isOpen
+    isFolioPage && isOpen
       ? Math.max(window.innerWidth - document.documentElement.clientWidth, 0)
       : 0;
 
@@ -2895,16 +2895,8 @@ if (photoGrid) {
       Math.max(getPageScrollHeight() - window.innerHeight, 0);
 
     const syncPageScrollMode = () => {
-      const usesCustomNativeScrollbar = !photoScrollbarMobileLayout.matches;
-
-      document.documentElement.classList.toggle(
-        "is-photography-native-scroll",
-        usesCustomNativeScrollbar
-      );
-      document.body.classList.toggle(
-        "is-photography-native-scroll",
-        usesCustomNativeScrollbar
-      );
+      document.documentElement.classList.remove("is-photography-native-scroll");
+      document.body.classList.remove("is-photography-native-scroll");
     };
 
     const syncScrollbarState = () => {
@@ -3366,7 +3358,6 @@ if (photoGrid) {
   };
 
   initPhotographyPattern();
-  initPhotographyScrollbar();
 }
 
 const initVideoTimelineScene = () => {
@@ -3466,16 +3457,8 @@ const initVideoTimelineScene = () => {
     Math.max(getVideoPageScrollHeight() - window.innerHeight, 0);
 
   const syncVideoPageScrollMode = () => {
-    const usesCustomNativeScrollbar = !videoIsMobileLayout.matches;
-
-    document.documentElement.classList.toggle(
-      "is-video-native-scroll",
-      usesCustomNativeScrollbar
-    );
-    document.body.classList.toggle(
-      "is-video-native-scroll",
-      usesCustomNativeScrollbar
-    );
+    document.documentElement.classList.remove("is-video-native-scroll");
+    document.body.classList.remove("is-video-native-scroll");
   };
 
   const syncMobileVideoTimelinePattern = () => {

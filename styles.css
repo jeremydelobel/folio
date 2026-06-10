@@ -1207,6 +1207,7 @@ body.is-photography-native-scroll::-webkit-scrollbar {
   position: relative;
   width: 100%;
   height: 20px;
+  touch-action: none;
   transition:
     height 180ms ease,
     background-color 180ms ease;
@@ -1454,7 +1455,7 @@ body.is-photography-native-scroll::-webkit-scrollbar {
   --card-fx: 0px;
   --card-fy: 0px;
   --card-title-scale: 1;
-  --entry-delay: 0.08s;
+  --reveal-delay: 0ms;
   --card-color: #d9b8b1;
   position: absolute;
   top: 0;
@@ -1613,14 +1614,14 @@ body.is-photography-native-scroll::-webkit-scrollbar {
   transform: translate3d(0, 0, 0);
 }
 
-body.is-ready .video-card-frame {
+body.is-ready .video-timeline-card.is-revealed .video-card-frame {
   animation: card-mask-reveal 0.95s cubic-bezier(0.22, 1, 0.36, 1)
-    var(--entry-delay) forwards;
+    var(--reveal-delay) forwards;
 }
 
-body.is-ready .video-card-label-mask .video-card-label-value {
+body.is-ready .video-timeline-card.is-revealed .video-card-label-mask .video-card-label-value {
   animation: label-reveal 0.72s cubic-bezier(0.22, 1, 0.36, 1)
-    calc(var(--entry-delay) + 0.54s) forwards;
+    calc(var(--reveal-delay) + 540ms) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1639,12 +1640,23 @@ body.is-ready .video-card-label-mask .video-card-label-value {
 
   body.is-ready .category-card.is-media-ready .category-frame,
   body.is-ready .category-card.is-media-fallback .category-frame,
-  body.is-ready .video-card-frame,
-  body.is-ready .video-card-label-mask .video-card-label-value,
+  body.is-ready .video-timeline-card.is-revealed .video-card-frame,
+  body.is-ready .video-timeline-card.is-revealed .video-card-label-mask .video-card-label-value,
   body.is-ready .category-card.is-media-ready .category-label-mask .category-label-value,
   body.is-ready .category-card.is-media-fallback .category-label-mask .category-label-value,
   body.is-ready .text-reveal-mask .text-reveal-value {
     animation: none;
+  }
+
+  body.is-ready .video-timeline-card.is-revealed .video-card-frame {
+    clip-path: inset(0 0 0 0);
+  }
+
+  body.is-ready
+    .video-timeline-card.is-revealed
+    .video-card-label-mask
+    .video-card-label-value {
+    transform: translate3d(0, 0, 0);
   }
 
   .text-reveal-value {

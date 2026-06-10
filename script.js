@@ -2862,11 +2862,16 @@ if (photoGrid) {
     }
 
     const photoScrollbarMobileLayout = window.matchMedia("(max-width: 640px)");
+    const scrollbarDragActivationThreshold = 5;
     let scrollbarThumbRatio = 0.18;
     let isScrollbarActive = false;
     let isScrollbarDragging = false;
+    let isScrollbarTrackPressActive = false;
     let scrollbarDragGrabOffset = 0;
+    let scrollbarDragPointerId = null;
     let scrollbarScrollAnimationFrame = 0;
+    let scrollbarTrackPressPointerId = null;
+    let scrollbarTrackPressStartClientY = 0;
 
     const getPageScrollTop = () =>
       Math.max(
@@ -2927,7 +2932,11 @@ if (photoGrid) {
         videoScrollbar.hidden = true;
         isScrollbarActive = false;
         isScrollbarDragging = false;
+        isScrollbarTrackPressActive = false;
         scrollbarDragGrabOffset = 0;
+        scrollbarDragPointerId = null;
+        scrollbarTrackPressPointerId = null;
+        scrollbarTrackPressStartClientY = 0;
         syncScrollbarState();
         return;
       }
@@ -2967,7 +2976,8 @@ if (photoGrid) {
         clientY >= rect.top - 10 &&
         clientY <= rect.bottom + 10;
 
-      isScrollbarActive = isScrollbarDragging || isNearAxis || isOverScrollbar;
+      isScrollbarActive =
+        isScrollbarDragging || isScrollbarTrackPressActive || isNearAxis || isOverScrollbar;
       syncScrollbarState();
     };
 
@@ -3079,6 +3089,152 @@ if (photoGrid) {
       });
     };
 
+    const captureScrollbarPointer = (pointerId) => {
+      if (
+        typeof pointerId !== "number" ||
+        typeof videoScrollbarTrack?.setPointerCapture !== "function"
+      ) {
+        return;
+      }
+
+      videoScrollbarTrack.setPointerCapture(pointerId);
+    };
+
+    const releaseScrollbarPointer = (pointerId) => {
+      if (
+        typeof pointerId !== "number" ||
+        typeof videoScrollbarTrack?.hasPointerCapture !== "function" ||
+        !videoScrollbarTrack.hasPointerCapture(pointerId)
+      ) {
+        return;
+      }
+
+      videoScrollbarTrack.releasePointerCapture(pointerId);
+    };
+
+    const startScrollbarDrag = (pointerId) => {
+      stopScrollbarTrackPress({
+        pointerId,
+        releaseCapture: false,
+      });
+      stopScrollbarScrollAnimation();
+      isScrollbarDragging = true;
+      scrollbarDragPointerId = pointerId;
+      captureScrollbarPointer(pointerId);
+      syncScrollbarState();
+    };
+
+    const stopScrollbarDrag = ({ pointerId, clientX, clientY } = {}) => {
+      if (
+        !isScrollbarDragging ||
+        (typeof pointerId === "number" &&
+          scrollbarDragPointerId !== null &&
+          pointerId !== scrollbarDragPointerId)
+      ) {
+        return false;
+      }
+
+      const capturedPointerId = scrollbarDragPointerId;
+      isScrollbarDragging = false;
+      scrollbarDragGrabOffset = 0;
+      scrollbarDragPointerId = null;
+      releaseScrollbarPointer(capturedPointerId);
+
+      if (typeof clientX === "number" && typeof clientY === "number") {
+        setScrollbarActivityFromPointer(clientX, clientY);
+      } else {
+        syncScrollbarState();
+      }
+
+      return true;
+    };
+
+    const stopScrollbarTrackPress = (
+      { pointerId, clientX, clientY, releaseCapture = true } = {}
+    ) => {
+      if (
+        !isScrollbarTrackPressActive ||
+        (typeof pointerId === "number" &&
+          scrollbarTrackPressPointerId !== null &&
+          pointerId !== scrollbarTrackPressPointerId)
+      ) {
+        return false;
+      }
+
+      const capturedPointerId = scrollbarTrackPressPointerId;
+      isScrollbarTrackPressActive = false;
+      scrollbarTrackPressPointerId = null;
+      scrollbarTrackPressStartClientY = 0;
+
+      if (releaseCapture) {
+        releaseScrollbarPointer(capturedPointerId);
+      }
+
+      if (typeof clientX === "number" && typeof clientY === "number") {
+        setScrollbarActivityFromPointer(clientX, clientY);
+      } else if (!isScrollbarDragging) {
+        isScrollbarActive = false;
+        syncScrollbarState();
+      }
+
+      return true;
+    };
+
+    const startScrollbarTrackPress = (event) => {
+      const metrics = getScrollbarMetrics();
+      isScrollbarTrackPressActive = true;
+      scrollbarTrackPressPointerId = event.pointerId;
+      scrollbarTrackPressStartClientY = event.clientY;
+      scrollbarDragGrabOffset = metrics.thumbSize * 0.5;
+      captureScrollbarPointer(event.pointerId);
+      syncScrollbarState();
+      syncScrollbarFromPointerPosition(event.clientY, {
+        animated: true,
+        preserveGrabOffset: true,
+      });
+    };
+
+    const maybePromoteScrollbarTrackPressToDrag = (event) => {
+      if (
+        !isScrollbarTrackPressActive ||
+        scrollbarTrackPressPointerId !== event.pointerId
+      ) {
+        return false;
+      }
+
+      if (
+        Math.abs(event.clientY - scrollbarTrackPressStartClientY) <=
+        scrollbarDragActivationThreshold
+      ) {
+        return false;
+      }
+
+      stopScrollbarScrollAnimation();
+      stopScrollbarTrackPress({
+        pointerId: event.pointerId,
+        releaseCapture: false,
+      });
+      startScrollbarDrag(event.pointerId);
+
+      const thumbRect = videoScrollbarThumb.getBoundingClientRect();
+      scrollbarDragGrabOffset = event.clientY - thumbRect.top;
+      syncScrollbarFromPointerPosition(event.clientY, {
+        immediate: true,
+        preserveGrabOffset: true,
+      });
+
+      return true;
+    };
+
+    const handleScrollbarPointerMove = (event) => {
+      if (!maybePromoteScrollbarTrackPressToDrag(event) && isScrollbarDragging) {
+        syncScrollbarFromPointerPosition(event.clientY, {
+          immediate: true,
+          preserveGrabOffset: true,
+        });
+      }
+    };
+
     refreshPhotographyScrollbar = () => {
       updateScrollbar();
     };
@@ -3088,42 +3244,42 @@ if (photoGrid) {
       "pointermove",
       (event) => {
         setScrollbarActivityFromPointer(event.clientX, event.clientY);
-
-        if (isScrollbarDragging) {
-          syncScrollbarFromPointerPosition(event.clientY, {
-            immediate: true,
-            preserveGrabOffset: true,
-          });
-        }
+        handleScrollbarPointerMove(event);
       },
       { passive: true }
     );
 
     window.addEventListener("pointerleave", () => {
-      if (!isScrollbarDragging) {
+      if (!isScrollbarDragging && !isScrollbarTrackPressActive) {
         isScrollbarActive = false;
         syncScrollbarState();
       }
     });
 
-    window.addEventListener("pointerup", () => {
-      if (!isScrollbarDragging) {
+    window.addEventListener("pointerup", (event) => {
+      if (
+        stopScrollbarTrackPress({
+          pointerId: event.pointerId,
+          clientX: event.clientX,
+          clientY: event.clientY,
+        })
+      ) {
         return;
       }
 
-      isScrollbarDragging = false;
-      scrollbarDragGrabOffset = 0;
-      syncScrollbarState();
+      stopScrollbarDrag({
+        pointerId: event.pointerId,
+        clientX: event.clientX,
+        clientY: event.clientY,
+      });
     });
 
-    window.addEventListener("pointercancel", () => {
-      if (!isScrollbarDragging) {
+    window.addEventListener("pointercancel", (event) => {
+      if (stopScrollbarTrackPress({ pointerId: event.pointerId })) {
         return;
       }
 
-      isScrollbarDragging = false;
-      scrollbarDragGrabOffset = 0;
-      syncScrollbarState();
+      stopScrollbarDrag({ pointerId: event.pointerId });
     });
 
     videoScrollbarTrack.addEventListener("pointerdown", (event) => {
@@ -3138,11 +3294,9 @@ if (photoGrid) {
         videoScrollbarThumb.contains(event.target);
 
       if (startedOnThumb) {
-        stopScrollbarScrollAnimation();
-        isScrollbarDragging = true;
+        startScrollbarDrag(event.pointerId);
         const thumbRect = videoScrollbarThumb.getBoundingClientRect();
         scrollbarDragGrabOffset = event.clientY - thumbRect.top;
-        syncScrollbarState();
         syncScrollbarFromPointerPosition(event.clientY, {
           immediate: true,
           preserveGrabOffset: true,
@@ -3150,13 +3304,42 @@ if (photoGrid) {
         return;
       }
 
-      isScrollbarDragging = false;
-      scrollbarDragGrabOffset = 0;
-      syncScrollbarState();
-      syncScrollbarFromPointerPosition(event.clientY, {
-        animated: true,
-        centerOnPointer: true,
+      startScrollbarTrackPress(event);
+    });
+
+    videoScrollbarTrack.addEventListener("pointermove", (event) => {
+      handleScrollbarPointerMove(event);
+    });
+
+    videoScrollbarTrack.addEventListener("pointerup", (event) => {
+      if (
+        stopScrollbarTrackPress({
+          pointerId: event.pointerId,
+          clientX: event.clientX,
+          clientY: event.clientY,
+        })
+      ) {
+        return;
+      }
+
+      stopScrollbarDrag({
+        pointerId: event.pointerId,
+        clientX: event.clientX,
+        clientY: event.clientY,
       });
+    });
+
+    videoScrollbarTrack.addEventListener("pointercancel", (event) => {
+      if (stopScrollbarTrackPress({ pointerId: event.pointerId })) {
+        return;
+      }
+
+      stopScrollbarDrag({ pointerId: event.pointerId });
+    });
+
+    videoScrollbarTrack.addEventListener("lostpointercapture", () => {
+      stopScrollbarTrackPress({ releaseCapture: false });
+      stopScrollbarDrag();
     });
 
     window.addEventListener(
@@ -3235,6 +3418,9 @@ const initVideoTimelineScene = () => {
   const desktopTimelinePatternVerticalStep = 1080;
   const mobileTimelinePatternVerticalStep = 540;
   const wideCardSizeBoost = 1.5;
+  const videoCardRevealRootMargin = "12% 0px 12% 0px";
+  const videoCardRevealStaggerMs = 50;
+  const videoScrollbarDragActivationThreshold = 5;
   const videoCards = timelineCards.map((card, index) => ({
     element: card,
     visual: card.querySelector(".video-card-visual"),
@@ -3247,8 +3433,13 @@ const initVideoTimelineScene = () => {
   let scrollbarThumbRatio = 0.18;
   let isVideoScrollbarActive = false;
   let isVideoScrollbarDragging = false;
+  let isVideoScrollbarTrackPressActive = false;
   let videoScrollbarDragGrabOffset = 0;
+  let videoScrollbarDragPointerId = null;
   let videoScrollbarScrollAnimationFrame = 0;
+  let videoScrollbarTrackPressPointerId = null;
+  let videoScrollbarTrackPressStartPrimaryPosition = 0;
+  let videoCardRevealObserver = null;
   let videoSceneFrame = 0;
   let lastVideoMediaRefresh = -Infinity;
   let forceVideoMediaRefresh = true;
@@ -3457,6 +3648,71 @@ const initVideoTimelineScene = () => {
     });
   };
 
+  const sortVideoCardsByVisualPosition = (cards) =>
+    cards.slice().sort((leftCard, rightCard) => {
+      const leftRect = leftCard.getBoundingClientRect();
+      const rightRect = rightCard.getBoundingClientRect();
+
+      if (leftRect.top !== rightRect.top) {
+        return leftRect.top - rightRect.top;
+      }
+
+      return leftRect.left - rightRect.left;
+    });
+
+  const revealVideoCards = (cards, { staggered = true } = {}) => {
+    sortVideoCardsByVisualPosition(cards)
+      .filter((card) => !card.classList.contains("is-revealed"))
+      .forEach((card, index) => {
+        card.style.setProperty(
+          "--reveal-delay",
+          staggered ? `${index * videoCardRevealStaggerMs}ms` : "0ms"
+        );
+        card.classList.add("is-revealed");
+      });
+  };
+
+  const observeVideoTimelineCards = () => {
+    if (videoCardRevealObserver) {
+      videoCardRevealObserver.disconnect();
+    }
+
+    if (prefersReducedMotion.matches || !("IntersectionObserver" in window)) {
+      revealVideoCards(timelineCards, { staggered: false });
+      return;
+    }
+
+    videoCardRevealObserver = new IntersectionObserver(
+      (entries) => {
+        const visibleCards = entries
+          .filter((entry) => entry.isIntersecting)
+          .map((entry) => entry.target)
+          .filter((card) => !card.classList.contains("is-revealed"));
+
+        if (!visibleCards.length) {
+          return;
+        }
+
+        revealVideoCards(visibleCards);
+        visibleCards.forEach((card) => videoCardRevealObserver?.unobserve(card));
+
+        if (timelineCards.every((card) => card.classList.contains("is-revealed"))) {
+          videoCardRevealObserver.disconnect();
+        }
+      },
+      {
+        threshold: 0.02,
+        rootMargin: videoCardRevealRootMargin,
+      }
+    );
+
+    timelineCards.forEach((card) => {
+      if (!card.classList.contains("is-revealed")) {
+        videoCardRevealObserver.observe(card);
+      }
+    });
+  };
+
   const applyVideoTrackOffset = (offset) => {
     videoTimeline.style.setProperty(
       "--timeline-pattern-shift-y",
@@ -3510,6 +3766,11 @@ const initVideoTimelineScene = () => {
       videoScrollbar.hidden = true;
       isVideoScrollbarActive = false;
       isVideoScrollbarDragging = false;
+      isVideoScrollbarTrackPressActive = false;
+      videoScrollbarDragGrabOffset = 0;
+      videoScrollbarDragPointerId = null;
+      videoScrollbarTrackPressPointerId = null;
+      videoScrollbarTrackPressStartPrimaryPosition = 0;
       syncVideoScrollbarState();
       return;
     }
@@ -3555,7 +3816,11 @@ const initVideoTimelineScene = () => {
       ? clientX >= rect.left - 10 && clientX <= rect.right + 10
       : clientY >= rect.top - 10 && clientY <= rect.bottom + 10;
 
-    isVideoScrollbarActive = isVideoScrollbarDragging || isNearAxis || isOverScrollbar;
+    isVideoScrollbarActive =
+      isVideoScrollbarDragging ||
+      isVideoScrollbarTrackPressActive ||
+      isNearAxis ||
+      isOverScrollbar;
     syncVideoScrollbarState();
   };
 
@@ -3702,6 +3967,188 @@ const initVideoTimelineScene = () => {
     });
 
     syncTimelineOffsetFromProgress(nextProgress, { immediate, animated });
+  };
+
+  const getVideoScrollbarPrimaryClientPosition = (
+    clientX,
+    clientY,
+    isVerticalScrollbar = isVerticalDesktopTimeline()
+  ) => (isVerticalScrollbar ? clientY : clientX);
+
+  const captureVideoScrollbarPointer = (pointerId) => {
+    if (
+      typeof pointerId !== "number" ||
+      typeof videoScrollbarTrack?.setPointerCapture !== "function"
+    ) {
+      return;
+    }
+
+    videoScrollbarTrack.setPointerCapture(pointerId);
+  };
+
+  const releaseVideoScrollbarPointer = (pointerId) => {
+    if (
+      typeof pointerId !== "number" ||
+      typeof videoScrollbarTrack?.hasPointerCapture !== "function" ||
+      !videoScrollbarTrack.hasPointerCapture(pointerId)
+    ) {
+      return;
+    }
+
+    videoScrollbarTrack.releasePointerCapture(pointerId);
+  };
+
+  const startVideoScrollbarDrag = (pointerId) => {
+    stopVideoScrollbarTrackPress({
+      pointerId,
+      releaseCapture: false,
+    });
+    stopVideoScrollbarScrollAnimation();
+    isVideoScrollbarDragging = true;
+    videoScrollbarDragPointerId = pointerId;
+    captureVideoScrollbarPointer(pointerId);
+    syncVideoScrollbarState();
+  };
+
+  const syncVideoScrollbarInteractionState = ({ clientX, clientY } = {}) => {
+    if (typeof clientX === "number" && typeof clientY === "number") {
+      setVideoScrollbarActivityFromPointer(clientX, clientY);
+      return;
+    }
+
+    if (videoPointer.active) {
+      setVideoScrollbarActivityFromPointer(videoPointer.x, videoPointer.y);
+      return;
+    }
+
+    syncVideoScrollbarState();
+  };
+
+  const stopVideoScrollbarDrag = ({ pointerId, clientX, clientY } = {}) => {
+    if (
+      !isVideoScrollbarDragging ||
+      (typeof pointerId === "number" &&
+        videoScrollbarDragPointerId !== null &&
+        pointerId !== videoScrollbarDragPointerId)
+    ) {
+      return false;
+    }
+
+    const capturedPointerId = videoScrollbarDragPointerId;
+    isVideoScrollbarDragging = false;
+    videoScrollbarDragGrabOffset = 0;
+    videoScrollbarDragPointerId = null;
+    releaseVideoScrollbarPointer(capturedPointerId);
+    syncVideoScrollbarInteractionState({ clientX, clientY });
+    return true;
+  };
+
+  const stopVideoScrollbarTrackPress = (
+    { pointerId, clientX, clientY, releaseCapture = true } = {}
+  ) => {
+    if (
+      !isVideoScrollbarTrackPressActive ||
+      (typeof pointerId === "number" &&
+        videoScrollbarTrackPressPointerId !== null &&
+        pointerId !== videoScrollbarTrackPressPointerId)
+    ) {
+      return false;
+    }
+
+    const capturedPointerId = videoScrollbarTrackPressPointerId;
+    isVideoScrollbarTrackPressActive = false;
+    videoScrollbarTrackPressPointerId = null;
+    videoScrollbarTrackPressStartPrimaryPosition = 0;
+
+    if (releaseCapture) {
+      releaseVideoScrollbarPointer(capturedPointerId);
+    }
+
+    syncVideoScrollbarInteractionState({ clientX, clientY });
+    return true;
+  };
+
+  const startVideoScrollbarTrackPress = (event) => {
+    const metrics = getVideoScrollbarMetrics();
+
+    if (!metrics) {
+      return;
+    }
+
+    isVideoScrollbarTrackPressActive = true;
+    videoScrollbarTrackPressPointerId = event.pointerId;
+    videoScrollbarTrackPressStartPrimaryPosition =
+      getVideoScrollbarPrimaryClientPosition(
+        event.clientX,
+        event.clientY,
+        metrics.isVerticalScrollbar
+      );
+    videoScrollbarDragGrabOffset = metrics.thumbSize * 0.5;
+    captureVideoScrollbarPointer(event.pointerId);
+    syncVideoScrollbarState();
+    syncTimelineOffsetFromPointerPosition(event.clientX, event.clientY, {
+      animated: true,
+      preserveGrabOffset: true,
+    });
+  };
+
+  const maybePromoteVideoScrollbarTrackPressToDrag = (event) => {
+    if (
+      !isVideoScrollbarTrackPressActive ||
+      videoScrollbarTrackPressPointerId !== event.pointerId
+    ) {
+      return false;
+    }
+
+    const metrics = getVideoScrollbarMetrics();
+
+    if (!metrics) {
+      return false;
+    }
+
+    const currentPrimaryPosition = getVideoScrollbarPrimaryClientPosition(
+      event.clientX,
+      event.clientY,
+      metrics.isVerticalScrollbar
+    );
+
+    if (
+      Math.abs(
+        currentPrimaryPosition - videoScrollbarTrackPressStartPrimaryPosition
+      ) <= videoScrollbarDragActivationThreshold
+    ) {
+      return false;
+    }
+
+    stopVideoScrollbarScrollAnimation();
+    stopVideoScrollbarTrackPress({
+      pointerId: event.pointerId,
+      releaseCapture: false,
+    });
+    startVideoScrollbarDrag(event.pointerId);
+
+    const thumbRect = videoScrollbarThumb.getBoundingClientRect();
+    videoScrollbarDragGrabOffset = metrics.isVerticalScrollbar
+      ? event.clientY - thumbRect.top
+      : event.clientX - thumbRect.left;
+    syncTimelineOffsetFromPointerPosition(event.clientX, event.clientY, {
+      immediate: true,
+      preserveGrabOffset: true,
+    });
+
+    return true;
+  };
+
+  const handleVideoScrollbarPointerMove = (event) => {
+    if (
+      !maybePromoteVideoScrollbarTrackPressToDrag(event) &&
+      isVideoScrollbarDragging
+    ) {
+      syncTimelineOffsetFromPointerPosition(event.clientX, event.clientY, {
+        immediate: true,
+        preserveGrabOffset: true,
+      });
+    }
   };
 
   const getFittedVideoCardTitleMetrics = ({
@@ -3929,10 +4376,6 @@ const initVideoTimelineScene = () => {
         metric.card.style.setProperty(
           "--mobile-shift",
           "0px"
-        );
-        metric.card.style.setProperty(
-          "--entry-delay",
-          `${(0.08 + metric.index * 0.08).toFixed(2)}s`
         );
         metric.card.style.setProperty(
           "--card-color",
@@ -4305,10 +4748,6 @@ const initVideoTimelineScene = () => {
         card.style.setProperty("--card-x", `${balancedX.toFixed(2)}px`);
         card.style.setProperty("--card-y", `${offsetY.toFixed(2)}px`);
         card.style.setProperty(
-          "--entry-delay",
-          `${(0.1 + metric.index * 0.09).toFixed(2)}s`
-        );
-        card.style.setProperty(
           "--card-color",
           pastelPalette[metric.index % pastelPalette.length]
         );
@@ -4353,10 +4792,6 @@ const initVideoTimelineScene = () => {
         card.style.setProperty("--card-x", `${cursor.toFixed(2)}px`);
         card.style.setProperty("--card-y", `${y.toFixed(2)}px`);
         card.style.setProperty(
-          "--entry-delay",
-          `${(0.1 + index * 0.09).toFixed(2)}s`
-        );
-        card.style.setProperty(
           "--card-color",
           pastelPalette[index % pastelPalette.length]
         );
@@ -4394,53 +4829,43 @@ const initVideoTimelineScene = () => {
       videoPointer.active = true;
       syncVideoTimelinePatternFocus();
       setVideoScrollbarActivityFromPointer(event.clientX, event.clientY);
-
-      if (isVideoScrollbarDragging) {
-        syncTimelineOffsetFromPointerPosition(event.clientX, event.clientY, {
-          immediate: true,
-          preserveGrabOffset: true,
-        });
-      }
+      handleVideoScrollbarPointerMove(event);
     });
 
     window.addEventListener("pointerleave", () => {
       videoPointer.active = false;
       syncVideoTimelinePatternFocus();
 
-      if (!isVideoScrollbarDragging) {
+      if (!isVideoScrollbarDragging && !isVideoScrollbarTrackPressActive) {
         isVideoScrollbarActive = false;
         syncVideoScrollbarState();
       }
     });
 
-    window.addEventListener("pointerup", () => {
-      if (!isVideoScrollbarDragging) {
+    window.addEventListener("pointerup", (event) => {
+      if (
+        stopVideoScrollbarTrackPress({
+          pointerId: event.pointerId,
+          clientX: event.clientX,
+          clientY: event.clientY,
+        })
+      ) {
         return;
       }
 
-      isVideoScrollbarDragging = false;
-      videoScrollbarDragGrabOffset = 0;
-      if (videoPointer.active) {
-        setVideoScrollbarActivityFromPointer(videoPointer.x, videoPointer.y);
-        return;
-      }
-
-      syncVideoScrollbarState();
+      stopVideoScrollbarDrag({
+        pointerId: event.pointerId,
+        clientX: event.clientX,
+        clientY: event.clientY,
+      });
     });
 
-    window.addEventListener("pointercancel", () => {
-      if (!isVideoScrollbarDragging) {
+    window.addEventListener("pointercancel", (event) => {
+      if (stopVideoScrollbarTrackPress({ pointerId: event.pointerId })) {
         return;
       }
 
-      isVideoScrollbarDragging = false;
-      videoScrollbarDragGrabOffset = 0;
-      if (videoPointer.active) {
-        setVideoScrollbarActivityFromPointer(videoPointer.x, videoPointer.y);
-        return;
-      }
-
-      syncVideoScrollbarState();
+      stopVideoScrollbarDrag({ pointerId: event.pointerId });
     });
   }
 
@@ -4458,13 +4883,11 @@ const initVideoTimelineScene = () => {
           videoScrollbarThumb.contains(event.target));
 
       if (startedOnThumb) {
-        stopVideoScrollbarScrollAnimation();
-        isVideoScrollbarDragging = true;
+        startVideoScrollbarDrag(event.pointerId);
         const thumbRect = videoScrollbarThumb.getBoundingClientRect();
         videoScrollbarDragGrabOffset = isVerticalDesktopTimeline()
           ? event.clientY - thumbRect.top
           : event.clientX - thumbRect.left;
-        syncVideoScrollbarState();
         syncTimelineOffsetFromPointerPosition(event.clientX, event.clientY, {
           immediate: true,
           preserveGrabOffset: true,
@@ -4472,17 +4895,47 @@ const initVideoTimelineScene = () => {
         return;
       }
 
-      isVideoScrollbarDragging = false;
-      videoScrollbarDragGrabOffset = 0;
-      syncVideoScrollbarState();
-      syncTimelineOffsetFromPointerPosition(event.clientX, event.clientY, {
-        animated: true,
-        centerOnPointer: true,
+      startVideoScrollbarTrackPress(event);
+    });
+
+    videoScrollbarTrack.addEventListener("pointermove", (event) => {
+      handleVideoScrollbarPointerMove(event);
+    });
+
+    videoScrollbarTrack.addEventListener("pointerup", (event) => {
+      if (
+        stopVideoScrollbarTrackPress({
+          pointerId: event.pointerId,
+          clientX: event.clientX,
+          clientY: event.clientY,
+        })
+      ) {
+        return;
+      }
+
+      stopVideoScrollbarDrag({
+        pointerId: event.pointerId,
+        clientX: event.clientX,
+        clientY: event.clientY,
       });
+    });
+
+    videoScrollbarTrack.addEventListener("pointercancel", (event) => {
+      if (stopVideoScrollbarTrackPress({ pointerId: event.pointerId })) {
+        return;
+      }
+
+      stopVideoScrollbarDrag({ pointerId: event.pointerId });
+    });
+
+    videoScrollbarTrack.addEventListener("lostpointercapture", () => {
+      stopVideoScrollbarTrackPress({ releaseCapture: false });
+      stopVideoScrollbarDrag();
     });
   }
 
   layoutVideoTimeline();
+  observeVideoTimelineCards();
   window.addEventListener("resize", layoutVideoTimeline);
   window.addEventListener("scroll", () => {
     syncVideoTimelineScroll({ snap: true });

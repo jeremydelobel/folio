@@ -48,12 +48,12 @@ const photoEventLabelMap = Object.freeze({
 const videoCardAspectRatios = {
   vertical: 2 / 3,
   wide: 1920 / 803,
-  landscape: 3 / 2,
+  landscape: 16 / 9,
 };
 const motionDesignCardAspectRatios = {
   vertical: 4 / 5,
   wide: 1920 / 803,
-  landscape: 5 / 4,
+  landscape: 16 / 9,
 };
 const videoRoleMap = {
   m: "Montage",
@@ -3477,6 +3477,33 @@ const initVideoTimelineScene = () => {
     );
   };
 
+  const syncVideoTimelineLinePositions = (
+    lineRatios,
+    patternWidth = videoTimeline?.getBoundingClientRect().width || window.innerWidth
+  ) => {
+    if (!videoPageShell || !lineRatios.length) {
+      return;
+    }
+
+    lineRatios.forEach((lineRatio, lineIndex) => {
+      const lineCenterX = patternWidth * lineRatio;
+      videoPageShell.style.setProperty(
+        `--timeline-line-${lineIndex + 1}-position`,
+        `${(lineCenterX - 0.5).toFixed(2)}px`
+      );
+    });
+
+    for (
+      let lineIndex = lineRatios.length;
+      lineIndex < desktopTimelinePatternLineRatios.length;
+      lineIndex += 1
+    ) {
+      videoPageShell.style.removeProperty(
+        `--timeline-line-${lineIndex + 1}-position`
+      );
+    }
+  };
+
   const syncVideoTimelinePatternFocus = () => {
     if (!videoPageShell || !isVideoPage) {
       return;
@@ -3529,11 +3556,18 @@ const initVideoTimelineScene = () => {
     const lineOffsets = videoIsMobileLayout.matches
       ? mobileTimelinePatternLineOffsets
       : desktopTimelinePatternLineOffsets;
+    const patternWidth =
+      patternContainer.getBoundingClientRect().width ||
+      videoTimeline?.getBoundingClientRect().width ||
+      window.innerWidth;
 
     lineRatios.forEach((lineRatio, lineIndex) => {
       const line = document.createElement("div");
       line.className = "video-timeline-pattern-line";
-      line.style.setProperty("--pattern-x", `${(lineRatio * 100).toFixed(4)}%`);
+      line.style.setProperty(
+        "--pattern-x",
+        `${(patternWidth * lineRatio).toFixed(2)}px`
+      );
 
       const firstOffset = lineOffsets[lineIndex] || 0;
 
@@ -3560,6 +3594,15 @@ const initVideoTimelineScene = () => {
   };
 
   const syncVideoTimelinePattern = (trackHeight) => {
+    const currentLineRatios = videoIsMobileLayout.matches
+      ? mobileTimelinePatternLineRatios
+      : desktopTimelinePatternLineRatios;
+    const patternWidth =
+      videoTimelinePatternBase?.getBoundingClientRect().width ||
+      videoTimeline?.getBoundingClientRect().width ||
+      window.innerWidth;
+
+    syncVideoTimelineLinePositions(currentLineRatios, patternWidth);
     syncVideoTimelinePatternLayer(
       videoTimelinePatternBase,
       "./rsrc/Keyframe-Grise.svg",

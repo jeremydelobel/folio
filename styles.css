@@ -1040,11 +1040,11 @@ body.is-ready .text-reveal-mask .text-reveal-value {
     1px 100%,
     1px 100%;
   background-position:
-    calc(100% / 6 - 0.333333px) 0,
-    calc(100% / 3 - 0.166667px) 0,
-    50% 0,
-    calc(100% * 2 / 3 + 0.166667px) 0,
-    calc(100% * 5 / 6 + 0.333333px) 0;
+    var(--timeline-line-1-position, calc(100% / 6 - 0.333333px)) 0,
+    var(--timeline-line-2-position, calc(100% / 3 - 0.166667px)) 0,
+    var(--timeline-line-3-position, 50%) 0,
+    var(--timeline-line-4-position, calc(100% * 2 / 3 + 0.166667px)) 0,
+    var(--timeline-line-5-position, calc(100% * 5 / 6 + 0.333333px)) 0;
 }
 
 .video-page .video-page-shell::after,
@@ -1069,11 +1069,11 @@ body.is-ready .text-reveal-mask .text-reveal-value {
     1px 100%,
     1px 100%;
   background-position:
-    calc(100% / 6 - 0.333333px) 0,
-    calc(100% / 3 - 0.166667px) 0,
-    50% 0,
-    calc(100% * 2 / 3 + 0.166667px) 0,
-    calc(100% * 5 / 6 + 0.333333px) 0;
+    var(--timeline-line-1-position, calc(100% / 6 - 0.333333px)) 0,
+    var(--timeline-line-2-position, calc(100% / 3 - 0.166667px)) 0,
+    var(--timeline-line-3-position, 50%) 0,
+    var(--timeline-line-4-position, calc(100% * 2 / 3 + 0.166667px)) 0,
+    var(--timeline-line-5-position, calc(100% * 5 / 6 + 0.333333px)) 0;
   -webkit-mask-image: radial-gradient(
     circle at var(--motif-focus-x) var(--motif-focus-y),
     rgba(0, 0, 0, 1) 0,
@@ -1352,7 +1352,7 @@ body.is-ready .text-reveal-mask .text-reveal-value {
 .video-card-frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   clip-path: inset(50% 50% 50% 50%);
   will-change: clip-path;
@@ -1367,7 +1367,7 @@ body.is-ready .text-reveal-mask .text-reveal-value {
 }
 
 .motion-design-page .video-card-frame {
-  aspect-ratio: var(--card-media-aspect-ratio, 5 / 4);
+  aspect-ratio: var(--card-media-aspect-ratio, 16 / 9);
 }
 
 .video-card-visual {
@@ -1752,9 +1752,9 @@ body.is-ready .video-timeline-card.is-revealed .video-card-label-mask .video-car
       1px 100%,
       1px 100%;
     background-position:
-      calc(25% - 0.25px) 0,
-      50% 0,
-      calc(75% + 0.25px) 0;
+      var(--timeline-line-1-position, calc(25% - 0.25px)) 0,
+      var(--timeline-line-2-position, 50%) 0,
+      var(--timeline-line-3-position, calc(75% + 0.25px)) 0;
   }
 
   .video-page .video-page-shell::after,

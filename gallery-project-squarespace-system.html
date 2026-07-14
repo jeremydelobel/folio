@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prototype page projet photo</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #ffffff;
+        color: #222222;
+        font-family: "Helvetica Neue", Arial, sans-serif;
+      }
+
+      .project {
+        min-height: 100vh;
+      }
+
+      .project-meta {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 3;
+        width: 300px;
+        padding: 47px 35px 47px 32px;
+      }
+
+      .project-title {
+        margin: 0;
+        color: #222222;
+        font-size: 27px;
+        font-weight: 400;
+        line-height: 1.2;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .project-gallery {
+        --gallery-width: min(50vw, 900px);
+        --gallery-gap: 17px;
+        --row-height: calc((var(--gallery-width) - var(--gallery-gap)) / 3);
+        width: var(--gallery-width);
+        margin: 52px auto 50px;
+      }
+
+      .project-table {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-auto-rows: var(--row-height);
+        grid-auto-flow: dense;
+        gap: var(--gallery-gap);
+        width: 100%;
+      }
+
+      .photo-placeholder {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+        width: 100%;
+        height: 100%;
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0)),
+          #d2d2d2;
+      }
+
+      .photo-placeholder::after {
+        content: "";
+        position: absolute;
+        inset: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+      }
+
+      .photo-placeholder[data-size="small"] {
+        grid-column: span 1;
+        grid-row: span 1;
+      }
+
+      .photo-placeholder[data-size="portrait"] {
+        grid-column: span 1;
+        grid-row: span 2;
+      }
+
+      .photo-placeholder[data-size="wide"] {
+        grid-column: span 2;
+        grid-row: span 2;
+      }
+
+      .photo-label {
+        position: relative;
+        z-index: 1;
+        color: rgba(0, 0, 0, 0.42);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      @media only screen and (max-width: 1024px) {
+        .project-meta {
+          position: relative;
+          width: auto;
+          padding: 40px;
+        }
+
+        .project-gallery {
+          --gallery-width: min(calc(100vw - 40px), 900px);
+          max-width: none;
+          min-width: 0;
+          margin: 0 auto 20px;
+        }
+      }
+
+      @media only screen and (max-width: 640px) {
+        .project-meta {
+          padding: 20px 20px 0;
+          margin: 20px 0;
+        }
+
+        .project-gallery {
+          --gallery-width: calc(100vw - 10px);
+          --gallery-gap: 5px;
+          margin-top: 20px;
+        }
+
+        .project-table {
+          grid-template-columns: 1fr;
+        }
+
+        .photo-placeholder[data-size="small"],
+        .photo-placeholder[data-size="portrait"],
+        .photo-placeholder[data-size="wide"] {
+          grid-column: span 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="project">
+      <aside class="project-meta">
+        <h1 class="project-title">Projet exemple</h1>
+      </aside>
+
+      <section class="project-gallery" aria-label="Galerie du projet">
+        <div class="project-table">
+          <div class="photo-placeholder" data-size="wide">
+            <span class="photo-label">01 / 2x2</span>
+          </div>
+          <div class="photo-placeholder" data-size="small">
+            <span class="photo-label">02 / 1x1</span>
+          </div>
+          <div class="photo-placeholder" data-size="small">
+            <span class="photo-label">03 / 1x1</span>
+          </div>
+          <div class="photo-placeholder" data-size="portrait">
+            <span class="photo-label">04 / 1x2</span>
+          </div>
+          <div class="photo-placeholder" data-size="small">
+            <span class="photo-label">05 / 1x1</span>
+          </div>
+          <div class="photo-placeholder" data-size="small">
+            <span class="photo-label">06 / 1x1</span>
+          </div>
+          <div class="photo-placeholder" data-size="small">
+            <span class="photo-label">07 / 1x1</span>
+          </div>
+          <div class="photo-placeholder" data-size="portrait">
+            <span class="photo-label">08 / 1x2</span>
+          </div>
+          <div class="photo-placeholder" data-size="wide">
+            <span class="photo-label">09 / 2x2</span>
+          </div>
+          <div class="photo-placeholder" data-size="small">
+            <span class="photo-label">10 / 1x1</span>
+          </div>
+          <div class="photo-placeholder" data-size="small">
+            <span class="photo-label">11 / 1x1</span>
+          </div>
+          <div class="photo-placeholder" data-size="portrait">
+            <span class="photo-label">12 / 1x2</span>
+          </div>
+          <div class="photo-placeholder" data-size="small">
+            <span class="photo-label">13 / 1x1</span>
+          </div>
+          <div class="photo-placeholder" data-size="small">
+            <span class="photo-label">14 / 1x1</span>
+          </div>
+          <div class="photo-placeholder" data-size="wide">
+            <span class="photo-label">15 / 2x2</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

@@ -14,6 +14,8 @@ let photoLightboxLowResCanvas = document.querySelector(".photo-lightbox-canvas-l
 let photoLightboxHighResCanvas = document.querySelector(".photo-lightbox-canvas-highres");
 let photoLightboxCaption = document.querySelector(".photo-lightbox-caption");
 const photoGrid = document.querySelector(".photo-grid");
+const photoTabs = Array.from(document.querySelectorAll(".photo-tab"));
+const photoTabsList = document.querySelector(".photo-tabs-list");
 const photographyPageShell = document.querySelector(".photography-page-shell");
 const photographyPatternBase = document.querySelector(".photography-pattern-base");
 const photographyPatternFocus = document.querySelector(".photography-pattern-focus");
@@ -47,6 +49,7 @@ const getDocumentScrollTop = () =>
     0
   );
 const photoEventLabelMap = Object.freeze({
+  "esports-world-cup-2026": "Esports World Cup 2026",
   "telethon-gaming-2025": "Telethon Gaming 2025",
   "living-the-dream-2026": "Living The Dream 2026",
   "coupe-de-france-slash-2025": "Coupe de France Slash 2025",
@@ -88,6 +91,7 @@ let activePhotoLightboxTile = null;
 let activePhotoLightboxImage = null;
 let activePhotoLightboxHighResDrawable = null;
 let activePhotoLightboxCanvasRenderToken = 0;
+let photoLightboxCanvasMorphFrame = 0;
 let photoLightboxCleanupTimer = 0;
 let photoLightboxCaptionTimer = 0;
 let syncPhotographyScrollbar = null;
@@ -181,7 +185,7 @@ const ensurePhotoLightboxCanvasDom = () => {
 const syncSharedMediaOverlayState = () => {
   const isOpen = activeVideoOverlay !== "none" || isPhotoLightboxOpen();
   const scrollbarCompensation =
-    isFolioPage && isOpen
+    isFolioPage && !isPhotographyPage && isOpen
       ? Math.max(window.innerWidth - document.documentElement.clientWidth, 0)
       : 0;
 
@@ -1369,7 +1373,7 @@ const drawPhotoLightboxCanvas = (canvas, drawable, rect) => {
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = "high";
 
-  const scale = Math.min(pixelWidth / sourceWidth, pixelHeight / sourceHeight);
+  const scale = Math.max(pixelWidth / sourceWidth, pixelHeight / sourceHeight);
   const drawWidth = sourceWidth * scale;
   const drawHeight = sourceHeight * scale;
   const drawX = (pixelWidth - drawWidth) / 2;
@@ -1424,6 +1428,40 @@ const applyPhotoLightboxRect = (rect) => {
   photoLightboxStage.style.height = `${Math.max(rect.height, 1).toFixed(2)}px`;
 };
 
+const stopPhotoLightboxCanvasMorph = () => {
+  if (!photoLightboxCanvasMorphFrame) {
+    return;
+  }
+
+  window.cancelAnimationFrame(photoLightboxCanvasMorphFrame);
+  photoLightboxCanvasMorphFrame = 0;
+};
+
+const startPhotoLightboxCanvasMorph = () => {
+  stopPhotoLightboxCanvasMorph();
+  const startedAt = performance.now();
+
+  const renderFrame = (timestamp) => {
+    if (!isPhotoLightboxOpen() || !photoLightboxStage) {
+      photoLightboxCanvasMorphFrame = 0;
+      return;
+    }
+
+    renderActivePhotoLightboxCanvases({
+      targetRect: photoLightboxStage.getBoundingClientRect(),
+    });
+
+    if (timestamp - startedAt < photoLightboxTransitionDuration) {
+      photoLightboxCanvasMorphFrame = window.requestAnimationFrame(renderFrame);
+      return;
+    }
+
+    photoLightboxCanvasMorphFrame = 0;
+  };
+
+  photoLightboxCanvasMorphFrame = window.requestAnimationFrame(renderFrame);
+};
+
 const getPhotoLightboxTargetRect = (image) => {
   const aspectRatio = getPhotoLightboxImageAspectRatio(image);
   const maxWidth = Math.max(window.innerWidth * 0.85, 1);
@@ -1447,6 +1485,7 @@ const getPhotoLightboxTargetRect = (image) => {
 const finishPhotoLightboxClose = ({ restoreFocus = true } = {}) => {
   clearPhotoLightboxCleanupTimer();
   clearPhotoLightboxCaptionTimer();
+  stopPhotoLightboxCanvasMorph();
   activePhotoLightboxCanvasRenderToken += 1;
 
   photoLightbox?.classList.remove(
@@ -1532,6 +1571,7 @@ const closePhotoLightbox = ({ restoreFocus = true } = {}) => {
   isPhotoLightboxTransitioning = true;
   photoLightbox.classList.add("is-closing");
   applyPhotoLightboxRect(originRect);
+  startPhotoLightboxCanvasMorph();
   clearPhotoLightboxCleanupTimer();
   photoLightboxCleanupTimer = window.setTimeout(() => {
     finishPhotoLightboxClose({ restoreFocus });
@@ -1933,6 +1973,9 @@ window.addEventListener("resize", () => {
 
 if (photoGrid) {
   let currentPhotoColumns = 0;
+  let currentPhotoLayout = "masonry";
+  let currentPhotoTabKey = "gallery";
+  let allPhotoModels = [];
   let randomizedPhotoModels = [];
   let tileRevealObserver;
   let imageLoadObserver;
@@ -1947,6 +1990,179 @@ if (photoGrid) {
   const mobilePhotoPatternLineOffsets = [160, 360, 225];
   const desktopPhotoPatternVerticalStep = 1080;
   const mobilePhotoPatternVerticalStep = 540;
+  const photoTabFolderMap = {
+    "esports-world-cup": "esports-world-cup-2026",
+    rlcs: "rlcs-paris-major-2026",
+    "paris-games-week": "paris-games-week-2025",
+  };
+  const photoEditorialLayouts = {
+    "esports-world-cup": [
+      {
+        type: "featured",
+        photo:
+          "esports-world-cup-2026/@jeremy.delobel_09072026_211521.webp",
+      },
+      {
+        type: "composition",
+        portrait:
+          "esports-world-cup-2026/@jeremy.delobel_09072026_211410.webp",
+        landscapes: [
+          "esports-world-cup-2026/@jeremy.delobel_09072026_212053.webp",
+          "esports-world-cup-2026/@jeremy.delobel_09072026_211848-2.webp",
+        ],
+        portraitSide: "left",
+      },
+      {
+        type: "featured",
+        photo:
+          "esports-world-cup-2026/@jeremy.delobel_12072026_193753.webp",
+      },
+      {
+        type: "composition",
+        portrait:
+          "esports-world-cup-2026/@jeremy.delobel_12072026_193853.webp",
+        landscapes: [
+          "esports-world-cup-2026/@jeremy.delobel_12072026_195114.webp",
+          "esports-world-cup-2026/@jeremy.delobel_12072026_193932.webp",
+        ],
+        portraitSide: "left",
+      },
+      {
+        type: "composition",
+        portrait:
+          "esports-world-cup-2026/@jeremy.delobel_12072026_195442.webp",
+        landscapes: [
+          "esports-world-cup-2026/@jeremy.delobel_12072026_193500.webp",
+          "esports-world-cup-2026/@jeremy.delobel_09072026_200824.webp",
+        ],
+        portraitSide: "right",
+      },
+      {
+        type: "pair",
+        photos: [
+          "esports-world-cup-2026/@jeremy.delobel_09072026_212116.webp",
+          "esports-world-cup-2026/@jeremy.delobel_10072026_142157.webp",
+        ],
+      },
+      {
+        type: "featured",
+        photo:
+          "esports-world-cup-2026/@jeremy.delobel_09072026_212124.webp",
+      },
+      {
+        type: "composition",
+        portrait:
+          "esports-world-cup-2026/@jeremy.delobel_10072026_141040.webp",
+        landscapes: [
+          "esports-world-cup-2026/@jeremy.delobel_09072026_211942.webp",
+          "esports-world-cup-2026/@jeremy.delobel_09072026_173349.webp",
+        ],
+        portraitSide: "left",
+      },
+      {
+        type: "featured",
+        photo:
+          "esports-world-cup-2026/@jeremy.delobel_09072026_165849.webp",
+      },
+    ],
+    rlcs: [
+      {
+        type: "featured",
+        photo: "rlcs-paris-major-2026/@jeremy.delobel_24052026_212602.webp",
+      },
+      {
+        type: "pair",
+        photos: [
+          "rlcs-paris-major-2026/@jeremy.delobel_24052026_140142.webp",
+          "rlcs-paris-major-2026/@jeremy.delobel_24052026_212433.webp",
+        ],
+      },
+      {
+        type: "featured",
+        photo: "rlcs-paris-major-2026/@jeremy.delobel_24052026_181701.webp",
+      },
+      {
+        type: "composition",
+        portrait:
+          "rlcs-paris-major-2026/@jeremy.delobel_24052026_211630.webp",
+        landscapes: [
+          "rlcs-paris-major-2026/@jeremy.delobel_24052026_212927.webp",
+          "rlcs-paris-major-2026/@jeremy.delobel_24052026_211618.webp",
+        ],
+        portraitSide: "left",
+      },
+      {
+        type: "featured",
+        photo: "rlcs-paris-major-2026/@jeremy.delobel_24052026_211504.webp",
+      },
+      {
+        type: "pair",
+        photos: [
+          "rlcs-paris-major-2026/@jeremy.delobel_24052026_212818.webp",
+          "rlcs-paris-major-2026/@jeremy.delobel_24052026_212752.webp",
+        ],
+      },
+      {
+        type: "featured",
+        photo: "rlcs-paris-major-2026/@jeremy.delobel_24052026_212643.webp",
+      },
+      {
+        type: "pair",
+        photos: [
+          "rlcs-paris-major-2026/@jeremy.delobel_24052026_212542.webp",
+          "rlcs-paris-major-2026/@jeremy.delobel_24052026_212112.webp",
+        ],
+      },
+      {
+        type: "featured",
+        photo: "rlcs-paris-major-2026/@jeremy.delobel_24052026_175741.webp",
+      },
+      {
+        type: "pair",
+        photos: [
+          "rlcs-paris-major-2026/@jeremy.delobel_24052026_212558.webp",
+          "rlcs-paris-major-2026/@jeremy.delobel_24052026_213150.webp",
+        ],
+      },
+    ],
+    "paris-games-week": [
+      {
+        type: "featured",
+        photo:
+          "paris-games-week-2025/A7404964_JérémyDelobel_2025.webp",
+      },
+      {
+        type: "composition",
+        portrait:
+          "paris-games-week-2025/A7405020_JérémyDelobel_2025.webp",
+        landscapes: [
+          "paris-games-week-2025/A7404967_JérémyDelobel_2025.webp",
+          "paris-games-week-2025/A7404644_JérémyDelobel_2025.webp",
+        ],
+        portraitSide: "left",
+      },
+      {
+        type: "composition",
+        portrait:
+          "paris-games-week-2025/A7407158_JérémyDelobel_2025.webp",
+        landscapes: [
+          "paris-games-week-2025/A7407151_JérémyDelobel_2025.webp",
+          "paris-games-week-2025/A7404435_JérémyDelobel_2025.webp",
+        ],
+        portraitSide: "right",
+      },
+      {
+        type: "featured",
+        photo:
+          "paris-games-week-2025/A7406101_JérémyDelobel_2025.webp",
+      },
+      {
+        type: "featured",
+        photo:
+          "paris-games-week-2025/A7405910_JérémyDelobel_2025.webp",
+      },
+    ],
+  };
 
   const shuffleArray = (items) => {
     const shuffled = [...items];
@@ -1963,6 +2179,20 @@ if (photoGrid) {
     return shuffled;
   };
 
+  const normalizePhotoId = (source) => {
+    const marker = "/rsrc/photos/";
+    const normalizedSource = String(source || "").replace(/\\/g, "/");
+    const markerIndex = normalizedSource.indexOf(marker);
+
+    if (markerIndex >= 0) {
+      return normalizedSource.slice(markerIndex + marker.length);
+    }
+
+    return normalizedSource
+      .replace(/^\.\//, "")
+      .replace(/^rsrc\/photos\//, "");
+  };
+
   const buildPhotoModels = () =>
     Array.from(photoGrid.querySelectorAll(".photo-tile")).map((tile) => {
       const image = tile.querySelector(".photo-image");
@@ -1971,6 +2201,7 @@ if (photoGrid) {
       const height =
         Number(image?.getAttribute("height")) || image?.naturalHeight || 1;
       const ratio = width / height;
+      const photoId = normalizePhotoId(image?.dataset.src);
       const kind =
         ratio < 0.9 ? "portrait" : ratio > 1.65 ? "wide" : "landscape";
 
@@ -1982,16 +2213,168 @@ if (photoGrid) {
       tile.setAttribute("aria-label", "Ouvrir la photo");
 
       return {
+        id: photoId,
         tile,
         image,
+        ratio,
         kind,
+        isLandscape: ratio > 1,
+        isThreeTwoLandscape: ratio > 1 && Math.abs(ratio - 1.5) <= 0.035,
         formatGroup: kind === "portrait" ? "portrait" : "horizontal",
         balanceUnits: kind === "portrait" ? 2 : 1,
       };
     });
 
-  const refreshRandomizedPhotoModels = () => {
-    randomizedPhotoModels = shuffleArray(buildPhotoModels());
+  const refreshRandomizedPhotoModels = (tabKey = "gallery") => {
+    if (!allPhotoModels.length) {
+      allPhotoModels = buildPhotoModels();
+    }
+
+    currentPhotoTabKey = tabKey;
+    const selectedFolder = photoTabFolderMap[tabKey];
+    const selectedModels = selectedFolder
+      ? allPhotoModels.filter((model) =>
+          (model.image.dataset.src || "").includes(`/${selectedFolder}/`)
+        )
+      : allPhotoModels;
+
+    currentPhotoLayout = selectedFolder ? "editorial" : "masonry";
+    randomizedPhotoModels = selectedFolder
+      ? [...selectedModels]
+      : shuffleArray(selectedModels);
+  };
+
+  const buildConfiguredEditorialPhotoGroups = (layoutRows) => {
+    const modelsById = new Map(
+      randomizedPhotoModels.map((model) => [model.id, model])
+    );
+    const configuredPhotoIds = layoutRows.flatMap((row) => {
+      if (row.type === "featured") {
+        return [row.photo];
+      }
+
+      if (row.type === "composition") {
+        return [row.portrait, ...row.landscapes];
+      }
+
+      return row.type === "pair" ? row.photos : [];
+    });
+    const missingPhotoIds = configuredPhotoIds.filter(
+      (photoId) => !modelsById.has(photoId)
+    );
+
+    if (missingPhotoIds.length) {
+      console.error(
+        `Layout photo invalide pour ${currentPhotoTabKey}:`,
+        missingPhotoIds
+      );
+      return null;
+    }
+
+    return layoutRows.flatMap((row) => {
+      if (row.type === "featured") {
+        const model = modelsById.get(row.photo);
+
+        model.tile.classList.add("is-featured");
+        return [{ type: "featured", models: [model] }];
+      }
+
+      if (row.type === "composition") {
+        const portrait = modelsById.get(row.portrait);
+        const landscapes = row.landscapes.map((photoId) =>
+          modelsById.get(photoId)
+        );
+
+        return [
+          {
+            type: "composition",
+            isReversed: row.portraitSide === "right",
+            portrait,
+            landscapes,
+          },
+        ];
+      }
+
+      if (row.type === "pair") {
+        const models = row.photos.map((photoId) => modelsById.get(photoId));
+
+        return [{ type: "pair", models }];
+      }
+
+      return [];
+    });
+  };
+
+  const buildEditorialPhotoGroups = () => {
+    const featuredLandscapeModels = randomizedPhotoModels.filter(
+      (model) => model.isLandscape && !model.isThreeTwoLandscape
+    );
+    const standardLandscapeModels = randomizedPhotoModels.filter(
+      (model) => model.isThreeTwoLandscape
+    );
+    const portraitModels = randomizedPhotoModels.filter(
+      (model) => !model.isLandscape
+    );
+    const groups = [];
+    let compositionIndex = 0;
+
+    randomizedPhotoModels.forEach((model) => {
+      model.tile.classList.remove("is-featured", "is-editorial-portrait");
+    });
+
+    const configuredLayout = photoEditorialLayouts[currentPhotoTabKey];
+
+    if (configuredLayout) {
+      return buildConfiguredEditorialPhotoGroups(configuredLayout) || [];
+    }
+
+    while (
+      featuredLandscapeModels.length ||
+      standardLandscapeModels.length ||
+      portraitModels.length
+    ) {
+      if (
+        featuredLandscapeModels.length &&
+        (groups.length % 2 === 0 || !portraitModels.length)
+      ) {
+        const featuredModel = featuredLandscapeModels.shift();
+        featuredModel.tile.classList.add("is-featured");
+        groups.push({ type: "featured", models: [featuredModel] });
+        continue;
+      }
+
+      if (portraitModels.length && standardLandscapeModels.length >= 2) {
+        groups.push({
+          type: "composition",
+          isReversed: compositionIndex % 2 === 1,
+          portrait: portraitModels.shift(),
+          landscapes: [
+            standardLandscapeModels.shift(),
+            standardLandscapeModels.shift(),
+          ],
+        });
+        compositionIndex += 1;
+        continue;
+      }
+
+      if (featuredLandscapeModels.length) {
+        const featuredModel = featuredLandscapeModels.shift();
+        featuredModel.tile.classList.add("is-featured");
+        groups.push({ type: "featured", models: [featuredModel] });
+        continue;
+      }
+
+      const remainingPool = portraitModels.length
+        ? portraitModels
+        : standardLandscapeModels;
+      const pairModels = remainingPool.splice(0, 2);
+
+      if (pairModels.length) {
+        groups.push({ type: "pair", models: pairModels });
+      }
+    }
+
+    return groups;
   };
 
   const buildColumnCandidate = (columnCount) => {
@@ -2272,16 +2655,46 @@ if (photoGrid) {
       }
     }
 
-    return bestCandidate || buildColumnCandidate(columnCount);
+    if (bestCandidate) {
+      return bestCandidate;
+    }
+
+    const fallbackColumns = Array.from({ length: columnCount }, (_, index) => ({
+      index,
+      balanceUnits: 0,
+      items: [],
+    }));
+
+    shuffleArray(randomizedPhotoModels).forEach((model) => {
+      const column = [...fallbackColumns].sort((columnA, columnB) => {
+        if (columnA.balanceUnits !== columnB.balanceUnits) {
+          return columnA.balanceUnits - columnB.balanceUnits;
+        }
+
+        return columnA.items.length - columnB.items.length;
+      })[0];
+
+      column.items.push(model);
+      column.balanceUnits += model.balanceUnits;
+    });
+
+    return fallbackColumns;
   };
 
   const loadPhotoImage = (image) => {
-    if (!image || image.dataset.loaded === "true") {
+    if (!image) {
       return;
     }
 
     const tile = image.closest(".photo-tile");
-    const source = image.dataset.src;
+    const source = image.dataset.displaySrc || image.dataset.src;
+
+    if (
+      image.dataset.loaded === "true" &&
+      image.dataset.loadedSource === source
+    ) {
+      return;
+    }
 
     if (!source) {
       tile?.classList.add("is-loaded");
@@ -2292,6 +2705,7 @@ if (photoGrid) {
     const handleLoad = () => {
       tile?.classList.add("is-loaded");
       image.dataset.loaded = "true";
+      image.dataset.loadedSource = source;
       image.removeEventListener("load", handleLoad);
     };
 
@@ -2331,6 +2745,21 @@ if (photoGrid) {
         .replace("/rsrc/photos/", "/rsrc/photos-fullres/")
         .replace(/\.webp$/i, ".jpg");
     }
+  };
+
+  const setPhotoDisplayResolution = (model, useHighResolution) => {
+    const lowResolutionSource = model.image.dataset.src || "";
+    const displaySource = useHighResolution
+      ? getPhotoFullResSource(model.image)
+      : lowResolutionSource;
+
+    if (!displaySource || model.image.dataset.displaySrc === displaySource) {
+      return;
+    }
+
+    model.image.dataset.displaySrc = displaySource;
+    model.image.dataset.loaded = "false";
+    model.tile.classList.remove("is-loaded");
   };
 
   const preloadPhotoFullResSource = (source) => {
@@ -2477,7 +2906,7 @@ if (photoGrid) {
     setPhotoLightboxHighResVisible(false);
     setPhotoLightboxCaptionVisible(false);
     setPhotoLightboxCaptionLabel(photoEventLabel);
-    renderActivePhotoLightboxCanvases({ targetRect });
+    renderActivePhotoLightboxCanvases({ targetRect: originRect });
 
     photoLightbox.classList.remove("is-closing");
     photoLightbox.classList.add("is-visible");
@@ -2489,6 +2918,7 @@ if (photoGrid) {
     if (prefersReducedMotion.matches) {
       tile.classList.add("is-lightbox-origin");
       applyPhotoLightboxRect(targetRect);
+      renderActivePhotoLightboxCanvases({ targetRect });
       if (photoEventLabel) {
         setPhotoLightboxCaptionVisible(true);
       }
@@ -2503,6 +2933,7 @@ if (photoGrid) {
         }
 
         applyPhotoLightboxRect(targetRect);
+        startPhotoLightboxCanvasMorph();
 
         window.requestAnimationFrame(() => {
           if (!isPhotoLightboxOpen() || activePhotoLightboxTile !== tile) {
@@ -2518,6 +2949,8 @@ if (photoGrid) {
 
         if (isPhotoLightboxOpen()) {
           isPhotoLightboxTransitioning = false;
+          stopPhotoLightboxCanvasMorph();
+          renderActivePhotoLightboxCanvases({ targetRect });
         }
       }, photoLightboxTransitionDuration);
 
@@ -2548,7 +2981,10 @@ if (photoGrid) {
 
       activePhotoLightboxHighResDrawable = fullResDrawable;
       renderActivePhotoLightboxCanvases({
-        targetRect: getPhotoLightboxTargetRect(image),
+        targetRect:
+          isPhotoLightboxTransitioning && photoLightboxStage
+            ? photoLightboxStage.getBoundingClientRect()
+            : getPhotoLightboxTargetRect(image),
       });
 
       window.requestAnimationFrame(() => {
@@ -2663,15 +3099,71 @@ if (photoGrid) {
     images.forEach((image) => imageLoadObserver.observe(image));
   };
 
-  const rebuildPhotoColumns = () => {
+  const rebuildPhotoColumns = (force = false, shouldObserve = true) => {
     const nextColumns = window.innerWidth <= 980 ? 2 : 4;
 
-    if (nextColumns === currentPhotoColumns) {
+    if (!force && nextColumns === currentPhotoColumns) {
       return;
     }
 
     currentPhotoColumns = nextColumns;
     photoGrid.innerHTML = "";
+
+    if (currentPhotoLayout === "editorial") {
+      photoGrid.classList.add("is-editorial");
+      const editorialGroups = buildEditorialPhotoGroups();
+
+      randomizedPhotoModels.forEach((model) => {
+        setPhotoDisplayResolution(
+          model,
+          model.tile.classList.contains("is-featured")
+        );
+        bindPhotoTileLightbox(model.tile, model.image);
+      });
+
+      editorialGroups.forEach((group) => {
+        if (group.type === "featured") {
+          photoGrid.appendChild(group.models[0].tile);
+          return;
+        }
+
+        if (group.type === "composition") {
+          const composition = document.createElement("div");
+          const landscapeStack = document.createElement("div");
+
+          composition.className = `photo-editorial-composition${
+            group.isReversed ? " is-reversed" : ""
+          }`;
+          landscapeStack.className = "photo-editorial-stack";
+          group.portrait.tile.classList.add("is-editorial-portrait");
+          group.landscapes.forEach((model) => {
+            landscapeStack.appendChild(model.tile);
+          });
+          composition.append(group.portrait.tile, landscapeStack);
+          photoGrid.appendChild(composition);
+          return;
+        }
+
+        const pair = document.createElement("div");
+        pair.className = `photo-editorial-pair${
+          group.models.length === 1 ? " is-single" : ""
+        }`;
+        group.models.forEach((model) => pair.appendChild(model.tile));
+        photoGrid.appendChild(pair);
+      });
+
+      if (shouldObserve) {
+        observePhotoTiles();
+      }
+
+      return;
+    }
+
+    photoGrid.classList.remove("is-editorial");
+    randomizedPhotoModels.forEach((model) => {
+      model.tile.classList.remove("is-featured", "is-editorial-portrait");
+      setPhotoDisplayResolution(model, false);
+    });
     const bestCandidate = getBestColumnCandidate(nextColumns);
 
     if (!bestCandidate) {
@@ -2689,11 +3181,183 @@ if (photoGrid) {
       });
     });
 
-    observePhotoTiles();
+    if (shouldObserve) {
+      observePhotoTiles();
+    }
   };
 
   refreshRandomizedPhotoModels();
   rebuildPhotoColumns();
+
+  if (photoTabs.length && photoTabsList) {
+    let activePhotoTab = photoTabs.find((tab) => tab.classList.contains("is-active"));
+    let pendingPhotoTab = activePhotoTab;
+    let photoTabTransitionTimer = 0;
+    let photoTabTransitionFrame = 0;
+    let photoTabRevealFrame = 0;
+    let photoTabTransitionPhase = "idle";
+    const photoTabRevealStartDelay = 320;
+    const photoTabRevealDuration = 900;
+
+    const updatePhotoTabIndicator = (tab) => {
+      if (!tab) {
+        return;
+      }
+
+      photoTabsList.style.setProperty(
+        "--photo-tab-indicator-x",
+        `${tab.offsetLeft}px`
+      );
+      photoTabsList.style.setProperty(
+        "--photo-tab-indicator-width",
+        `${tab.offsetWidth}px`
+      );
+    };
+
+    const applyPhotoTabVisualSelection = (tabToSelect) => {
+      photoTabs.forEach((tab) => {
+        tab.classList.toggle("is-active", tab === tabToSelect);
+      });
+
+      updatePhotoTabIndicator(tabToSelect);
+    };
+
+    const applyPhotoTabSelection = (tabToSelect) => {
+      applyPhotoTabVisualSelection(tabToSelect);
+
+      photoTabs.forEach((tab) => {
+        const isActive = tab === tabToSelect;
+        tab.setAttribute("aria-selected", String(isActive));
+        tab.tabIndex = isActive ? 0 : -1;
+      });
+
+      activePhotoTab = tabToSelect;
+      photoGrid.setAttribute("aria-label", tabToSelect.textContent.trim());
+    };
+
+    const rebuildSelectedCollection = (tabToSelect, shouldObserve = true) => {
+      refreshRandomizedPhotoModels(tabToSelect.dataset.photoTab);
+      rebuildPhotoColumns(true, shouldObserve);
+    };
+
+    const clearPhotoTabTransition = () => {
+      window.clearTimeout(photoTabTransitionTimer);
+      window.cancelAnimationFrame(photoTabTransitionFrame);
+      window.cancelAnimationFrame(photoTabRevealFrame);
+      photoTabTransitionTimer = 0;
+      photoTabTransitionFrame = 0;
+      photoTabRevealFrame = 0;
+    };
+
+    const startPhotoTabTransition = () => {
+      photoTabTransitionPhase = "out";
+      photoGrid.classList.remove("is-tab-resetting");
+      photoGrid
+        .querySelectorAll(".photo-tile")
+        .forEach((tile) => tile.classList.add("is-visible"));
+      photoGrid.classList.add("is-tab-fading");
+      photoTabsList.setAttribute("aria-busy", "true");
+
+      photoTabTransitionTimer = window.setTimeout(() => {
+        photoTabTransitionTimer = 0;
+        const tabToDisplay = pendingPhotoTab;
+
+        photoGrid.classList.add("is-tab-resetting");
+        applyPhotoTabSelection(tabToDisplay);
+        rebuildSelectedCollection(tabToDisplay, false);
+
+        const incomingTiles = Array.from(photoGrid.querySelectorAll(".photo-tile"));
+        incomingTiles.forEach((tile) => tile.classList.remove("is-visible"));
+        photoGrid.classList.remove("is-tab-fading");
+        photoTabTransitionPhase = "in";
+        void photoGrid.offsetWidth;
+
+        photoTabTransitionFrame = window.requestAnimationFrame(() => {
+          photoTabTransitionFrame = 0;
+          photoGrid.classList.remove("is-tab-resetting");
+          void photoGrid.offsetWidth;
+
+          photoTabRevealFrame = window.requestAnimationFrame(() => {
+            photoTabRevealFrame = 0;
+            incomingTiles.forEach((tile) => tile.classList.add("is-visible"));
+            observePhotoTiles();
+            refreshPhotographyScrollbar();
+          });
+        });
+
+        photoTabTransitionTimer = window.setTimeout(() => {
+          photoTabTransitionTimer = 0;
+          photoTabTransitionPhase = "idle";
+          photoTabsList.removeAttribute("aria-busy");
+        }, photoTabRevealDuration);
+      }, photoTabRevealStartDelay);
+    };
+
+    const selectPhotoTab = (nextTab) => {
+      if (!nextTab) {
+        return;
+      }
+
+      if (
+        nextTab === pendingPhotoTab &&
+        photoTabTransitionPhase !== "idle"
+      ) {
+        return;
+      }
+
+      if (nextTab === activePhotoTab && photoTabTransitionPhase === "idle") {
+        return;
+      }
+
+      pendingPhotoTab = nextTab;
+      applyPhotoTabVisualSelection(nextTab);
+
+      if (prefersReducedMotion.matches) {
+        clearPhotoTabTransition();
+        photoTabTransitionPhase = "idle";
+        photoGrid.classList.remove("is-tab-fading", "is-tab-resetting");
+        photoTabsList.removeAttribute("aria-busy");
+        applyPhotoTabSelection(nextTab);
+        rebuildSelectedCollection(nextTab);
+        refreshPhotographyScrollbar();
+        return;
+      }
+
+      if (photoTabTransitionPhase === "out") {
+        return;
+      }
+
+      clearPhotoTabTransition();
+      startPhotoTabTransition();
+    };
+
+    photoTabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => selectPhotoTab(tab));
+      tab.addEventListener("keydown", (event) => {
+        if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+          return;
+        }
+
+        event.preventDefault();
+        const lastIndex = photoTabs.length - 1;
+        const nextIndex =
+          event.key === "Home"
+            ? 0
+            : event.key === "End"
+              ? lastIndex
+              : event.key === "ArrowRight"
+                ? (index + 1) % photoTabs.length
+                : (index - 1 + photoTabs.length) % photoTabs.length;
+
+        photoTabs[nextIndex].focus();
+        selectPhotoTab(photoTabs[nextIndex]);
+      });
+    });
+
+    updatePhotoTabIndicator(activePhotoTab);
+    window.addEventListener("load", () => updatePhotoTabIndicator(activePhotoTab));
+    window.addEventListener("resize", () => updatePhotoTabIndicator(activePhotoTab));
+  }
 
   photoGrid.addEventListener("contextmenu", (event) => {
     if (event.target.closest(".photo-tile")) {
@@ -5136,134 +5800,8 @@ const canHover =
   window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 const isMobileLayout = window.matchMedia("(max-width: 640px)");
 const landing = document.querySelector(".landing");
-const landingPatternBase = document.querySelector(".landing-pattern-base");
-const landingPatternFocus = document.querySelector(".landing-pattern-focus");
 const intro = document.querySelector(".intro");
 const locationBlock = document.querySelector(".location");
-
-const initLandingPattern = () => {
-  if (!landing || !landingPatternBase || !landingPatternFocus) {
-    return;
-  }
-
-  const landingPointer = { x: 0, y: 0, active: false };
-  const desktopLineRatios = [1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6];
-  const desktopLineOffsets = [320, 720, 450, 200, 900];
-  const desktopLineDurations = [29, 32, 30, 34, 31];
-  const mobileLineRatios = [1 / 4, 2 / 4, 3 / 4];
-  const mobileLineOffsets = [160, 360, 225];
-  const mobileLineDurations = [21, 24, 22.5];
-  const desktopPatternStep = 1080;
-  const mobilePatternStep = 540;
-
-  const getLandingPatternConfig = () =>
-    isMobileLayout.matches
-      ? {
-          lineRatios: mobileLineRatios,
-          lineOffsets: mobileLineOffsets,
-          lineDurations: mobileLineDurations,
-          step: mobilePatternStep,
-        }
-      : {
-          lineRatios: desktopLineRatios,
-          lineOffsets: desktopLineOffsets,
-          lineDurations: desktopLineDurations,
-          step: desktopPatternStep,
-        };
-
-  const syncLandingPatternFocus = () => {
-    const isFocusActive = canHover && landingPointer.active && !isMobileLayout.matches;
-    const focusOpacity = isFocusActive ? 1 : 0;
-
-    landing.style.setProperty(
-      "--landing-motif-focus-opacity",
-      focusOpacity.toFixed(3)
-    );
-
-    if (!isFocusActive) {
-      return;
-    }
-
-    landing.style.setProperty(
-      "--landing-motif-focus-x",
-      `${landingPointer.x.toFixed(2)}px`
-    );
-    landing.style.setProperty(
-      "--landing-motif-focus-y",
-      `${landingPointer.y.toFixed(2)}px`
-    );
-  };
-
-  const buildLandingPatternLayer = (patternContainer, iconSrc) => {
-    const { lineRatios, lineOffsets, lineDurations, step } =
-      getLandingPatternConfig();
-    const patternHeight = Math.max(landing.scrollHeight, window.innerHeight);
-    const fragment = document.createDocumentFragment();
-
-    lineRatios.forEach((lineRatio, lineIndex) => {
-      landing.style.setProperty(
-        `--landing-line-${lineIndex + 1}`,
-        `${(lineRatio * 100).toFixed(6)}%`
-      );
-
-      const track = document.createElement("div");
-      track.className = "landing-pattern-track";
-      track.style.setProperty("--pattern-x", `var(--landing-line-${lineIndex + 1})`);
-      track.style.setProperty("--landing-pattern-travel", `${step}px`);
-      track.style.setProperty(
-        "--landing-pattern-duration",
-        `${(lineDurations[lineIndex] || lineDurations[lineDurations.length - 1]).toFixed(2)}s`
-      );
-
-      const firstOffset = lineOffsets[lineIndex] || 0;
-      const animationProgress = ((firstOffset % step) + step) % step / step;
-      const duration = lineDurations[lineIndex] || lineDurations[lineDurations.length - 1];
-      track.style.animationDelay = `${(-animationProgress * duration).toFixed(2)}s`;
-
-      for (let iconY = firstOffset - step; iconY <= patternHeight + step; iconY += step) {
-        const icon = document.createElement("img");
-        icon.className = "landing-pattern-icon";
-        icon.src = iconSrc;
-        icon.alt = "";
-        icon.decoding = "async";
-        icon.draggable = false;
-        icon.setAttribute("aria-hidden", "true");
-        icon.style.setProperty("--pattern-y", `${iconY}px`);
-        track.appendChild(icon);
-      }
-
-      fragment.appendChild(track);
-    });
-
-    patternContainer.replaceChildren(fragment);
-  };
-
-  const rebuildLandingPattern = () => {
-    buildLandingPatternLayer(landingPatternBase, "./rsrc/Keyframe-Grise.svg");
-    buildLandingPatternLayer(landingPatternFocus, "./rsrc/Keyframe.svg");
-    syncLandingPatternFocus();
-  };
-
-  if (canHover) {
-    window.addEventListener("pointermove", (event) => {
-      landingPointer.x = event.clientX;
-      landingPointer.y = event.clientY;
-      landingPointer.active = true;
-      syncLandingPatternFocus();
-    });
-
-    window.addEventListener("pointerleave", () => {
-      landingPointer.active = false;
-      syncLandingPatternFocus();
-    });
-  }
-
-  rebuildLandingPattern();
-  window.addEventListener("resize", rebuildLandingPattern);
-  isMobileLayout.addEventListener("change", rebuildLandingPattern);
-};
-
-initLandingPattern();
 
 if (categorySection && categoryCards.length) {
   const pointer = { x: 0, y: 0, active: false };

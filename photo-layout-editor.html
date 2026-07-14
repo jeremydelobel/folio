@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Placement des photos</title>
+    <link rel="stylesheet" href="./photo-layout-editor.css" />
+    <script src="./photo-layout-editor.js" defer></script>
+  </head>
+  <body>
+    <main class="layout-editor">
+      <header class="editor-header">
+        <div class="editor-heading">
+          <h1>Placement des photos</h1>
+          <span class="save-status" id="save-status" aria-live="polite">Chargement…</span>
+        </div>
+
+        <div class="editor-actions">
+          <label class="collection-control" for="collection-select">
+            <span>Onglet</span>
+            <select id="collection-select" aria-label="Onglet à composer">
+              <option value="esports-world-cup">Esports World Cup</option>
+              <option value="rlcs">RLCS</option>
+              <option value="paris-games-week">Paris Games Week</option>
+            </select>
+          </label>
+
+          <button class="text-action" id="undo-layout" type="button" disabled>Annuler</button>
+          <button class="text-action" id="import-layout" type="button">Importer</button>
+          <input id="import-file" type="file" accept="application/json,.json" hidden />
+          <button class="primary-action" id="export-layout" type="button">Exporter</button>
+          <button class="text-action danger-action" id="reset-layout" type="button">Réinitialiser</button>
+        </div>
+      </header>
+
+      <div class="editor-workspace">
+        <section class="canvas-panel" aria-labelledby="canvas-title">
+          <header class="panel-header canvas-header">
+            <h2 id="canvas-title">Grille</h2>
+            <span id="placed-count">0 photo placée</span>
+          </header>
+
+          <div class="layout-canvas" id="layout-canvas" aria-live="polite"></div>
+        </section>
+
+        <aside class="library-panel" id="library-panel" aria-labelledby="library-title">
+          <header class="panel-header library-header">
+            <h2 id="library-title">Photos</h2>
+            <span id="library-count">0 à placer</span>
+          </header>
+
+          <div class="library-filters" role="group" aria-label="Filtrer les photos">
+            <button class="library-filter is-active" type="button" data-library-filter="available">À placer</button>
+            <button class="library-filter" type="button" data-library-filter="all">Toutes</button>
+          </div>
+
+          <div class="photo-library" id="photo-library"></div>
+
+          <div class="library-return-zone" id="library-return-zone" aria-hidden="true">
+            Retirer de la grille
+          </div>
+        </aside>
+      </div>
+
+      <div class="editor-message" id="editor-message" role="status" aria-live="polite"></div>
+    </main>
+  </body>
+</html>

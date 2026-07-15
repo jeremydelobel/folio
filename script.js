@@ -68,12 +68,12 @@ const motionDesignCardAspectRatios = {
   landscape: 16 / 9,
 };
 const videoRoleMap = {
-  m: "Montage",
+  m: "Video Editing",
   md: "Motion Design",
-  fx: "FX",
-  cg: "Étalonnage",
+  fx: "VFX",
+  cg: "Color Grading",
   sd: "Sound Design",
-  dr: "Derush",
+  dr: "Footage Selection",
 };
 const projectPlayerAspectRatios = {
   vertical: 9 / 16,
@@ -933,7 +933,7 @@ const clearProjectPlayerEmbed = () => {
   projectPlayerEmbedShell?.replaceChildren();
 };
 
-const mountProjectPlayerEmbed = (embedUrl, title = "Lecture du projet") => {
+const mountProjectPlayerEmbed = (embedUrl, title = "Project video player") => {
   if (!projectPlayerEmbedShell || !embedUrl) {
     return false;
   }
@@ -1152,7 +1152,7 @@ const openProjectPlayerOverlay = ({
   embedUrl,
   format = "landscape",
   customAspectRatio = null,
-  title = "Lecture du projet",
+  title = "Project video player",
 } = {}) => {
   if (!projectPlayerOverlay || !projectPlayerDialog || !embedUrl) {
     return false;
@@ -1605,6 +1605,10 @@ const initVideoHoverMedia = () => {
     }
 
     const activate = () => {
+      if (prefersReducedMotion.matches) {
+        return;
+      }
+
       clearVideoVisualHoverResetTimer(visual);
       ensureVideoVisualThumbLoaded(visual, { priority: "high" });
       ensureVideoVisualHoverVideoLoaded(visual, { preload: "auto" });
@@ -1644,13 +1648,8 @@ const initVideoHoverMedia = () => {
           return;
         }
 
-        resetVideoVisualStoredHoverTime(visual);
-
-        try {
-          video.currentTime = 0;
-        } catch {}
-
         videoHoverResetTimers.delete(visual);
+        releaseVideoVisualHoverVideo(visual);
       }, videoHoverResumeRetentionDuration);
 
       videoHoverResetTimers.set(visual, timer);
@@ -1689,7 +1688,9 @@ const initVideoProjectLinks = () => {
         videoProjectLinksCache.set(cacheKey, inlineHref);
       }
 
-      void loadVideoProjectLink(projectRoot, folderName);
+      if (!inlineHref) {
+        void loadVideoProjectLink(projectRoot, folderName);
+      }
     } else if (inlineHref) {
       videoProjectLinksCache.set(inlineHref, inlineHref);
     }
@@ -1716,7 +1717,7 @@ const initVideoProjectLinks = () => {
 
       const projectTitle =
         card.querySelector(".video-card-label-value")?.textContent?.trim() ||
-        "Lecture du projet";
+        "Project video player";
 
       openProjectPlayerOverlay({
         embedUrl: resolvedSource.embedUrl,
@@ -2210,7 +2211,7 @@ if (photoGrid) {
       tile.tabIndex = 0;
       tile.setAttribute("role", "button");
       tile.setAttribute("aria-haspopup", "dialog");
-      tile.setAttribute("aria-label", "Ouvrir la photo");
+      tile.setAttribute("aria-label", "Open photo");
 
       return {
         id: photoId,
@@ -2265,7 +2266,7 @@ if (photoGrid) {
 
     if (missingPhotoIds.length) {
       console.error(
-        `Layout photo invalide pour ${currentPhotoTabKey}:`,
+        `Invalid photo layout for ${currentPhotoTabKey}:`,
         missingPhotoIds
       );
       return null;
@@ -3034,7 +3035,6 @@ if (photoGrid) {
       void openPhotoTileLightbox(tile, image);
     };
 
-    tile.addEventListener("pointerenter", preloadFullRes);
     tile.addEventListener("focus", preloadFullRes);
     tile.addEventListener("pointerdown", preloadFullRes);
     tile.addEventListener("pointerup", (event) => {
@@ -3073,28 +3073,34 @@ if (photoGrid) {
       .map((tile) => tile.querySelector(".photo-image"))
       .filter(Boolean);
 
-    if (prefersReducedMotion.matches || !("IntersectionObserver" in window)) {
+    const canObserve = "IntersectionObserver" in window;
+
+    if (!canObserve) {
       tiles.forEach((tile) => tile.classList.add("is-visible"));
       images.forEach((image) => loadPhotoImage(image));
       return;
     }
 
-    tileRevealObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) {
-            return;
-          }
+    if (prefersReducedMotion.matches) {
+      tiles.forEach((tile) => tile.classList.add("is-visible"));
+    } else {
+      tileRevealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) {
+              return;
+            }
 
-          entry.target.classList.add("is-visible");
-          tileRevealObserver.unobserve(entry.target);
-        });
-      },
-      {
-        threshold: 0.02,
-        rootMargin: "0px 0px 14% 0px",
-      }
-    );
+            entry.target.classList.add("is-visible");
+            tileRevealObserver.unobserve(entry.target);
+          });
+        },
+        {
+          threshold: 0.02,
+          rootMargin: "0px 0px 14% 0px",
+        }
+      );
+    }
 
     imageLoadObserver = new IntersectionObserver(
       (entries) => {
@@ -3109,11 +3115,13 @@ if (photoGrid) {
       },
       {
         threshold: 0.01,
-        rootMargin: "900px 0px 900px 0px",
+        rootMargin: "250px 0px 500px 0px",
       }
     );
 
-    tiles.forEach((tile) => tileRevealObserver.observe(tile));
+    if (tileRevealObserver && !prefersReducedMotion.matches) {
+      tiles.forEach((tile) => tileRevealObserver.observe(tile));
+    }
     images.forEach((image) => imageLoadObserver.observe(image));
   };
 
@@ -4527,9 +4535,7 @@ const initVideoTimelineScene = () => {
       : isVerticalDesktopTimeline()
         ? viewportHeight * 0.82
         : viewportHeight * 0.24;
-    const priorityCardCount = videoIsMobileLayout.matches ? 3 : 4;
-
-    videoCards.forEach((card, index) => {
+    videoCards.forEach((card) => {
       const { element, visual } = card;
 
       if (!visual) {
@@ -4547,23 +4553,21 @@ const initVideoTimelineScene = () => {
         rect.left <= viewportWidth + horizontalBuffer &&
         rect.bottom >= -verticalBuffer &&
         rect.top <= viewportHeight + verticalBuffer;
-      const shouldLoadThumb = isWithinMediaRange || index < priorityCardCount;
+      const shouldLoadThumb = isWithinMediaRange;
 
       if (shouldLoadThumb) {
-        const thumbPriority = isInViewport || index < priorityCardCount
-          ? "high"
-          : isWithinMediaRange
-            ? "auto"
-            : "low";
+        const thumbPriority = isInViewport ? "high" : "low";
 
         ensureVideoVisualThumbLoaded(visual, {
           priority: thumbPriority,
+          loading: isInViewport ? "eager" : "lazy",
         });
       }
 
-      if (isWithinMediaRange) {
-        ensureVideoVisualHoverVideoLoaded(visual, { preload: "metadata" });
-      } else {
+      if (
+        !isWithinMediaRange &&
+        !visual.classList.contains("is-hover-media-active")
+      ) {
         releaseVideoVisualHoverVideo(visual);
       }
 
@@ -5893,7 +5897,40 @@ const intro = document.querySelector(".intro");
 const locationBlock = document.querySelector(".location");
 
 if (categorySection && categoryCards.length) {
+  const photographySlideshowSources = Object.freeze([
+    "./rsrc/photos/esports-world-cup-2026/@jeremy.delobel_09072026_165849.webp",
+    "./rsrc/photos/esports-world-cup-2026/@jeremy.delobel_09072026_173349.webp",
+    "./rsrc/photos/esports-world-cup-2026/@jeremy.delobel_09072026_200824.webp",
+    "./rsrc/photos/esports-world-cup-2026/@jeremy.delobel_09072026_211521.webp",
+    "./rsrc/photos/esports-world-cup-2026/@jeremy.delobel_09072026_211848-2.webp",
+    "./rsrc/photos/esports-world-cup-2026/@jeremy.delobel_09072026_211942.webp",
+    "./rsrc/photos/esports-world-cup-2026/@jeremy.delobel_09072026_212053.webp",
+    "./rsrc/photos/esports-world-cup-2026/@jeremy.delobel_09072026_212124.webp",
+    "./rsrc/photos/esports-world-cup-2026/@jeremy.delobel_12072026_193500.webp",
+    "./rsrc/photos/esports-world-cup-2026/@jeremy.delobel_12072026_193753.webp",
+    "./rsrc/photos/esports-world-cup-2026/@jeremy.delobel_12072026_193932.webp",
+    "./rsrc/photos/esports-world-cup-2026/@jeremy.delobel_12072026_195114.webp",
+    "./rsrc/photos/rlcs-paris-major-2026/@jeremy.delobel_24052026_175741.webp",
+    "./rsrc/photos/rlcs-paris-major-2026/@jeremy.delobel_24052026_181701.webp",
+    "./rsrc/photos/rlcs-paris-major-2026/@jeremy.delobel_24052026_211504.webp",
+    "./rsrc/photos/rlcs-paris-major-2026/@jeremy.delobel_24052026_211618.webp",
+    "./rsrc/photos/rlcs-paris-major-2026/@jeremy.delobel_24052026_212602.webp",
+    "./rsrc/photos/rlcs-paris-major-2026/@jeremy.delobel_24052026_212643.webp",
+    "./rsrc/photos/rlcs-paris-major-2026/@jeremy.delobel_24052026_212927.webp",
+    "./rsrc/photos/editing-con-paris-2026/@jeremy.delobel_15022026_133629.webp",
+    "./rsrc/photos/editing-con-paris-2026/@jeremy.delobel_15022026_160914.webp",
+    "./rsrc/photos/editing-con-paris-2026/@jeremy.delobel_15022026_171313.webp",
+    "./rsrc/photos/editing-con-paris-2026/@jeremy.delobel_15022026_185303.webp",
+    "./rsrc/photos/paris-games-week-2025/A7404435_JérémyDelobel_2025.webp",
+    "./rsrc/photos/paris-games-week-2025/A7404644_JérémyDelobel_2025.webp",
+    "./rsrc/photos/paris-games-week-2025/A7404964_JérémyDelobel_2025.webp",
+    "./rsrc/photos/paris-games-week-2025/A7404967_JérémyDelobel_2025.webp",
+    "./rsrc/photos/paris-games-week-2025/A7405910_JérémyDelobel_2025.webp",
+    "./rsrc/photos/paris-games-week-2025/A7406101_JérémyDelobel_2025.webp",
+    "./rsrc/photos/paris-games-week-2025/A7407151_JérémyDelobel_2025.webp",
+  ]);
   const pointer = { x: 0, y: 0, active: false };
+  const categoryVideos = [];
   const cards = Array.from(categoryCards).map((card, index) => ({
     element: card,
     currentX: 0,
@@ -5911,11 +5948,157 @@ if (categorySection && categoryCards.length) {
     card.classList.add(fallback ? "is-media-fallback" : "is-media-ready");
   };
 
+  const playCategoryVideo = (video) => {
+    const source = video?.querySelector("source");
+    const sourceUrl = source?.dataset.src?.trim() || "";
+
+    if (!video || !source || !sourceUrl) {
+      return;
+    }
+
+    if (!source.getAttribute("src")) {
+      source.setAttribute("src", sourceUrl);
+      video.load();
+    }
+
+    const playPromise = video.play();
+
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(() => {});
+    }
+  };
+
+  const photographySlideshow = categorySection.querySelector(
+    "[data-photography-slideshow]"
+  );
+  const photographySlideshowCard = photographySlideshow?.closest(
+    ".category-card"
+  );
+  const photographySlideshowImages = photographySlideshow
+    ? Array.from(photographySlideshow.querySelectorAll(".category-photo"))
+    : [];
+  let photographySlideshowQueue = [];
+  let photographySlideshowActiveIndex = -1;
+  let photographySlideshowCurrentSource = "";
+  let photographySlideshowTimer = 0;
+  let isPhotographySlideshowChanging = false;
+  let photographySlideshowPreloadedSource = "";
+  let photographySlideshowPreloader = null;
+
+  const refillPhotographySlideshowQueue = () => {
+    photographySlideshowQueue = photographySlideshowSources.slice();
+
+    for (let index = photographySlideshowQueue.length - 1; index > 0; index -= 1) {
+      const randomIndex = Math.floor(Math.random() * (index + 1));
+      [photographySlideshowQueue[index], photographySlideshowQueue[randomIndex]] = [
+        photographySlideshowQueue[randomIndex],
+        photographySlideshowQueue[index],
+      ];
+    }
+
+    if (
+      photographySlideshowQueue.length > 1 &&
+      photographySlideshowQueue[0] === photographySlideshowCurrentSource
+    ) {
+      [photographySlideshowQueue[0], photographySlideshowQueue[1]] = [
+        photographySlideshowQueue[1],
+        photographySlideshowQueue[0],
+      ];
+    }
+  };
+
+  const takeNextPhotographySlideshowSource = () => {
+    if (!photographySlideshowQueue.length) {
+      refillPhotographySlideshowQueue();
+    }
+
+    return photographySlideshowQueue.shift() || "";
+  };
+
+  const prepareNextPhotographySlide = () => {
+    if (photographySlideshowPreloadedSource) {
+      return;
+    }
+
+    photographySlideshowPreloadedSource =
+      takeNextPhotographySlideshowSource();
+    photographySlideshowPreloader = new Image();
+    photographySlideshowPreloader.decoding = "async";
+    photographySlideshowPreloader.src = photographySlideshowPreloadedSource;
+  };
+
+  const scheduleNextPhotographySlide = () => {
+    window.clearTimeout(photographySlideshowTimer);
+
+    if (document.hidden || photographySlideshowImages.length < 2) {
+      return;
+    }
+
+    photographySlideshowTimer = window.setTimeout(() => {
+      void showNextPhotographySlide();
+    }, 2000);
+  };
+
+  const showNextPhotographySlide = async () => {
+    if (
+      isPhotographySlideshowChanging ||
+      !photographySlideshowCard ||
+      photographySlideshowImages.length < 2
+    ) {
+      return;
+    }
+
+    isPhotographySlideshowChanging = true;
+    const source =
+      photographySlideshowPreloadedSource ||
+      takeNextPhotographySlideshowSource();
+    photographySlideshowPreloadedSource = "";
+    photographySlideshowPreloader = null;
+    const nextIndex = photographySlideshowActiveIndex === 0 ? 1 : 0;
+    const nextImage = photographySlideshowImages[nextIndex];
+    const previousImage =
+      photographySlideshowActiveIndex >= 0
+        ? photographySlideshowImages[photographySlideshowActiveIndex]
+        : null;
+
+    nextImage.classList.remove("is-active");
+    nextImage.src = source;
+
+    try {
+      await nextImage.decode();
+    } catch {
+      if (!nextImage.complete || nextImage.naturalWidth === 0) {
+        isPhotographySlideshowChanging = false;
+        window.setTimeout(() => {
+          void showNextPhotographySlide();
+        }, 100);
+        return;
+      }
+    }
+
+    window.requestAnimationFrame(() => {
+      nextImage.classList.add("is-active");
+      previousImage?.classList.remove("is-active");
+      photographySlideshowActiveIndex = nextIndex;
+      photographySlideshowCurrentSource = source;
+      isPhotographySlideshowChanging = false;
+      markCategoryCardMediaReady(photographySlideshowCard);
+      prepareNextPhotographySlide();
+      scheduleNextPhotographySlide();
+    });
+  };
+
+  if (photographySlideshowImages.length >= 2) {
+    void showNextPhotographySlide();
+  }
+
   cards.forEach(({ element: card }) => {
     const video = card.querySelector(".category-video");
 
     if (!video) {
-      markCategoryCardMediaReady(card, true);
+      if (!card.querySelector("[data-photography-slideshow]")) {
+        markCategoryCardMediaReady(card, true);
+      }
       return;
     }
 
@@ -5927,14 +6110,32 @@ if (categorySection && categoryCards.length) {
       markCategoryCardMediaReady(card, true);
     };
 
-    if (video.readyState >= 2) {
+    const hasPoster = video.hasAttribute("poster");
+
+    if (hasPoster || video.readyState >= 2) {
       onMediaReady();
     } else {
       video.addEventListener("loadeddata", onMediaReady, { once: true });
       video.addEventListener("canplay", onMediaReady, { once: true });
       video.addEventListener("error", onMediaError, { once: true });
     }
+
+    categoryVideos.push(video);
+    playCategoryVideo(video);
   });
+
+  if (categoryVideos.length || photographySlideshow) {
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        categoryVideos.forEach((video) => video.pause());
+        window.clearTimeout(photographySlideshowTimer);
+        return;
+      }
+
+      categoryVideos.forEach((video) => playCategoryVideo(video));
+      scheduleNextPhotographySlide();
+    });
+  }
 
   const updateMobileLandingLayout = () => {
     if (!landing || !isMobileLayout.matches) {
@@ -6073,16 +6274,35 @@ if (categorySection && categoryCards.length) {
     updateTargets();
   };
 
+  let categoryAnimationFrame = 0;
+
   const animate = () => {
+    let shouldContinue = false;
+
     cards.forEach((card) => {
       card.currentX += (card.targetX - card.currentX) * 0.08;
       card.currentY += (card.targetY - card.currentY) * 0.08;
+
+      if (
+        Math.abs(card.targetX - card.currentX) > 0.02 ||
+        Math.abs(card.targetY - card.currentY) > 0.02
+      ) {
+        shouldContinue = true;
+      }
 
       card.element.style.setProperty("--mx", `${card.currentX.toFixed(2)}px`);
       card.element.style.setProperty("--my", `${card.currentY.toFixed(2)}px`);
     });
 
-    requestAnimationFrame(animate);
+    categoryAnimationFrame = shouldContinue
+      ? requestAnimationFrame(animate)
+      : 0;
+  };
+
+  const requestCategoryAnimation = () => {
+    if (!categoryAnimationFrame) {
+      categoryAnimationFrame = requestAnimationFrame(animate);
+    }
   };
 
   if (canHover) {
@@ -6091,14 +6311,14 @@ if (categorySection && categoryCards.length) {
       pointer.y = event.clientY;
       pointer.active = true;
       updateTargets();
+      requestCategoryAnimation();
     });
 
     window.addEventListener("pointerleave", () => {
       pointer.active = false;
       updateTargets();
+      requestCategoryAnimation();
     });
-
-    animate();
   }
 
   window.addEventListener("resize", syncLayout);

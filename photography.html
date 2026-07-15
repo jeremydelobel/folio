@@ -1,13 +1,52 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jérémy Delobel - Photographie</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <title>Esports Photography Portfolio — Jérémy Delobel</title>
+    <meta
+      name="description"
+      content="Selected event and esports photography by Jérémy Delobel, including the Esports World Cup, RLCS and Paris Games Week."
+    />
+    <link rel="canonical" href="https://jeremydelobel.fr/photography.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Jérémy Delobel" />
+    <meta
+      property="og:title"
+      content="Esports Photography Portfolio — Jérémy Delobel"
+    />
+    <meta
+      property="og:description"
+      content="Selected event and esports photography by Jérémy Delobel, including the Esports World Cup, RLCS and Paris Games Week."
+    />
+    <meta property="og:url" content="https://jeremydelobel.fr/photography.html" />
+    <meta property="og:image" content="https://jeremydelobel.fr/PreviewOpenGraph.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Collage showcasing Jérémy Delobel's YouTube and esports portfolio."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Esports Photography Portfolio — Jérémy Delobel"
+    />
+    <meta
+      name="twitter:description"
+      content="Selected event and esports photography by Jérémy Delobel, including the Esports World Cup, RLCS and Paris Games Week."
+    />
+    <meta name="twitter:image" content="https://jeremydelobel.fr/PreviewOpenGraph.jpg" />
+    <meta
+      name="twitter:image:alt"
+      content="Collage showcasing Jérémy Delobel's YouTube and esports portfolio."
+    />
+    <link rel="stylesheet" href="./styles.css?v=20260715-home-media-2" />
     <link rel="stylesheet" href="./rsrc/vendor/lenis/lenis.css" />
     <script src="./rsrc/vendor/lenis/lenis.min.js" defer></script>
-    <script src="./script.js" defer></script>
+    <script src="./script.js?v=20260715-home-media" defer></script>
   </head>
   <body class="photography-page">
     <div class="page-transition is-visible" aria-hidden="true"></div>
@@ -20,19 +59,19 @@
       </button>
 
       <h1 class="folio-title text-reveal-mask text-line-1">
-        <span class="text-reveal-value" data-i18n="photoPageTitle">Photographie</span>
+        <span class="text-reveal-value" data-i18n="photoPageTitle">Photography</span>
       </h1>
 
-      <nav class="photo-tabs" aria-label="Collections photographiques">
+      <nav class="photo-tabs" aria-label="Photo collections">
         <div class="photo-tabs-list" role="tablist" aria-label="Collections">
-          <button class="photo-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="photo-grid" data-photo-tab="gallery">Galerie</button>
+          <button class="photo-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="photo-grid" data-photo-tab="gallery">Gallery</button>
           <button class="photo-tab" type="button" role="tab" aria-selected="false" aria-controls="photo-grid" data-photo-tab="esports-world-cup" tabindex="-1">Esports World Cup</button>
           <button class="photo-tab" type="button" role="tab" aria-selected="false" aria-controls="photo-grid" data-photo-tab="rlcs" tabindex="-1">RLCS</button>
           <button class="photo-tab" type="button" role="tab" aria-selected="false" aria-controls="photo-grid" data-photo-tab="paris-games-week" tabindex="-1">Paris Games Week</button>
         </div>
       </nav>
 
-      <section class="photo-grid" id="photo-grid" role="tabpanel" aria-label="Galerie">
+      <section class="photo-grid" id="photo-grid" role="tabpanel" aria-label="Gallery">
         <article class="photo-tile">
           <img class="photo-image" src="data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=" data-src="./rsrc/photos/esports-world-cup-2026/@jeremy.delobel_09072026_165849.webp" alt="" width="1000" height="563" loading="lazy" decoding="async" />
         </article>
@@ -272,7 +311,7 @@
         </article>
       </section>
 
-      <nav class="social-links social-links-inline" aria-label="Réseaux sociaux">
+      <nav class="social-links social-links-inline" aria-label="Social media">
         <a
           class="social-link"
           href="https://x.com/kotarow28"
@@ -294,7 +333,7 @@
         <a
           class="social-link"
           href="mailto:kotarow.montage@gmail.com"
-          aria-label="Mail"
+          aria-label="Email"
         >
           <img src="./rsrc/social-icons/mail.svg" alt="" />
         </a>
@@ -307,7 +346,7 @@
         <button
           class="photo-lightbox-backdrop"
           type="button"
-          aria-label="Fermer la photo"
+          aria-label="Close photo"
           data-photo-lightbox-close
         ></button>
 
@@ -315,7 +354,7 @@
           class="photo-lightbox-stage"
           role="dialog"
           aria-modal="true"
-          aria-label="Photo agrandie"
+          aria-label="Enlarged photo"
         >
           <div class="photo-lightbox-canvas-shell" aria-hidden="true">
             <canvas class="photo-lightbox-canvas photo-lightbox-canvas-lowres"></canvas>
@@ -327,7 +366,7 @@
         <button
           class="photo-lightbox-close"
           type="button"
-          aria-label="Fermer la photo"
+          aria-label="Close photo"
           data-photo-lightbox-close
         >
           <img src="./rsrc/Croix.svg" alt="" />

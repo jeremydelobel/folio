@@ -582,6 +582,36 @@ html.lenis.lenis-smooth
   opacity: 1;
 }
 
+.category-photo-slideshow {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #111111;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.category-card.is-media-ready .category-photo-slideshow {
+  opacity: 1;
+}
+
+.category-photo {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 520ms ease;
+  will-change: opacity;
+}
+
+.category-photo.is-active {
+  z-index: 1;
+  opacity: 1;
+}
+
 .category-card p,
 .video-card-date-row,
 .video-card-label-row {
@@ -1345,6 +1375,10 @@ body.is-ready .video-timeline-card.is-revealed .video-card-label-mask .video-car
     animation: none;
   }
 
+  .category-photo {
+    transition: none;
+  }
+
   body.is-ready .video-timeline-card.is-revealed .video-card-frame {
     clip-path: inset(0 0 0 0);
   }
@@ -1668,12 +1702,38 @@ body.is-ready .video-timeline-card.is-revealed .video-card-label-mask .video-car
   }
 
   .photo-tabs-list {
-    justify-content: flex-start;
-    min-width: max-content;
-    gap: 1.5rem;
+    justify-content: center;
+    min-width: 100%;
+    gap: clamp(0.5rem, 2.5vw, 1.5rem);
+  }
+
+  .photo-tab {
+    font-size: clamp(12px, 3.75vw, 15px);
   }
 
   .photo-column {
     gap: 0.75rem;
+  }
+}
+
+@media (orientation: landscape) and (min-width: 641px) and (max-width: 960px) and (max-height: 500px) {
+  .landing {
+    min-height: 100svh;
+  }
+
+  .categories {
+    width: calc(100vw - 4rem);
+    height: auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1rem, 3vw, 2rem);
+    align-items: start;
+    transform: translate(-50%, -50%);
+  }
+
+  .category-card {
+    position: static;
+    width: 100%;
+    transform: none;
   }
 }

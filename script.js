@@ -2822,13 +2822,25 @@ if (photoGrid) {
         return;
       }
 
+      const expectedSource = image.dataset.displaySrc || image.dataset.src || "";
+      let isFinished = false;
+
       const finish = (didLoad) => {
+        if (isFinished) {
+          return;
+        }
+
+        isFinished = true;
         image.removeEventListener("load", handleLoad);
         image.removeEventListener("error", handleError);
         resolve(didLoad);
       };
 
-      const handleLoad = () => {
+      const handleLoad = async () => {
+        try {
+          await image.decode();
+        } catch {}
+
         finish(image.naturalWidth > 0 && image.naturalHeight > 0);
       };
 
@@ -2836,7 +2848,13 @@ if (photoGrid) {
         finish(false);
       };
 
-      if (image.complete && image.naturalWidth > 0 && image.naturalHeight > 0) {
+      if (
+        image.dataset.loaded === "true" &&
+        image.dataset.loadedSource === expectedSource &&
+        image.complete &&
+        image.naturalWidth > 0 &&
+        image.naturalHeight > 0
+      ) {
         resolve(true);
         return;
       }
@@ -2846,7 +2864,7 @@ if (photoGrid) {
       loadPhotoImage(image);
 
       if (image.complete) {
-        handleLoad();
+        void handleLoad();
       }
     });
 
@@ -3106,6 +3124,11 @@ if (photoGrid) {
       return;
     }
 
+    if (!shouldObserve) {
+      tileRevealObserver?.disconnect();
+      imageLoadObserver?.disconnect();
+    }
+
     currentPhotoColumns = nextColumns;
     photoGrid.innerHTML = "";
 
@@ -3195,6 +3218,7 @@ if (photoGrid) {
     let photoTabTransitionTimer = 0;
     let photoTabTransitionFrame = 0;
     let photoTabRevealFrame = 0;
+    let photoTabTransitionToken = 0;
     let photoTabTransitionPhase = "idle";
     const photoTabRevealStartDelay = 320;
     const photoTabRevealDuration = 900;
@@ -3240,7 +3264,44 @@ if (photoGrid) {
       rebuildPhotoColumns(true, shouldObserve);
     };
 
+    const preloadPhotoTabLeadImage = (tabToSelect) => {
+      const tabKey = tabToSelect?.dataset.photoTab;
+      const leadRow = photoEditorialLayouts[tabKey]?.[0];
+
+      if (!leadRow || leadRow.type !== "featured") {
+        return Promise.resolve(null);
+      }
+
+      const leadModel = allPhotoModels.find(
+        (model) => model.id === leadRow.photo
+      );
+
+      return leadModel
+        ? preloadPhotoFullResSource(getPhotoFullResSource(leadModel.image))
+        : Promise.resolve(null);
+    };
+
+    const waitForPhotoTabLeadImages = async (tabToSelect) => {
+      const preloadPromise = preloadPhotoTabLeadImage(tabToSelect);
+
+      if (currentPhotoLayout !== "editorial") {
+        await preloadPromise;
+        return;
+      }
+
+      const leadGroup = photoGrid.firstElementChild;
+      const leadImages = leadGroup
+        ? Array.from(leadGroup.querySelectorAll(".photo-image"))
+        : [];
+
+      await Promise.allSettled([
+        preloadPromise,
+        ...leadImages.map((image) => waitForPhotoImageReady(image)),
+      ]);
+    };
+
     const clearPhotoTabTransition = () => {
+      photoTabTransitionToken += 1;
       window.clearTimeout(photoTabTransitionTimer);
       window.cancelAnimationFrame(photoTabTransitionFrame);
       window.cancelAnimationFrame(photoTabRevealFrame);
@@ -3250,6 +3311,7 @@ if (photoGrid) {
     };
 
     const startPhotoTabTransition = () => {
+      const transitionToken = ++photoTabTransitionToken;
       photoTabTransitionPhase = "out";
       photoGrid.classList.remove("is-tab-resetting");
       photoGrid
@@ -3268,28 +3330,36 @@ if (photoGrid) {
 
         const incomingTiles = Array.from(photoGrid.querySelectorAll(".photo-tile"));
         incomingTiles.forEach((tile) => tile.classList.remove("is-visible"));
-        photoGrid.classList.remove("is-tab-fading");
         photoTabTransitionPhase = "in";
         void photoGrid.offsetWidth;
 
-        photoTabTransitionFrame = window.requestAnimationFrame(() => {
-          photoTabTransitionFrame = 0;
-          photoGrid.classList.remove("is-tab-resetting");
+        void waitForPhotoTabLeadImages(tabToDisplay).then(() => {
+          if (transitionToken !== photoTabTransitionToken) {
+            return;
+          }
+
+          photoGrid.classList.remove("is-tab-fading");
           void photoGrid.offsetWidth;
 
-          photoTabRevealFrame = window.requestAnimationFrame(() => {
-            photoTabRevealFrame = 0;
-            incomingTiles.forEach((tile) => tile.classList.add("is-visible"));
-            observePhotoTiles();
-            refreshPhotographyScrollbar();
-          });
-        });
+          photoTabTransitionFrame = window.requestAnimationFrame(() => {
+            photoTabTransitionFrame = 0;
+            photoGrid.classList.remove("is-tab-resetting");
+            void photoGrid.offsetWidth;
 
-        photoTabTransitionTimer = window.setTimeout(() => {
-          photoTabTransitionTimer = 0;
-          photoTabTransitionPhase = "idle";
-          photoTabsList.removeAttribute("aria-busy");
-        }, photoTabRevealDuration);
+            photoTabRevealFrame = window.requestAnimationFrame(() => {
+              photoTabRevealFrame = 0;
+              incomingTiles.forEach((tile) => tile.classList.add("is-visible"));
+              observePhotoTiles();
+              refreshPhotographyScrollbar();
+            });
+          });
+
+          photoTabTransitionTimer = window.setTimeout(() => {
+            photoTabTransitionTimer = 0;
+            photoTabTransitionPhase = "idle";
+            photoTabsList.removeAttribute("aria-busy");
+          }, photoTabRevealDuration);
+        });
       }, photoTabRevealStartDelay);
     };
 
@@ -3311,15 +3381,34 @@ if (photoGrid) {
 
       pendingPhotoTab = nextTab;
       applyPhotoTabVisualSelection(nextTab);
+      void preloadPhotoTabLeadImage(nextTab);
 
       if (prefersReducedMotion.matches) {
         clearPhotoTabTransition();
-        photoTabTransitionPhase = "idle";
-        photoGrid.classList.remove("is-tab-fading", "is-tab-resetting");
-        photoTabsList.removeAttribute("aria-busy");
+        const transitionToken = ++photoTabTransitionToken;
+        photoTabTransitionPhase = "in";
+        photoGrid.classList.add("is-tab-fading", "is-tab-resetting");
+        photoTabsList.setAttribute("aria-busy", "true");
         applyPhotoTabSelection(nextTab);
-        rebuildSelectedCollection(nextTab);
-        refreshPhotographyScrollbar();
+        rebuildSelectedCollection(nextTab, false);
+
+        const incomingTiles = Array.from(
+          photoGrid.querySelectorAll(".photo-tile")
+        );
+        incomingTiles.forEach((tile) => tile.classList.remove("is-visible"));
+
+        void waitForPhotoTabLeadImages(nextTab).then(() => {
+          if (transitionToken !== photoTabTransitionToken) {
+            return;
+          }
+
+          photoGrid.classList.remove("is-tab-fading", "is-tab-resetting");
+          incomingTiles.forEach((tile) => tile.classList.add("is-visible"));
+          observePhotoTiles();
+          refreshPhotographyScrollbar();
+          photoTabTransitionPhase = "idle";
+          photoTabsList.removeAttribute("aria-busy");
+        });
         return;
       }
 

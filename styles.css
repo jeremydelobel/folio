@@ -120,7 +120,8 @@ button {
 }
 
 .back-button,
-.showreel-button {
+.showreel-button,
+.photo-project-gallery-button {
   position: fixed;
   top: 2rem;
   appearance: none;
@@ -143,7 +144,8 @@ button {
   left: 2rem;
 }
 
-.showreel-button {
+.showreel-button,
+.photo-project-gallery-button {
   right: 2rem;
 }
 
@@ -165,7 +167,8 @@ button {
 }
 
 .back-button:hover,
-.showreel-button:hover {
+.showreel-button:hover,
+.photo-project-gallery-button:hover {
   opacity: 0.7;
 }
 
@@ -776,6 +779,70 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   gap: 1rem;
 }
 
+.photo-project-page {
+  --photo-project-grid-width: min(885px, calc(75vw - 210px));
+  --photo-project-layout-offset: 8.5rem;
+}
+
+.photo-project-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr) var(--photo-project-grid-width)
+    minmax(0, 1fr);
+  align-items: start;
+  width: 100%;
+  margin-top: var(--photo-project-layout-offset);
+}
+
+.photo-project-heading {
+  grid-column: 1;
+  grid-row: 1;
+  position: sticky;
+  top: calc(2rem + var(--photo-project-layout-offset));
+  align-self: start;
+  justify-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  max-width: calc(100% - 2rem);
+  margin: 0;
+  padding-right: 2rem;
+  z-index: 2;
+}
+
+.photo-project-title {
+  display: flex;
+  margin: 0;
+  font-family: "Neue Montreal", sans-serif;
+  font-size: var(--project-header-title-size);
+  line-height: 1.08;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.photo-project-client {
+  display: flex;
+  margin: 0;
+  font-family: "Neue Montreal", sans-serif;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+
+.photo-project-title .text-reveal-value,
+.photo-project-client .text-reveal-value {
+  display: block;
+}
+
+.photo-project-layout > .photo-grid.is-editorial {
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+  margin: 0;
+}
+
 .photo-editorial-composition,
 .photo-editorial-pair {
   display: grid;
@@ -1064,7 +1131,8 @@ body.is-ready .text-reveal-mask .text-reveal-value {
 
 .video-page .back-button,
 .video-page .showreel-button,
-.photography-page .back-button {
+.photography-page .back-button,
+.photography-page .photo-project-gallery-button {
   top: var(--project-header-inset);
   z-index: 40;
   color: #111111;
@@ -1459,6 +1527,23 @@ body.is-ready .video-timeline-card.is-revealed .video-card-label-mask .video-car
     width: calc(75vw - 2.25rem);
   }
 
+  .photo-project-layout {
+    display: block;
+  }
+
+  .photo-project-heading {
+    position: static;
+    width: calc(75vw - 2.25rem);
+    max-width: none;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  .photo-project-layout > .photo-grid.is-editorial {
+    width: calc(75vw - 2.25rem);
+    margin: 1.75rem auto 0;
+  }
+
   .video-timeline-card {
     width: var(--card-width, clamp(260px, 38vw, 400px));
   }
@@ -1476,6 +1561,10 @@ body.is-ready .video-timeline-card.is-revealed .video-card-label-mask .video-car
     --project-header-inset: 1.25rem;
   }
 
+  .photo-project-page {
+    --photo-project-layout-offset: 6.5rem;
+  }
+
   .landing {
     min-height: 100svh;
     --mobile-side-padding: 15vw;
@@ -1490,7 +1579,8 @@ body.is-ready .video-timeline-card.is-revealed .video-card-label-mask .video-car
   }
 
   .photo-lightbox-close,
-  .showreel-button {
+  .showreel-button,
+  .photo-project-gallery-button {
     top: 1.25rem;
     right: 1.25rem;
   }
@@ -1659,6 +1749,19 @@ body.is-ready .video-timeline-card.is-revealed .video-card-label-mask .video-car
   .photo-grid.is-editorial {
     width: calc(100vw - 2.5rem);
     gap: 0.75rem;
+  }
+
+  .photo-project-heading {
+    width: calc(100vw - 2.5rem);
+  }
+
+  .photo-project-title {
+    font-size: var(--project-header-title-size);
+  }
+
+  .photo-project-layout > .photo-grid.is-editorial {
+    width: calc(100vw - 2.5rem);
+    margin-top: 1.5rem;
   }
 
   .photo-editorial-composition,

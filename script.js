@@ -25,6 +25,7 @@ const videoScrollbar = document.querySelector(".video-scrollbar");
 const videoScrollbarTrack = document.querySelector(".video-scrollbar-track");
 const videoScrollbarThumb = document.querySelector(".video-scrollbar-thumb");
 const folioTitle = document.querySelector(".folio-title");
+const photoProjectHeading = document.querySelector(".photo-project-heading");
 const navigationEntry = performance.getEntriesByType("navigation")[0];
 const isBackForwardLoad = navigationEntry?.type === "back_forward";
 const isPhotographyPage = document.body.classList.contains("photography-page");
@@ -94,6 +95,8 @@ let activePhotoLightboxCanvasRenderToken = 0;
 let photoLightboxCanvasMorphFrame = 0;
 let photoLightboxCleanupTimer = 0;
 let photoLightboxCaptionTimer = 0;
+let isPhotoProjectHeadingFrozen = false;
+let photoProjectHeadingInlineStyle = null;
 let syncPhotographyScrollbar = null;
 let syncFolioLenis = null;
 let stopFolioLenis = () => {};
@@ -102,6 +105,44 @@ const folioLenisWheelMultiplier = 1;
 const folioLenisTouchMultiplier = 1.4;
 
 const isPhotoLightboxOpen = () => isPhotoLightboxActive;
+
+const freezePhotoProjectHeading = () => {
+  if (
+    !photoProjectHeading ||
+    isPhotoProjectHeadingFrozen ||
+    window.getComputedStyle(photoProjectHeading).position !== "sticky"
+  ) {
+    return;
+  }
+
+  const rect = photoProjectHeading.getBoundingClientRect();
+  photoProjectHeadingInlineStyle = photoProjectHeading.getAttribute("style");
+  isPhotoProjectHeadingFrozen = true;
+
+  Object.assign(photoProjectHeading.style, {
+    position: "fixed",
+    top: `${rect.top}px`,
+    left: `${rect.left}px`,
+    width: `${rect.width}px`,
+    maxWidth: "none",
+    margin: "0",
+  });
+};
+
+const restorePhotoProjectHeading = () => {
+  if (!photoProjectHeading || !isPhotoProjectHeadingFrozen) {
+    return;
+  }
+
+  if (photoProjectHeadingInlineStyle === null) {
+    photoProjectHeading.removeAttribute("style");
+  } else {
+    photoProjectHeading.setAttribute("style", photoProjectHeadingInlineStyle);
+  }
+
+  photoProjectHeadingInlineStyle = null;
+  isPhotoProjectHeadingFrozen = false;
+};
 
 const ensurePhotoLightboxCaptionDom = () => {
   if (!photoLightboxStage) {
@@ -1516,6 +1557,7 @@ const finishPhotoLightboxClose = ({ restoreFocus = true } = {}) => {
   isPhotoLightboxTransitioning = false;
   isPhotoLightboxLoading = false;
   syncSharedMediaOverlayState();
+  restorePhotoProjectHeading();
 
   if (imageToRestore) {
     void imageToRestore.offsetWidth;
@@ -1996,6 +2038,8 @@ if (photoGrid) {
     rlcs: "rlcs-paris-major-2026",
     "paris-games-week": "paris-games-week-2025",
   };
+  const requestedPhotoProjectKey =
+    document.body.dataset.photoProject?.trim() || "";
   const photoEditorialLayouts = {
     "esports-world-cup": [
       {
@@ -2932,6 +2976,7 @@ if (photoGrid) {
     photoLightbox.setAttribute("aria-hidden", "false");
 
     applyPhotoLightboxRect(originRect);
+    freezePhotoProjectHeading();
     syncSharedMediaOverlayState();
 
     if (prefersReducedMotion.matches) {
@@ -3217,7 +3262,19 @@ if (photoGrid) {
     }
   };
 
-  refreshRandomizedPhotoModels();
+  const isKnownPhotoProject =
+    requestedPhotoProjectKey &&
+    Object.hasOwn(photoTabFolderMap, requestedPhotoProjectKey) &&
+    Object.hasOwn(photoEditorialLayouts, requestedPhotoProjectKey);
+  const initialPhotoCollectionKey = isKnownPhotoProject
+    ? requestedPhotoProjectKey
+    : "gallery";
+
+  if (requestedPhotoProjectKey && !isKnownPhotoProject) {
+    console.error(`Unknown photo project: ${requestedPhotoProjectKey}`);
+  }
+
+  refreshRandomizedPhotoModels(initialPhotoCollectionKey);
   rebuildPhotoColumns();
 
   if (photoTabs.length && photoTabsList) {

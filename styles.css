@@ -214,6 +214,16 @@ body.is-media-overlay-open .showreel-button-label-close {
   opacity: 1;
 }
 
+.photography-page:has(.photo-lightbox.is-visible) .back-button {
+  pointer-events: none;
+}
+
+.photography-page:has(.photo-lightbox.is-visible)
+  .photo-project-gallery-button {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 html.is-media-overlay-open,
 body.is-media-overlay-open {
   overflow: hidden;
@@ -245,11 +255,9 @@ html.lenis.lenis-stopped.is-media-overlay-open:has(body.photography-page) {
 }
 
 .photo-lightbox {
-  position: fixed;
-  inset: 0;
+  position: static;
   visibility: hidden;
   pointer-events: none;
-  z-index: 50;
   transition: visibility 0s linear 540ms;
 }
 
@@ -275,8 +283,9 @@ html.lenis.lenis-stopped.is-media-overlay-open:has(body.photography-page) {
 }
 
 .photo-lightbox-backdrop {
-  position: absolute;
+  position: fixed;
   inset: 0;
+  z-index: 2;
   appearance: none;
   border: 0;
   background: rgba(255, 255, 255, 0.95);
@@ -317,16 +326,14 @@ html.lenis.lenis-stopped.is-media-overlay-open:has(body.photography-page) {
 
 .photo-lightbox-stage {
   position: fixed;
-  z-index: 1;
+  z-index: 2;
   margin: 0;
   overflow: hidden;
-  transform: translateZ(0);
   transition:
     top 520ms cubic-bezier(0.22, 1, 0.36, 1),
     left 520ms cubic-bezier(0.22, 1, 0.36, 1),
     width 520ms cubic-bezier(0.22, 1, 0.36, 1),
     height 520ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: top, left, width, height;
 }
 
 .showreel-dialog {
@@ -423,8 +430,9 @@ html.lenis.lenis-smooth
   opacity: 1;
 }
 
-.photo-lightbox.is-highres-visible .photo-lightbox-canvas-lowres {
+.photo-lightbox.is-highres-visible:not(.is-opening) .photo-lightbox-canvas-lowres {
   opacity: 0;
+  transition-delay: 160ms;
 }
 
 .photo-lightbox-caption {
@@ -1075,7 +1083,7 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   font-weight: 500;
   letter-spacing: -0.01em;
   cursor: pointer;
-  z-index: 2;
+  z-index: 41;
   opacity: 0;
   pointer-events: none;
   transition: opacity 220ms ease 120ms;

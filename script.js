@@ -1458,6 +1458,27 @@ const renderActivePhotoLightboxCanvases = ({ targetRect = null } = {}) => {
   return didRenderLowRes;
 };
 
+const getProjectHeaderGlassHeight = () => {
+  const headerStyle = window.getComputedStyle(document.body, "::before");
+  const headerHeight = Number.parseFloat(headerStyle.height);
+  const headerBorder = Number.parseFloat(headerStyle.borderBottomWidth);
+
+  return (
+    (Number.isFinite(headerHeight) ? headerHeight : 0) +
+    (Number.isFinite(headerBorder) ? headerBorder : 0)
+  );
+};
+
+const getPhotoLightboxSafeInset = (image) => {
+  const tileContainer = image?.closest(".photo-tile")?.parentElement || photoGrid;
+  const galleryGap = tileContainer
+    ? Number.parseFloat(window.getComputedStyle(tileContainer).rowGap)
+    : 0;
+  const gap = Number.isFinite(galleryGap) ? galleryGap : 0;
+
+  return getProjectHeaderGlassHeight() + gap;
+};
+
 const applyPhotoLightboxRect = (rect) => {
   if (!photoLightboxStage || !rect) {
     return;
@@ -1488,9 +1509,8 @@ const startPhotoLightboxCanvasMorph = () => {
       return;
     }
 
-    renderActivePhotoLightboxCanvases({
-      targetRect: photoLightboxStage.getBoundingClientRect(),
-    });
+    const stageRect = photoLightboxStage.getBoundingClientRect();
+    renderActivePhotoLightboxCanvases({ targetRect: stageRect });
 
     if (timestamp - startedAt < photoLightboxTransitionDuration) {
       photoLightboxCanvasMorphFrame = window.requestAnimationFrame(renderFrame);
@@ -1503,10 +1523,19 @@ const startPhotoLightboxCanvasMorph = () => {
   photoLightboxCanvasMorphFrame = window.requestAnimationFrame(renderFrame);
 };
 
-const getPhotoLightboxTargetRect = (image) => {
+const getPhotoLightboxTargetRect = (
+  image,
+  safeInset = getPhotoLightboxSafeInset(image)
+) => {
   const aspectRatio = getPhotoLightboxImageAspectRatio(image);
   const maxWidth = Math.max(window.innerWidth * 0.85, 1);
-  const maxHeight = Math.max(window.innerHeight * 0.85, 1);
+  const maxHeight = Math.max(
+    Math.min(
+      window.innerHeight * 0.85,
+      window.innerHeight - safeInset * 2
+    ),
+    1
+  );
   let width = maxWidth;
   let height = width / aspectRatio;
 
@@ -2970,12 +2999,13 @@ if (photoGrid) {
     setPhotoLightboxCaptionVisible(false);
     setPhotoLightboxCaptionLabel(photoEventLabel);
     renderActivePhotoLightboxCanvases({ targetRect: originRect });
+    applyPhotoLightboxRect(originRect);
 
     photoLightbox.classList.remove("is-closing");
+    photoLightbox.classList.toggle("is-opening", !prefersReducedMotion.matches);
     photoLightbox.classList.add("is-visible");
     photoLightbox.setAttribute("aria-hidden", "false");
 
-    applyPhotoLightboxRect(originRect);
     freezePhotoProjectHeading();
     syncSharedMediaOverlayState();
 
@@ -3013,6 +3043,7 @@ if (photoGrid) {
 
         if (isPhotoLightboxOpen()) {
           isPhotoLightboxTransitioning = false;
+          photoLightbox.classList.remove("is-opening");
           stopPhotoLightboxCanvasMorph();
           renderActivePhotoLightboxCanvases({ targetRect });
         }

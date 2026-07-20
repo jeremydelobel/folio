@@ -2074,6 +2074,61 @@ if (photoGrid) {
       {
         type: "featured",
         photo:
+          "esports-world-cup-2026/@jeremy.delobel_18072026_130034.webp",
+      },
+      {
+        type: "composition",
+        portrait:
+          "esports-world-cup-2026/@jeremy.delobel_19072026_120030.webp",
+        landscapes: [
+          "esports-world-cup-2026/@jeremy.delobel_18072026_150701.webp",
+          "esports-world-cup-2026/@jeremy.delobel_19072026_120040.webp",
+        ],
+        portraitSide: "left",
+      },
+      {
+        type: "featured",
+        photo:
+          "esports-world-cup-2026/@jeremy.delobel_19072026_150701.webp",
+      },
+      {
+        type: "composition",
+        portrait:
+          "esports-world-cup-2026/@jeremy.delobel_18072026_130018.webp",
+        landscapes: [
+          "esports-world-cup-2026/@jeremy.delobel_18072026_153854.webp",
+          "esports-world-cup-2026/@jeremy.delobel_19072026_143612.webp",
+        ],
+        portraitSide: "right",
+      },
+      {
+        type: "featured",
+        photo:
+          "esports-world-cup-2026/@jeremy.delobel_19072026_175809.webp",
+      },
+      {
+        type: "composition",
+        portrait:
+          "esports-world-cup-2026/@jeremy.delobel_19072026_180039.webp",
+        landscapes: [
+          "esports-world-cup-2026/@jeremy.delobel_19072026_175733.webp",
+          "esports-world-cup-2026/@jeremy.delobel_19072026_180202.webp",
+        ],
+        portraitSide: "left",
+      },
+      {
+        type: "composition",
+        portrait:
+          "esports-world-cup-2026/@jeremy.delobel_19072026_151044.webp",
+        landscapes: [
+          "esports-world-cup-2026/@jeremy.delobel_17072026_165923.webp",
+          "esports-world-cup-2026/@jeremy.delobel_17072026_170008.webp",
+        ],
+        portraitSide: "right",
+      },
+      {
+        type: "featured",
+        photo:
           "esports-world-cup-2026/@jeremy.delobel_09072026_211521.webp",
       },
       {

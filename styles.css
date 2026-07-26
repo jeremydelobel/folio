@@ -215,12 +215,13 @@ body.is-media-overlay-open .showreel-button-label-close {
 }
 
 .photography-page:has(.photo-lightbox.is-visible) .back-button {
-  pointer-events: none;
+  z-index: 31;
+  pointer-events: auto;
 }
 
-.photography-page:has(.photo-lightbox.is-visible)
+.photography-page:has(.photo-lightbox.is-visible:not(.is-closing))
   .photo-project-gallery-button {
-  visibility: hidden;
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -255,7 +256,9 @@ html.lenis.lenis-stopped.is-media-overlay-open:has(body.photography-page) {
 }
 
 .photo-lightbox {
-  position: static;
+  position: fixed;
+  inset: 0;
+  z-index: 30;
   visibility: hidden;
   pointer-events: none;
   transition: visibility 0s linear 540ms;
@@ -790,6 +793,52 @@ body.is-ready .text-reveal-mask .text-reveal-value {
 .photo-project-page {
   --photo-project-grid-width: min(885px, calc(75vw - 210px));
   --photo-project-layout-offset: 8.5rem;
+}
+
+.photo-project-mark {
+  --photo-project-mark-right: 0px;
+  --photo-project-mark-bottom: 0px;
+  position: fixed;
+  right: var(--photo-project-mark-right);
+  bottom: var(--photo-project-mark-bottom);
+  display: block;
+  height: auto;
+  z-index: 4;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  transform: translate3d(
+    0,
+    calc(100% + var(--photo-project-mark-bottom)),
+    0
+  );
+  will-change: transform;
+}
+
+body.is-ready .photo-project-mark {
+  animation: photo-project-mark-entry 1.05s cubic-bezier(0.22, 1, 0.36, 1)
+    480ms forwards;
+}
+
+@keyframes photo-project-mark-entry {
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.photo-project-mark--ewc {
+  --photo-project-mark-right: clamp(1.25rem, 2vw, 2rem);
+  --photo-project-mark-bottom: clamp(1.25rem, 2vw, 2rem);
+  width: clamp(7.5rem, 11.25vw, 11.25rem);
+}
+
+.photo-project-mark--pgw {
+  --photo-project-mark-right: clamp(1rem, 1.5vw, 1.5rem);
+  width: clamp(7.5rem, 10vw, 10rem);
+}
+
+.photo-project-page:has(.photo-lightbox.is-visible) .photo-project-mark {
+  visibility: hidden;
 }
 
 .photo-project-layout {
@@ -1499,6 +1548,13 @@ body.is-ready .video-timeline-card.is-revealed .video-card-label-mask .video-car
     transform: none;
   }
 
+  .photo-project-mark,
+  body.is-ready .photo-project-mark {
+    animation: none;
+    transform: translate3d(0, 0, 0);
+    will-change: auto;
+  }
+
   .photo-tile {
     opacity: 1;
     transform: none;
@@ -1525,6 +1581,10 @@ body.is-ready .video-timeline-card.is-revealed .video-card-label-mask .video-car
 }
 
 @media (max-width: 980px) {
+  .photo-project-mark {
+    display: none;
+  }
+
   .photo-tabs,
   .photo-grid {
     width: calc(100vw - 3rem);

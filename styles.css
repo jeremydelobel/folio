@@ -215,7 +215,7 @@ body.is-media-overlay-open .showreel-button-label-close {
 }
 
 .photography-page:has(.photo-lightbox.is-visible) .back-button {
-  z-index: 31;
+  z-index: 4;
   pointer-events: auto;
 }
 
@@ -223,6 +223,7 @@ body.is-media-overlay-open .showreel-button-label-close {
   .photo-project-gallery-button {
   opacity: 0;
   pointer-events: none;
+  transition-delay: 120ms;
 }
 
 html.is-media-overlay-open,
@@ -256,9 +257,7 @@ html.lenis.lenis-stopped.is-media-overlay-open:has(body.photography-page) {
 }
 
 .photo-lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 30;
+  position: static;
   visibility: hidden;
   pointer-events: none;
   transition: visibility 0s linear 540ms;
@@ -803,7 +802,7 @@ body.is-ready .text-reveal-mask .text-reveal-value {
   bottom: var(--photo-project-mark-bottom);
   display: block;
   height: auto;
-  z-index: 4;
+  z-index: 2;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
@@ -837,8 +836,10 @@ body.is-ready .photo-project-mark {
   width: clamp(7.5rem, 10vw, 10rem);
 }
 
-.photo-project-page:has(.photo-lightbox.is-visible) .photo-project-mark {
-  visibility: hidden;
+.photo-project-mark--rlcs {
+  --photo-project-mark-right: clamp(1.25rem, 2vw, 2rem);
+  --photo-project-mark-bottom: clamp(1.25rem, 2vw, 2rem);
+  width: clamp(5.625rem, 7.5vw, 7.5rem);
 }
 
 .photo-project-layout {

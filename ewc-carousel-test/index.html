@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>EWC 2026 — Carousel Test</title>
+    <meta
+      name="description"
+      content="Prototype local du carrousel EWC 2026."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="carousel-page">
+      <div
+        class="carousel-canvas"
+        data-carousel-canvas
+        role="application"
+        aria-label="Carrousel des photographies Esports World Cup 2026"
+      ></div>
+
+      <header class="project-heading" aria-live="polite">
+        <p class="project-kicker">Esports World Cup 2026</p>
+        <h1>For EsportNews</h1>
+      </header>
+
+      <p class="carousel-counter" data-carousel-counter>01/33</p>
+
+      <button
+        class="carousel-close"
+        type="button"
+        data-carousel-close
+        aria-label="Fermer la photo"
+      >
+        Close
+      </button>
+
+      <div class="view-cursor" data-view-cursor aria-hidden="true">View</div>
+
+      <p class="webgl-error" data-webgl-error hidden>
+        WebGL n’est pas disponible sur ce navigateur.
+      </p>
+    </main>
+
+    <script src="./vendor/gsap.min.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

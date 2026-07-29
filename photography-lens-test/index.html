@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Photography — Vertical Lens Test</title>
+    <meta
+      name="description"
+      content="Prototype local de la grille Photography avec lentille verticale."
+    />
+    <link rel="stylesheet" href="/rsrc/vendor/lenis/lenis.css" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="photography-lens-page">
+      <div class="gallery-canvas" data-gallery-canvas aria-hidden="true"></div>
+      <div class="scroll-spacer" data-scroll-spacer aria-hidden="true"></div>
+
+      <p class="desktop-holding">
+        Cette expérience est disponible sur ordinateur.
+      </p>
+
+      <p class="webgl-error" data-webgl-error hidden>
+        WebGL n’est pas disponible sur ce navigateur.
+      </p>
+    </main>
+
+    <script src="/rsrc/vendor/lenis/lenis.min.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

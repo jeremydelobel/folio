@@ -1,0 +1,194 @@
+@font-face {
+  font-family: "Neue Montreal";
+  src: url("/rsrc/font/NeueMontreal-Regular.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Neue Montreal";
+  src: url("/rsrc/font/NeueMontreal-Medium.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 500;
+}
+
+:root {
+  color-scheme: light;
+  font-family: "Neue Montreal", Arial, sans-serif;
+  background: #ffffff;
+  color: #101010;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+button {
+  color: inherit;
+  font: inherit;
+}
+
+.carousel-page,
+.carousel-canvas {
+  position: fixed;
+  inset: 0;
+}
+
+.carousel-page {
+  min-height: 100svh;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.carousel-canvas {
+  touch-action: none;
+}
+
+.carousel-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.project-heading {
+  position: fixed;
+  top: 15%;
+  left: 50%;
+  z-index: 3;
+  width: min(90vw, 680px);
+  margin: 0;
+  text-align: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+  mix-blend-mode: difference;
+  color: #ffffff;
+  opacity: 1;
+}
+
+.project-heading p,
+.project-heading h1 {
+  margin: 0;
+  font-size: clamp(14px, 1.1vw, 17px);
+  line-height: 1.15;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+.project-heading h1 {
+  margin-top: 0.15rem;
+}
+
+.carousel-counter {
+  position: fixed;
+  left: 50%;
+  bottom: 15%;
+  z-index: 3;
+  margin: 0;
+  font-size: clamp(14px, 1.1vw, 17px);
+  transform: translateX(-50%);
+  pointer-events: none;
+  opacity: 1;
+}
+
+.carousel-close {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 5;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0.5rem;
+  margin: -0.5rem;
+  mix-blend-mode: difference;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, -0.5rem, 0);
+  transition:
+    opacity 300ms ease,
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.carousel-page.is-focused .carousel-close {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0);
+}
+
+.view-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 6;
+  color: #ffffff;
+  font-size: 13px;
+  white-space: nowrap;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(-100px, -100px, 0) scale(0.7);
+  transition:
+    opacity 180ms ease,
+    scale 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.webgl-error {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 2rem;
+  background: #111111;
+  color: #ffffff;
+  text-align: center;
+}
+
+@media (pointer: coarse), (max-width: 720px) {
+  .carousel-close {
+    top: 1.25rem;
+    right: 1.25rem;
+  }
+
+  .view-cursor {
+    display: none;
+  }
+
+  .project-heading {
+    top: 9%;
+  }
+
+  .carousel-counter {
+    bottom: 9%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-heading,
+  .carousel-counter,
+  .carousel-close,
+  .loading-screen {
+    transition-duration: 1ms;
+  }
+}

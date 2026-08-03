@@ -54,10 +54,10 @@
       href="/rsrc/project-logos/EWC26.svg"
       media="(min-width: 981px)"
     />
-    <link rel="stylesheet" href="/styles.css?v=20260726-project-marks-v5-lightbox-v3" />
+    <link rel="stylesheet" href="/styles.css?v=20260803-project-mark-render-v1" />
     <link rel="stylesheet" href="/rsrc/vendor/lenis/lenis.css" />
     <script src="/rsrc/vendor/lenis/lenis.min.js" defer></script>
-    <script src="/script.js?v=20260720-ewc-layout-v1" defer></script>
+    <script src="/script.js?v=20260803-project-mark-render-v1" defer></script>
   </head>
   <body
     class="photography-page photo-project-page"
@@ -82,17 +82,21 @@
         </span>
       </button>
 
-      <img
+      <div
         class="photo-project-mark photo-project-mark--ewc"
-        src="/rsrc/project-logos/EWC26.svg"
-        alt=""
         aria-hidden="true"
-        width="1268"
-        height="153"
-        loading="lazy"
-        decoding="async"
-        draggable="false"
-      />
+      >
+        <img
+          class="photo-project-mark-image"
+          src="/rsrc/project-logos/EWC26.svg"
+          alt=""
+          width="1268"
+          height="153"
+          loading="eager"
+          decoding="async"
+          draggable="false"
+        />
+      </div>
 
       <div class="photo-project-layout">
         <div class="photo-project-heading">

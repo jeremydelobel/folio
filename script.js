@@ -26,6 +26,10 @@ const videoScrollbarTrack = document.querySelector(".video-scrollbar-track");
 const videoScrollbarThumb = document.querySelector(".video-scrollbar-thumb");
 const folioTitle = document.querySelector(".folio-title");
 const photoProjectHeading = document.querySelector(".photo-project-heading");
+const photoProjectMark = document.querySelector(".photo-project-mark");
+const photoProjectMarkImage = photoProjectMark?.querySelector(
+  ".photo-project-mark-image"
+);
 const navigationEntry = performance.getEntriesByType("navigation")[0];
 const isBackForwardLoad = navigationEntry?.type === "back_forward";
 const isPhotographyPage = document.body.classList.contains("photography-page");
@@ -103,6 +107,20 @@ let stopFolioLenis = () => {};
 const folioLenisLerp = 0.09;
 const folioLenisWheelMultiplier = 1;
 const folioLenisTouchMultiplier = 1.4;
+
+const preparePhotoProjectMark = async () => {
+  if (!photoProjectMark || !photoProjectMarkImage) {
+    return;
+  }
+
+  try {
+    await photoProjectMarkImage.decode();
+  } catch {}
+
+  photoProjectMark.classList.add("is-image-ready");
+};
+
+void preparePhotoProjectMark();
 
 const isPhotoLightboxOpen = () => isPhotoLightboxActive;
 

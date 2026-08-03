@@ -797,48 +797,65 @@ body.is-ready .text-reveal-mask .text-reveal-value {
 .photo-project-mark {
   --photo-project-mark-right: 0px;
   --photo-project-mark-bottom: 0px;
+  --photo-project-mark-ratio: 1 / 1;
   position: fixed;
   right: var(--photo-project-mark-right);
   bottom: var(--photo-project-mark-bottom);
   display: block;
+  aspect-ratio: var(--photo-project-mark-ratio);
   height: auto;
   z-index: 2;
   pointer-events: none;
   user-select: none;
-  -webkit-user-drag: none;
-  transform: translate3d(
-    0,
-    calc(100% + var(--photo-project-mark-bottom)),
-    0
-  );
-  will-change: transform;
 }
 
-body.is-ready .photo-project-mark {
+.photo-project-mark-image {
+  position: absolute;
+  top: calc(100% + var(--photo-project-mark-bottom));
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+body.is-ready
+  .photo-project-mark.is-image-ready
+  .photo-project-mark-image {
+  top: 0;
   animation: photo-project-mark-entry 1.05s cubic-bezier(0.22, 1, 0.36, 1)
-    480ms forwards;
+    480ms backwards;
 }
 
 @keyframes photo-project-mark-entry {
+  from {
+    top: calc(100% + var(--photo-project-mark-bottom));
+  }
+
   to {
-    transform: translate3d(0, 0, 0);
+    top: 0;
   }
 }
 
 .photo-project-mark--ewc {
   --photo-project-mark-right: clamp(1.25rem, 2vw, 2rem);
   --photo-project-mark-bottom: clamp(1.25rem, 2vw, 2rem);
+  --photo-project-mark-ratio: 1268 / 153;
   width: clamp(7.5rem, 11.25vw, 11.25rem);
 }
 
 .photo-project-mark--pgw {
   --photo-project-mark-right: clamp(1rem, 1.5vw, 1.5rem);
+  --photo-project-mark-ratio: 1080 / 459;
   width: clamp(7.5rem, 10vw, 10rem);
 }
 
 .photo-project-mark--rlcs {
   --photo-project-mark-right: clamp(1.25rem, 2vw, 2rem);
   --photo-project-mark-bottom: clamp(1.25rem, 2vw, 2rem);
+  --photo-project-mark-ratio: 152.544 / 40.972;
   width: clamp(5.625rem, 7.5vw, 7.5rem);
 }
 
@@ -1549,11 +1566,12 @@ body.is-ready .video-timeline-card.is-revealed .video-card-label-mask .video-car
     transform: none;
   }
 
-  .photo-project-mark,
-  body.is-ready .photo-project-mark {
+  .photo-project-mark-image,
+  body.is-ready
+    .photo-project-mark.is-image-ready
+    .photo-project-mark-image {
     animation: none;
-    transform: translate3d(0, 0, 0);
-    will-change: auto;
+    top: 0;
   }
 
   .photo-tile {

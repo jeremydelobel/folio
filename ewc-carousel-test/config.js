@@ -12,7 +12,6 @@ export const PROJECTS = [
   ["@jeremy.delobel_19072026_150701.webp", 1000, 667],
   ["@jeremy.delobel_18072026_130018.webp", 867, 1300],
   ["@jeremy.delobel_18072026_153854.webp", 1000, 667],
-  ["@jeremy.delobel_19072026_143612.webp", 1000, 667],
   ["@jeremy.delobel_19072026_175809.webp", 1000, 667],
   ["@jeremy.delobel_19072026_180039.webp", 867, 1300],
   ["@jeremy.delobel_19072026_175733.webp", 1000, 667],

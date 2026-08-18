@@ -4,37 +4,65 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
-    <title>Placement des photos</title>
-    <link rel="stylesheet" href="./photo-layout-editor.css" />
-    <script src="./photo-layout-editor.js" defer></script>
+    <title>Gestion des photos</title>
+    <link rel="stylesheet" href="./photo-layout-editor.css?v=20260819-photo-manager-v3" />
+    <script src="./photo-layout-editor.js?v=20260819-photo-manager-v3" defer></script>
   </head>
   <body>
     <main class="layout-editor">
       <header class="editor-header">
         <div class="editor-heading">
-          <h1>Placement des photos</h1>
+          <h1>Photos du site</h1>
           <span class="save-status" id="save-status" aria-live="polite">Chargement…</span>
         </div>
 
-        <div class="editor-actions">
+        <nav class="editor-tabs" role="tablist" aria-label="Gestion des photos">
+          <button
+            class="editor-tab is-active"
+            id="layout-tab"
+            type="button"
+            role="tab"
+            aria-selected="true"
+            aria-controls="layout-view"
+            data-editor-tab="layout"
+          >
+            Mise en page
+          </button>
+          <button
+            class="editor-tab"
+            id="photos-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="photos-view"
+            tabindex="-1"
+            data-editor-tab="photos"
+          >
+            Photos
+          </button>
+        </nav>
+
+        <div class="editor-actions" id="layout-actions">
           <label class="collection-control" for="collection-select">
-            <span>Onglet</span>
-            <select id="collection-select" aria-label="Onglet à composer">
-              <option value="esports-world-cup">Esports World Cup</option>
-              <option value="rlcs">RLCS</option>
-              <option value="paris-games-week">Paris Games Week</option>
-            </select>
+            <span>Projet</span>
+            <select id="collection-select" aria-label="Projet à composer"></select>
           </label>
 
           <button class="text-action" id="undo-layout" type="button" disabled>Annuler</button>
-          <button class="text-action" id="import-layout" type="button">Importer</button>
-          <input id="import-file" type="file" accept="application/json,.json" hidden />
-          <button class="primary-action" id="export-layout" type="button">Exporter</button>
+          <button class="primary-action" id="apply-layout" type="button" data-admin-only hidden>
+            Appliquer au site
+          </button>
           <button class="text-action danger-action" id="reset-layout" type="button">Réinitialiser</button>
         </div>
       </header>
 
-      <div class="editor-workspace">
+      <div
+        class="editor-view editor-workspace"
+        id="layout-view"
+        role="tabpanel"
+        aria-labelledby="layout-tab"
+        data-editor-view="layout"
+      >
         <section class="canvas-panel" aria-labelledby="canvas-title">
           <header class="panel-header canvas-header">
             <h2 id="canvas-title">Grille</h2>
@@ -62,6 +90,47 @@
           </div>
         </aside>
       </div>
+
+      <section
+        class="editor-view photo-manager"
+        id="photos-view"
+        role="tabpanel"
+        aria-labelledby="photos-tab"
+        data-editor-view="photos"
+        hidden
+      >
+        <header class="photo-manager-toolbar">
+          <label class="collection-control" for="photo-folder-select">
+            <span>Dossier</span>
+            <select id="photo-folder-select" aria-label="Filtrer par dossier">
+              <option value="">Tous les dossiers</option>
+            </select>
+          </label>
+          <span class="photo-manager-count" id="photo-manager-count">0 photo</span>
+          <div class="photo-folder-actions" data-admin-only hidden>
+            <button class="text-action" id="create-folder" type="button">Nouveau dossier</button>
+            <button class="text-action" id="rename-folder" type="button" disabled>Renommer</button>
+          </div>
+        </header>
+
+        <label class="photo-import-zone" id="photo-import-zone" data-admin-only hidden>
+          <input
+            id="photo-import-files"
+            type="file"
+            accept="image/jpeg,.jpg,.jpeg"
+            multiple
+            hidden
+          />
+          <span>Dépose tes JPG ici ou <span class="photo-import-link">parcourir</span></span>
+        </label>
+
+        <div class="photo-import-progress" id="photo-import-progress" hidden>
+          <progress id="photo-import-meter" value="0" max="1"></progress>
+          <span id="photo-import-status" aria-live="polite"></span>
+        </div>
+
+        <div class="managed-photo-list" id="managed-photo-list"></div>
+      </section>
 
       <div class="editor-message" id="editor-message" role="status" aria-live="polite"></div>
     </main>

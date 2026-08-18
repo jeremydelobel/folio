@@ -1,25 +1,14 @@
 (() => {
   "use strict";
 
-  const COLLECTIONS = {
-    "esports-world-cup": {
-      label: "Esports World Cup",
-      folder: "esports-world-cup-2026",
-    },
-    rlcs: {
-      label: "RLCS",
-      folder: "rlcs-paris-major-2026",
-    },
-    "paris-games-week": {
-      label: "Paris Games Week",
-      folder: "paris-games-week-2025",
-    },
-  };
-
-  const STORAGE_PREFIX = "photo-layout-editor:v1:";
-  const SELECTED_COLLECTION_KEY = `${STORAGE_PREFIX}selected-collection`;
+  const MANIFEST_URL = "/rsrc/photo-library.json";
+  const STORAGE_PREFIX = "photo-layout-editor:v2:";
+  const SELECTED_COLLECTION_KEY = `${STORAGE_PREFIX}selected-project`;
   const MAX_HISTORY = 40;
+  const MAX_IMPORT_FILE_SIZE = 200 * 1024 * 1024;
+  const REQUIRED_API_VERSION = 2;
   const PHOTO_TRANSFER_TYPE = "application/x-photo-layout-item";
+  const apiToken = new URLSearchParams(window.location.search).get("token") || "";
 
   const collectionSelect = document.querySelector("#collection-select");
   const layoutCanvas = document.querySelector("#layout-canvas");
@@ -30,18 +19,38 @@
   const placedCount = document.querySelector("#placed-count");
   const libraryCount = document.querySelector("#library-count");
   const undoButton = document.querySelector("#undo-layout");
-  const importButton = document.querySelector("#import-layout");
-  const importFile = document.querySelector("#import-file");
-  const exportButton = document.querySelector("#export-layout");
+  const applyButton = document.querySelector("#apply-layout");
   const resetButton = document.querySelector("#reset-layout");
   const editorMessage = document.querySelector("#editor-message");
   const canvasPanel = document.querySelector(".canvas-panel");
+  const layoutActions = document.querySelector("#layout-actions");
+  const editorTabs = Array.from(
+    document.querySelectorAll("[data-editor-tab]")
+  );
+  const editorViews = Array.from(
+    document.querySelectorAll("[data-editor-view]")
+  );
+  const photoFolderSelect = document.querySelector("#photo-folder-select");
+  const photoManagerCount = document.querySelector("#photo-manager-count");
+  const createFolderButton = document.querySelector("#create-folder");
+  const renameFolderButton = document.querySelector("#rename-folder");
+  const photoImportZone = document.querySelector("#photo-import-zone");
+  const photoImportFiles = document.querySelector("#photo-import-files");
+  const photoImportProgress = document.querySelector("#photo-import-progress");
+  const photoImportMeter = document.querySelector("#photo-import-meter");
+  const photoImportStatus = document.querySelector("#photo-import-status");
+  const managedPhotoList = document.querySelector("#managed-photo-list");
   const libraryFilters = Array.from(
     document.querySelectorAll("[data-library-filter]")
   );
 
+  let manifest = null;
+  let apiAvailable = false;
+  let photoDeletionAvailable = false;
+  let serverRestartRequired = false;
   let catalogByCollection = new Map();
-  let currentCollection = "esports-world-cup";
+  let currentCollection = "";
+  let currentEditorTab = "layout";
   let rows = [];
   let history = [];
   let libraryFilter = "available";
@@ -53,6 +62,8 @@
   let resetConfirmationTimer = 0;
   let resetArmed = false;
   let rowSequence = 0;
+  let importInProgress = false;
+  const deletingPhotoIds = new Set();
 
   const createRowId = () => {
     rowSequence += 1;
@@ -60,7 +71,7 @@
   };
 
   const getStorageKey = (collectionKey) =>
-    `${STORAGE_PREFIX}${collectionKey}`;
+    `${STORAGE_PREFIX}layout:${collectionKey}`;
 
   const getCatalog = () => catalogByCollection.get(currentCollection) || [];
 
@@ -69,6 +80,12 @@
 
   const getPhotoFilename = (photoId) =>
     photoId?.split("/").pop() || photoId || "Photo";
+
+  const encodePhotoIdForUrl = (photoId) =>
+    String(photoId || "")
+      .split("/")
+      .map((segment) => encodeURIComponent(segment))
+      .join("/");
 
   const formatPhotoType = (photo) => {
     if (photo.kind === "portrait") {
@@ -91,66 +108,137 @@
     saveStatus.textContent = message;
   };
 
-  const normalizePhotoId = (source) => {
-    const marker = "/rsrc/photos/";
-    const normalizedSource = String(source || "").replace(/\\/g, "/");
-    const markerIndex = normalizedSource.indexOf(marker);
+  const getManifestFromPayload = (payload) =>
+    payload?.manifest && typeof payload.manifest === "object"
+      ? payload.manifest
+      : payload;
 
-    if (markerIndex >= 0) {
-      return normalizedSource.slice(markerIndex + marker.length);
+  const normalizeManifest = (payload) => {
+    const candidate = getManifestFromPayload(payload);
+
+    if (
+      !candidate ||
+      typeof candidate !== "object" ||
+      !candidate.folders ||
+      typeof candidate.folders !== "object" ||
+      !Array.isArray(candidate.photos) ||
+      !candidate.projects ||
+      typeof candidate.projects !== "object"
+    ) {
+      throw new Error("Manifeste photo invalide");
     }
 
-    return normalizedSource
-      .replace(/^\.\//, "")
-      .replace(/^rsrc\/photos\//, "");
+    return {
+      version: candidate.version,
+      folders: candidate.folders,
+      photos: candidate.photos.filter(
+        (photo) =>
+          photo &&
+          typeof photo.id === "string" &&
+          (photo.folder === null || typeof photo.folder === "string")
+      ),
+      projects: candidate.projects,
+    };
   };
 
-  const loadPhotoCatalog = async () => {
-    const response = await fetch("./photography.html", { cache: "no-store" });
+  const getRequestHeaders = (headers = {}) => {
+    const requestHeaders = new Headers(headers);
 
-    if (!response.ok) {
-      throw new Error(`Impossible de lire photography.html (${response.status})`);
+    if (apiToken) {
+      requestHeaders.set("Authorization", `Bearer ${apiToken}`);
     }
 
-    const html = await response.text();
-    const parsedDocument = new DOMParser().parseFromString(html, "text/html");
-    const imageElements = Array.from(
-      parsedDocument.querySelectorAll(".photo-image[data-src]")
-    );
+    return requestHeaders;
+  };
 
+  const requestJson = async (path, options = {}) => {
+    const response = await fetch(path, {
+      cache: "no-store",
+      ...options,
+      headers: getRequestHeaders(options.headers),
+    });
+    const responseText = response.status === 204 ? "" : await response.text();
+    let payload = null;
+
+    if (responseText) {
+      try {
+        payload = JSON.parse(responseText);
+      } catch {
+        if (response.ok) {
+          throw new Error("Réponse JSON invalide");
+        }
+      }
+    }
+
+    if (!response.ok) {
+      const backendMessage =
+        typeof payload?.error === "string"
+          ? payload.error
+          : typeof payload?.message === "string"
+            ? payload.message
+            : `Requête refusée (${response.status})`;
+      const error = new Error(backendMessage);
+      error.status = response.status;
+      throw error;
+    }
+
+    return payload;
+  };
+
+  const loadInitialManifest = async () => {
+    try {
+      const apiState = await requestJson("/api/state");
+      apiAvailable = true;
+      photoDeletionAvailable =
+        Number(apiState?.apiVersion) >= REQUIRED_API_VERSION &&
+        Array.isArray(apiState?.capabilities) &&
+        apiState.capabilities.includes("photo-delete");
+      serverRestartRequired = !photoDeletionAvailable;
+      return normalizeManifest(apiState);
+    } catch {
+      apiAvailable = false;
+      photoDeletionAvailable = false;
+      serverRestartRequired = false;
+      const response = await fetch(MANIFEST_URL, { cache: "no-store" });
+
+      if (!response.ok) {
+        throw new Error(`Impossible de lire ${MANIFEST_URL}`);
+      }
+
+      return normalizeManifest(await response.json());
+    }
+  };
+
+  const createPhotoModel = (photo) => {
+    const width = Math.max(1, Number(photo.width) || 1);
+    const height = Math.max(1, Number(photo.height) || 1);
+    const ratio = width / height;
+    const kind = ratio < 1 ? "portrait" : "landscape";
+    const isThreeTwo =
+      kind === "landscape" && Math.abs(ratio - 1.5) <= 0.035;
+
+    return {
+      ...photo,
+      src: `/rsrc/photos/${encodePhotoIdForUrl(photo.id)}`,
+      filename: getPhotoFilename(photo.id),
+      width,
+      height,
+      ratio,
+      kind,
+      isThreeTwo,
+      wideOnly: kind === "landscape" && !isThreeTwo,
+    };
+  };
+
+  const rebuildCatalogs = () => {
+    const photoModels = manifest.photos.map(createPhotoModel);
     const catalogs = new Map();
 
-    Object.entries(COLLECTIONS).forEach(([collectionKey, collection]) => {
-      const photos = imageElements
-        .map((image) => {
-          const id = normalizePhotoId(image.dataset.src);
-
-          if (!id.startsWith(`${collection.folder}/`)) {
-            return null;
-          }
-
-          const width = Number(image.getAttribute("width")) || 1;
-          const height = Number(image.getAttribute("height")) || 1;
-          const ratio = width / height;
-          const kind = ratio < 1 ? "portrait" : "landscape";
-          const isThreeTwo =
-            kind === "landscape" && Math.abs(ratio - 1.5) <= 0.035;
-
-          return {
-            id,
-            src: `./rsrc/photos/${id}`,
-            filename: getPhotoFilename(id),
-            width,
-            height,
-            ratio,
-            kind,
-            isThreeTwo,
-            wideOnly: kind === "landscape" && !isThreeTwo,
-          };
-        })
-        .filter(Boolean);
-
-      catalogs.set(collectionKey, photos);
+    Object.entries(manifest.projects).forEach(([projectKey, project]) => {
+      catalogs.set(
+        projectKey,
+        photoModels.filter((photo) => photo.folder === project.folder)
+      );
     });
 
     catalogByCollection = catalogs;
@@ -246,25 +334,148 @@
       .map(normalizeSinglePortraitPair);
   };
 
+  const removePhotoIdFromRows = (candidateRows, photoId) => {
+    if (!Array.isArray(candidateRows)) {
+      return [];
+    }
+
+    return candidateRows.flatMap((row) => {
+      if (!row || typeof row !== "object") {
+        return [];
+      }
+
+      if (row.type === "featured") {
+        return row.photo === photoId ? [] : [row];
+      }
+
+      if (row.type === "pair") {
+        const photos = Array.isArray(row.photos) ? row.photos : [];
+
+        if (!photos.includes(photoId)) {
+          return [row];
+        }
+
+        const remainingPhotos = photos.filter(
+          (candidateId) =>
+            typeof candidateId === "string" && candidateId !== photoId
+        );
+
+        if (remainingPhotos.length >= 2) {
+          return [
+            {
+              id: row.id || createRowId(),
+              type: "pair",
+              photos: remainingPhotos.slice(0, 2),
+            },
+          ];
+        }
+
+        return remainingPhotos.slice(0, 1).map((remainingPhotoId) => ({
+          id: row.id || createRowId(),
+          type: "featured",
+          photo: remainingPhotoId,
+        }));
+      }
+
+      if (row.type !== "composition") {
+        return [row];
+      }
+
+      const landscapes = Array.isArray(row.landscapes) ? row.landscapes : [];
+      const removesPortrait = row.portrait === photoId;
+      const removesLandscape = landscapes.includes(photoId);
+
+      if (!removesPortrait && !removesLandscape) {
+        return [row];
+      }
+
+      const remainingPortrait =
+        typeof row.portrait === "string" && row.portrait !== photoId
+          ? row.portrait
+          : null;
+      const remainingLandscapes = landscapes.filter(
+        (candidateId) =>
+          typeof candidateId === "string" && candidateId !== photoId
+      );
+
+      if (!remainingPortrait && remainingLandscapes.length >= 2) {
+        return [
+          {
+            id: row.id || createRowId(),
+            type: "pair",
+            photos: remainingLandscapes.slice(0, 2),
+          },
+        ];
+      }
+
+      const remainingPhotoIds = (
+        row.portraitSide === "right"
+          ? [...remainingLandscapes, remainingPortrait]
+          : [remainingPortrait, ...remainingLandscapes]
+      ).filter(Boolean);
+
+      return remainingPhotoIds.map((remainingPhotoId, index) => ({
+        id: index === 0 && row.id ? row.id : createRowId(),
+        type: "featured",
+        photo: remainingPhotoId,
+      }));
+    });
+  };
+
+  const removePhotoIdFromStoredDrafts = (photoId, projectKeys) => {
+    projectKeys.forEach((projectKey) => {
+      const storageKey = getStorageKey(projectKey);
+      const savedValue = window.localStorage.getItem(storageKey);
+
+      if (!savedValue) {
+        return;
+      }
+
+      try {
+        const parsedValue = JSON.parse(savedValue);
+        const storedRows = Array.isArray(parsedValue)
+          ? parsedValue
+          : parsedValue?.rows;
+
+        if (!Array.isArray(storedRows)) {
+          return;
+        }
+
+        const nextRows = removePhotoIdFromRows(storedRows, photoId);
+
+        if (JSON.stringify(nextRows) === JSON.stringify(storedRows)) {
+          return;
+        }
+
+        const nextValue = Array.isArray(parsedValue)
+          ? nextRows
+          : { ...parsedValue, rows: nextRows };
+        window.localStorage.setItem(storageKey, JSON.stringify(nextValue));
+      } catch {}
+    });
+  };
+
   const loadRowsFromStorage = (collectionKey) => {
+    const appliedRows = manifest?.projects?.[collectionKey]?.layout;
+
     try {
       const savedValue = window.localStorage.getItem(getStorageKey(collectionKey));
 
       if (!savedValue) {
-        return [];
+        return sanitizeRows(appliedRows);
       }
 
       const parsedValue = JSON.parse(savedValue);
       return sanitizeRows(parsedValue.rows || parsedValue);
     } catch {
-      return [];
+      return sanitizeRows(appliedRows);
     }
   };
 
   const saveRowsToStorage = () => {
     const payload = {
       version: 1,
-      collection: currentCollection,
+      project: currentCollection,
       rows: cloneRows(),
     };
 
@@ -273,7 +484,7 @@
       JSON.stringify(payload)
     );
     window.localStorage.setItem(SELECTED_COLLECTION_KEY, currentCollection);
-    setSaveStatus("Sauvegardé");
+    setSaveStatus("Brouillon enregistré");
   };
 
   const pushHistory = () => {
@@ -931,7 +1142,7 @@
     const visiblePhotos = photos.filter(
       (photo) => libraryFilter === "all" || !usedIds.has(photo.id)
     );
-    const availableCount = photos.length - usedIds.size;
+    const availableCount = photos.filter((photo) => !usedIds.has(photo.id)).length;
 
     photoLibrary.innerHTML = "";
     libraryCount.textContent = `${availableCount} à placer`;
@@ -941,7 +1152,7 @@
       emptyMessage.className = "library-empty";
       emptyMessage.textContent = photos.length
         ? "Toutes les photos sont placées."
-        : "Aucune photo pour cet onglet.";
+        : "Aucune photo pour ce projet.";
       photoLibrary.appendChild(emptyMessage);
       return;
     }
@@ -1431,7 +1642,7 @@
   };
 
   const switchCollection = (collectionKey) => {
-    if (!COLLECTIONS[collectionKey]) {
+    if (!manifest?.projects?.[collectionKey]) {
       return;
     }
 
@@ -1440,11 +1651,19 @@
     rows = loadRowsFromStorage(collectionKey);
     history = [];
     window.localStorage.setItem(SELECTED_COLLECTION_KEY, collectionKey);
-    setSaveStatus("Sauvegardé");
+    setSaveStatus(
+      serverRestartRequired
+        ? "Relance requise"
+        : window.localStorage.getItem(getStorageKey(collectionKey))
+        ? "Brouillon enregistré"
+        : apiAvailable
+          ? "À jour"
+          : "Lecture seule"
+    );
     renderEditor();
   };
 
-  const serializeRowsForExport = () =>
+  const serializeRowsForApply = () =>
     rows.map((row) => {
       if (row.type === "featured") {
         return { type: "featured", photo: row.photo };
@@ -1462,105 +1681,496 @@
       };
     });
 
-  const exportLayout = () => {
-    const validationErrors = validateLayout();
-    const usedIds = getUsedPhotoIds();
-    const unplaced = getCatalog()
-      .filter((photo) => !usedIds.has(photo.id))
-      .map((photo) => photo.id);
-    const exportPayload = {
-      version: 1,
-      collection: currentCollection,
-      collectionLabel: COLLECTIONS[currentCollection].label,
-      status: validationErrors.length ? "draft" : "ready",
-      collections: {
-        [currentCollection]: serializeRowsForExport(),
-      },
-      unplaced,
-      warnings: validationErrors,
-    };
-    const blob = new Blob([`${JSON.stringify(exportPayload, null, 2)}\n`], {
-      type: "application/json",
+  const setAdminVisibility = () => {
+    document.querySelectorAll("[data-admin-only]").forEach((element) => {
+      element.hidden = !apiAvailable;
     });
-    const objectUrl = URL.createObjectURL(blob);
-    const downloadLink = document.createElement("a");
+  };
 
-    downloadLink.href = objectUrl;
-    downloadLink.download = `photo-layout-${currentCollection}.json`;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    downloadLink.remove();
-    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+  const getFolderLabel = (folderSlug) =>
+    manifest?.folders?.[folderSlug]?.label || folderSlug;
 
-    showMessage(
-      validationErrors.length
-        ? `Plan exporté avec ${validationErrors.length} point${
-            validationErrors.length > 1 ? "s" : ""
-          } à compléter.`
-        : "Plan exporté."
+  const renderProjectOptions = () => {
+    const selectedProject = currentCollection;
+    collectionSelect.innerHTML = "";
+
+    Object.entries(manifest.projects).forEach(([projectKey, project]) => {
+      const option = document.createElement("option");
+      option.value = projectKey;
+      option.textContent = project.label || getFolderLabel(project.folder);
+      collectionSelect.appendChild(option);
+    });
+
+    if (manifest.projects[selectedProject]) {
+      collectionSelect.value = selectedProject;
+    }
+  };
+
+  const renderFolderOptions = (preferredFolder = photoFolderSelect.value) => {
+    photoFolderSelect.innerHTML = "";
+    const allOption = document.createElement("option");
+    allOption.value = "";
+    allOption.textContent = "Tous les dossiers";
+    photoFolderSelect.appendChild(allOption);
+
+    Object.entries(manifest.folders)
+      .sort(([, first], [, second]) =>
+        String(first.label || "").localeCompare(String(second.label || ""), "fr")
+      )
+      .forEach(([folderSlug, folder]) => {
+        const option = document.createElement("option");
+        option.value = folderSlug;
+        option.textContent = folder.label || folderSlug;
+        photoFolderSelect.appendChild(option);
+      });
+
+    if (preferredFolder && manifest.folders[preferredFolder]) {
+      photoFolderSelect.value = preferredFolder;
+    }
+  };
+
+  const updatePhotoDeleteActions = () => {
+    const isBusy = importInProgress || deletingPhotoIds.size > 0;
+
+    managedPhotoList
+      .querySelectorAll(".managed-photo-delete")
+      .forEach((button) => {
+        button.disabled = isBusy;
+      });
+  };
+
+  const updateFolderActions = () => {
+    const hasSelectedFolder = Boolean(photoFolderSelect.value);
+    renameFolderButton.disabled = !hasSelectedFolder;
+    const importDisabled =
+      !hasSelectedFolder || importInProgress || deletingPhotoIds.size > 0;
+    photoImportFiles.disabled = importDisabled;
+    photoImportZone.classList.toggle("is-disabled", importDisabled);
+    photoImportZone.setAttribute("aria-disabled", String(importDisabled));
+    updatePhotoDeleteActions();
+  };
+
+  const renderManagedPhotos = () => {
+    const selectedFolder = photoFolderSelect.value;
+    const photos = manifest.photos.filter(
+      (photo) => !selectedFolder || photo.folder === selectedFolder
     );
-  };
 
-  const getImportedRows = (payload) => {
-    if (!payload || typeof payload !== "object") {
-      return null;
+    photoManagerCount.textContent = `${photos.length} photo${
+      photos.length > 1 ? "s" : ""
+    }`;
+    managedPhotoList.innerHTML = "";
+
+    if (!photos.length) {
+      const emptyMessage = document.createElement("p");
+      emptyMessage.className = "managed-photo-empty";
+      emptyMessage.textContent = "Aucune photo dans ce dossier.";
+      managedPhotoList.appendChild(emptyMessage);
+      updateFolderActions();
+      return;
     }
 
-    if (payload.collections?.[currentCollection]) {
-      return payload.collections[currentCollection];
-    }
+    photos.forEach((photo) => {
+      const item = document.createElement("article");
+      const image = document.createElement("img");
+      const name = document.createElement("p");
 
-    if (payload.collection === currentCollection && Array.isArray(payload.rows)) {
-      return payload.rows;
-    }
+      item.className = "managed-photo";
+      item.dataset.photoId = photo.id;
+      image.className = "managed-photo-preview";
+      image.src = `/rsrc/photos/${encodePhotoIdForUrl(photo.id)}`;
+      image.alt = "";
+      image.loading = "lazy";
+      image.decoding = "async";
+      name.className = "managed-photo-name";
+      name.textContent = getPhotoFilename(photo.id);
+      name.title = getPhotoFilename(photo.id);
+      item.appendChild(image);
 
-    return null;
-  };
+      if (apiAvailable && photoDeletionAvailable) {
+        const deleteButton = document.createElement("button");
 
-  const validateImportedRows = (candidateRows) => {
-    if (!Array.isArray(candidateRows)) {
-      return null;
-    }
-
-    const importedRows = sanitizeRows(candidateRows);
-
-    if (importedRows.length !== candidateRows.length) {
-      return null;
-    }
-
-    const knownIds = new Set(getCatalog().map((photo) => photo.id));
-    const seenIds = new Set();
-
-    for (const row of importedRows) {
-      for (const photoId of getRowPhotoIds(row)) {
-        if (!knownIds.has(photoId) || seenIds.has(photoId)) {
-          return null;
-        }
-
-        seenIds.add(photoId);
+        deleteButton.type = "button";
+        deleteButton.className = "managed-photo-delete";
+        deleteButton.setAttribute(
+          "aria-label",
+          `Supprimer ${getPhotoFilename(photo.id)}`
+        );
+        deleteButton.textContent = "×";
+        deleteButton.addEventListener("click", () => {
+          void deleteManagedPhoto(photo, item);
+        });
+        item.appendChild(deleteButton);
       }
-    }
 
-    return importedRows;
+      item.appendChild(name);
+
+      if (!selectedFolder) {
+        const folder = document.createElement("p");
+        folder.className = "managed-photo-folder";
+        folder.textContent = getFolderLabel(photo.folder);
+        item.appendChild(folder);
+      }
+
+      managedPhotoList.appendChild(item);
+    });
+
+    updateFolderActions();
   };
 
-  const importLayout = async (file) => {
+  const installManifest = (nextManifest, preferredFolder) => {
+    manifest = normalizeManifest(nextManifest);
+    rebuildCatalogs();
+    renderProjectOptions();
+    renderFolderOptions(preferredFolder);
+    renderManagedPhotos();
+
+    if (currentCollection && manifest.projects[currentCollection]) {
+      renderEditor();
+    }
+  };
+
+  const resolveManifestAfterMutation = async (payload) => {
     try {
-      const payload = JSON.parse(await file.text());
-      const candidateRows = getImportedRows(payload);
-      const importedRows = validateImportedRows(candidateRows);
+      return normalizeManifest(payload);
+    } catch {
+      return normalizeManifest(await requestJson("/api/state"));
+    }
+  };
 
-      if (!importedRows) {
-        throw new Error("Plan incompatible");
+  const refreshManifestAfterMutation = async (payload, preferredFolder) => {
+    const nextManifest = await resolveManifestAfterMutation(payload);
+
+    installManifest(nextManifest, preferredFolder);
+    return nextManifest;
+  };
+
+  const deleteManagedPhoto = async (photo, item) => {
+    if (
+      !apiAvailable ||
+      !photoDeletionAvailable ||
+      importInProgress ||
+      deletingPhotoIds.size > 0 ||
+      !photo?.id
+    ) {
+      return;
+    }
+
+    const filename = getPhotoFilename(photo.id);
+    const folderLabel = photo.folder
+      ? getFolderLabel(photo.folder)
+      : "Sans dossier";
+    const shouldDelete = window.confirm(
+      `Supprimer définitivement « ${filename} » ?\nDossier : ${folderLabel}\n\nLe JPG original et ses versions web seront supprimés. Les mises en page qui l’utilisent seront réorganisées.`
+    );
+
+    if (!shouldDelete || importInProgress || deletingPhotoIds.size > 0) {
+      return;
+    }
+
+    const preferredFolder = photoFolderSelect.value;
+    deletingPhotoIds.add(photo.id);
+    item.classList.add("is-deleting");
+    updateFolderActions();
+
+    try {
+      const payload = await requestJson(
+        `/api/photos/${encodeURIComponent(photo.id)}`,
+        { method: "DELETE" }
+      );
+      const nextManifest = await resolveManifestAfterMutation(payload);
+
+      removePhotoIdFromStoredDrafts(
+        photo.id,
+        Object.keys(nextManifest.projects)
+      );
+      rows = removePhotoIdFromRows(rows, photo.id);
+      history = [];
+      installManifest(nextManifest, preferredFolder);
+
+      if (currentCollection && manifest.projects[currentCollection]) {
+        switchCollection(currentCollection);
       }
 
-      commitChange(() => {
-        rows = importedRows;
-      }, "Plan importé.");
-    } catch {
-      showMessage("Ce fichier ne correspond pas à l’onglet sélectionné.");
+      showMessage(`« ${filename} » supprimée.`);
+    } catch (error) {
+      showMessage(
+        error instanceof Error && error.message
+          ? error.message
+          : "Impossible de supprimer cette photo."
+      );
     } finally {
-      importFile.value = "";
+      deletingPhotoIds.delete(photo.id);
+      item.classList.remove("is-deleting");
+      updateFolderActions();
+    }
+  };
+
+  const applyLayout = async () => {
+    if (!apiAvailable || !currentCollection) {
+      return;
+    }
+
+    const validationErrors = validateLayout();
+
+    if (!rows.length) {
+      showMessage("Ajoute au moins une photo avant d’appliquer.");
+      return;
+    }
+
+    if (validationErrors.length) {
+      showMessage(validationErrors[0]);
+      return;
+    }
+
+    const appliedRows = serializeRowsForApply();
+    applyButton.disabled = true;
+    setSaveStatus("Application…");
+
+    try {
+      const payload = await requestJson(
+        `/api/projects/${encodeURIComponent(currentCollection)}/layout`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ layout: appliedRows }),
+        }
+      );
+
+      await refreshManifestAfterMutation(payload, photoFolderSelect.value);
+      window.localStorage.removeItem(getStorageKey(currentCollection));
+      manifest.projects[currentCollection].layout = appliedRows;
+      rows = sanitizeRows(appliedRows);
+      history = [];
+      renderEditor();
+      setSaveStatus("Appliqué");
+      showMessage("Mise en page appliquée au site.");
+    } catch {
+      setSaveStatus("Brouillon enregistré");
+      showMessage("Impossible d’appliquer la mise en page.");
+    } finally {
+      applyButton.disabled = false;
+    }
+  };
+
+  const createFolder = async () => {
+    if (!apiAvailable) {
+      return;
+    }
+
+    const label = window.prompt("Nom du nouveau dossier")?.trim();
+
+    if (!label) {
+      return;
+    }
+
+    const previousSlugs = new Set(Object.keys(manifest.folders));
+    createFolderButton.disabled = true;
+
+    try {
+      const payload = await requestJson("/api/folders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ label }),
+      });
+      const nextManifest = normalizeManifest(payload);
+      const createdSlug =
+        payload?.folder?.slug ||
+        Object.keys(nextManifest.folders).find((slug) => !previousSlugs.has(slug)) ||
+        "";
+
+      installManifest(nextManifest, createdSlug);
+      showMessage("Dossier créé.");
+    } catch {
+      showMessage("Impossible de créer ce dossier.");
+    } finally {
+      createFolderButton.disabled = false;
+    }
+  };
+
+  const renameFolder = async () => {
+    const folderSlug = photoFolderSelect.value;
+
+    if (!apiAvailable || !folderSlug) {
+      return;
+    }
+
+    const label = window.prompt(
+      "Nouveau nom du dossier",
+      getFolderLabel(folderSlug)
+    )?.trim();
+
+    if (!label || label === getFolderLabel(folderSlug)) {
+      return;
+    }
+
+    renameFolderButton.disabled = true;
+
+    try {
+      const payload = await requestJson(
+        `/api/folders/${encodeURIComponent(folderSlug)}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ label }),
+        }
+      );
+      await refreshManifestAfterMutation(payload, folderSlug);
+      showMessage("Dossier renommé.");
+    } catch {
+      showMessage("Impossible de renommer ce dossier.");
+    } finally {
+      updateFolderActions();
+    }
+  };
+
+  const isJpegFile = (file) =>
+    file?.type === "image/jpeg" || /\.jpe?g$/i.test(file?.name || "");
+
+  const cancelImport = async (importId) => {
+    if (!importId) {
+      return;
+    }
+
+    try {
+      await requestJson(`/api/imports/${encodeURIComponent(importId)}`, {
+        method: "DELETE",
+      });
+    } catch {}
+  };
+
+  const importPhotos = async (fileList) => {
+    const folderSlug = photoFolderSelect.value;
+    const selectedFiles = Array.from(fileList || []);
+    const files = selectedFiles.filter(isJpegFile);
+
+    if (importInProgress) {
+      showMessage("Un import est déjà en cours.");
+      return;
+    }
+
+    if (deletingPhotoIds.size > 0) {
+      showMessage("Une suppression est déjà en cours.");
+      return;
+    }
+
+    if (!apiAvailable || !folderSlug) {
+      showMessage("Choisis d’abord un dossier.");
+      return;
+    }
+
+    if (!files.length || files.length !== selectedFiles.length) {
+      showMessage("Sélectionne des fichiers JPG.");
+      return;
+    }
+
+    if (files.some((file) => file.size > MAX_IMPORT_FILE_SIZE)) {
+      showMessage("Chaque JPG doit faire moins de 200 Mo.");
+      return;
+    }
+
+    let importId = "";
+    let committed = false;
+    importInProgress = true;
+    updateFolderActions();
+    photoImportProgress.hidden = false;
+    photoImportMeter.max = files.length;
+    photoImportMeter.value = 0;
+    photoImportStatus.textContent = `${files.length} fichier${
+      files.length > 1 ? "s" : ""
+    } à préparer`;
+
+    try {
+      const staged = await requestJson("/api/imports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          folder: folderSlug,
+          files: files.map((file) => ({
+            name: file.name,
+            size: file.size,
+            type: file.type || "image/jpeg",
+            lastModified: file.lastModified,
+          })),
+        }),
+      });
+      importId = staged?.importId || staged?.id || "";
+
+      if (!importId) {
+        throw new Error("Session d’import manquante");
+      }
+
+      const conflicts = Array.isArray(staged.conflicts)
+        ? staged.conflicts
+            .map((conflict) =>
+              typeof conflict === "string" ? conflict : conflict?.name
+            )
+            .filter(Boolean)
+        : [];
+      const conflictNames = new Set(
+        conflicts.map((name) => String(name).normalize("NFC"))
+      );
+      const shouldOverwrite =
+        !conflicts.length ||
+        window.confirm(
+          `${conflicts.length} fichier${
+            conflicts.length > 1 ? "s existent" : " existe"
+          } déjà :\n${conflicts.slice(0, 6).join("\n")}${
+            conflicts.length > 6 ? `\n… et ${conflicts.length - 6} autre(s)` : ""
+          }\n\nLes remplacer ?`
+        );
+
+      if (!shouldOverwrite) {
+        await cancelImport(importId);
+        importId = "";
+        photoImportStatus.textContent = "Import annulé";
+        return;
+      }
+
+      for (let index = 0; index < files.length; index += 1) {
+        const file = files[index];
+        const overwrite = conflictNames.has(file.name.normalize("NFC"))
+          ? "1"
+          : "0";
+        photoImportStatus.textContent = `${index + 1}/${files.length} · ${file.name}`;
+        await requestJson(
+          `/api/imports/${encodeURIComponent(importId)}/files/${encodeURIComponent(
+            file.name
+          )}?overwrite=${overwrite}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": file.type || "image/jpeg" },
+            body: file,
+          }
+        );
+        photoImportMeter.value = index + 1;
+      }
+
+      photoImportStatus.textContent = "Conversion…";
+      const payload = await requestJson(
+        `/api/imports/${encodeURIComponent(importId)}/commit`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        }
+      );
+      committed = true;
+      await refreshManifestAfterMutation(payload, folderSlug);
+      photoImportStatus.textContent = `${files.length} photo${
+        files.length > 1 ? "s importées" : " importée"
+      }`;
+      showMessage("Photos importées.");
+    } catch {
+      photoImportStatus.textContent = "Import impossible";
+      showMessage("L’import des photos a échoué.");
+    } finally {
+      if (importId && !committed) {
+        await cancelImport(importId);
+      }
+      photoImportFiles.value = "";
+      importInProgress = false;
+      updateFolderActions();
     }
   };
 
@@ -1572,6 +2182,28 @@
       panel.scrollBy(0, -14);
     } else if (event.clientY > rect.bottom - edgeSize) {
       panel.scrollBy(0, 14);
+    }
+  };
+
+  const setEditorTab = (tabName) => {
+    if (!editorViews.some((view) => view.dataset.editorView === tabName)) {
+      return;
+    }
+
+    currentEditorTab = tabName;
+    editorTabs.forEach((tab) => {
+      const isActive = tab.dataset.editorTab === tabName;
+      tab.classList.toggle("is-active", isActive);
+      tab.setAttribute("aria-selected", String(isActive));
+      tab.tabIndex = isActive ? 0 : -1;
+    });
+    editorViews.forEach((view) => {
+      view.hidden = view.dataset.editorView !== tabName;
+    });
+    layoutActions.hidden = tabName !== "layout";
+
+    if (tabName === "photos" && manifest) {
+      renderManagedPhotos();
     }
   };
 
@@ -1602,15 +2234,48 @@
       renderEditor();
     });
 
-    importButton.addEventListener("click", () => importFile.click());
-    importFile.addEventListener("change", () => {
-      const [file] = importFile.files;
-
-      if (file) {
-        void importLayout(file);
-      }
+    applyButton.addEventListener("click", () => {
+      void applyLayout();
     });
-    exportButton.addEventListener("click", exportLayout);
+
+    editorTabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => setEditorTab(tab.dataset.editorTab));
+      tab.addEventListener("keydown", (event) => {
+        if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) {
+          return;
+        }
+
+        event.preventDefault();
+        const direction = event.key === "ArrowRight" ? 1 : -1;
+        const nextTab = editorTabs[
+          (index + direction + editorTabs.length) % editorTabs.length
+        ];
+        setEditorTab(nextTab.dataset.editorTab);
+        nextTab.focus();
+      });
+    });
+
+    photoFolderSelect.addEventListener("change", renderManagedPhotos);
+    createFolderButton.addEventListener("click", () => void createFolder());
+    renameFolderButton.addEventListener("click", () => void renameFolder());
+    photoImportFiles.addEventListener("change", () => {
+      void importPhotos(photoImportFiles.files);
+    });
+    ["dragenter", "dragover"].forEach((eventName) => {
+      photoImportZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        photoImportZone.classList.add("is-drag-over");
+      });
+    });
+    photoImportZone.addEventListener("dragleave", () => {
+      photoImportZone.classList.remove("is-drag-over");
+    });
+    photoImportZone.addEventListener("drop", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      photoImportZone.classList.remove("is-drag-over");
+      void importPhotos(event.dataTransfer.files);
+    });
 
     resetButton.addEventListener("click", () => {
       if (!rows.length) {
@@ -1690,22 +2355,33 @@
     bindStaticEvents();
 
     try {
-      await loadPhotoCatalog();
+      installManifest(await loadInitialManifest());
+      setAdminVisibility();
       const savedCollection = window.localStorage.getItem(
         SELECTED_COLLECTION_KEY
       );
-      switchCollection(
-        savedCollection && COLLECTIONS[savedCollection]
+      const projectKeys = Object.keys(manifest.projects);
+      const initialProject =
+        savedCollection && manifest.projects[savedCollection]
           ? savedCollection
-          : currentCollection
-      );
+          : projectKeys[0];
+
+      if (!initialProject) {
+        throw new Error("Aucun projet photo");
+      }
+
+      switchCollection(initialProject);
+      setEditorTab(currentEditorTab);
     } catch {
+      apiAvailable = false;
+      setAdminVisibility();
       setSaveStatus("Photos indisponibles");
       layoutCanvas.innerHTML =
         '<p class="loading-error">Ouvre cet outil depuis le serveur local du site pour charger les photos.</p>';
       photoLibrary.innerHTML =
-        '<p class="loading-error">Impossible de lire photography.html.</p>';
-      exportButton.disabled = true;
+        '<p class="loading-error">Impossible de lire la bibliothèque photo.</p>';
+      managedPhotoList.innerHTML =
+        '<p class="loading-error">Impossible de lire la bibliothèque photo.</p>';
     }
   };
 

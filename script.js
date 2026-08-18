@@ -14,7 +14,7 @@ let photoLightboxLowResCanvas = document.querySelector(".photo-lightbox-canvas-l
 let photoLightboxHighResCanvas = document.querySelector(".photo-lightbox-canvas-highres");
 let photoLightboxCaption = document.querySelector(".photo-lightbox-caption");
 const photoGrid = document.querySelector(".photo-grid");
-const photoTabs = Array.from(document.querySelectorAll(".photo-tab"));
+let photoTabs = [];
 const photoTabsList = document.querySelector(".photo-tabs-list");
 const photographyPageShell = document.querySelector(".photography-page-shell");
 const photographyPatternBase = document.querySelector(".photography-pattern-base");
@@ -53,15 +53,7 @@ const getDocumentScrollTop = () =>
       0,
     0
   );
-const photoEventLabelMap = Object.freeze({
-  "esports-world-cup-2026": "Esports World Cup 2026",
-  "telethon-gaming-2025": "Telethon Gaming 2025",
-  "living-the-dream-2026": "Living The Dream 2026",
-  "coupe-de-france-slash-2025": "Coupe de France Slash 2025",
-  "editing-con-paris-2026": "Editing Con Paris 2026",
-  "rlcs-paris-major-2026": "RLCS Paris Major 2026",
-  "paris-games-week-2025": "Paris Games Week 2025",
-});
+let photoEventLabelMap = Object.freeze({});
 const videoCardAspectRatios = {
   vertical: 2 / 3,
   wide: 1920 / 803,
@@ -2061,7 +2053,226 @@ window.addEventListener("resize", () => {
   }
 });
 
-if (photoGrid) {
+const initPhotoGrid = async () => {
+  if (!photoGrid) {
+    return;
+  }
+
+  const photoLibrarySource = "/rsrc/photo-library.json";
+  const photoPlaceholderSource =
+    "data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=";
+  const requestedPhotoProjectKey =
+    document.body.dataset.photoProject?.trim() || "";
+  let photoLibrary;
+
+  const showPhotoLibraryError = (error) => {
+    const message = document.createElement("p");
+    message.className = "photo-library-error";
+    message.setAttribute("role", "status");
+    message.textContent = "Impossible de charger les photos pour le moment.";
+    photoGrid.replaceChildren(message);
+    photoGrid.removeAttribute("aria-busy");
+    photoTabsList?.closest(".photo-tabs")?.setAttribute("hidden", "");
+    console.error("Photo library unavailable:", error);
+  };
+
+  photoGrid.setAttribute("aria-busy", "true");
+
+  try {
+    const response = await fetch(photoLibrarySource, { cache: "no-cache" });
+
+    if (!response.ok) {
+      throw new Error(`Unable to load ${photoLibrarySource} (${response.status})`);
+    }
+
+    photoLibrary = await response.json();
+
+    if (
+      !photoLibrary ||
+      photoLibrary.version !== 1 ||
+      !photoLibrary.folders ||
+      typeof photoLibrary.folders !== "object" ||
+      Array.isArray(photoLibrary.folders) ||
+      !Array.isArray(photoLibrary.photos) ||
+      !photoLibrary.projects ||
+      typeof photoLibrary.projects !== "object" ||
+      Array.isArray(photoLibrary.projects)
+    ) {
+      throw new Error("Invalid photo library manifest");
+    }
+  } catch (error) {
+    showPhotoLibraryError(error);
+    return;
+  }
+
+  const folderEntries = Object.entries(photoLibrary.folders);
+  const projectEntries = Object.entries(photoLibrary.projects);
+  const photoEntries = photoLibrary.photos;
+
+  try {
+    folderEntries.forEach(([folderSlug, folder]) => {
+      if (!folderSlug || !folder || typeof folder.label !== "string") {
+        throw new Error("Invalid photo folder entry");
+      }
+    });
+
+    projectEntries.forEach(([projectKey, project]) => {
+      if (
+        !projectKey ||
+        !project ||
+        typeof project.folder !== "string" ||
+        typeof project.label !== "string" ||
+        typeof project.route !== "string" ||
+        !Array.isArray(project.layout)
+      ) {
+        throw new Error("Invalid photo project entry");
+      }
+    });
+
+    const seenPhotoIds = new Set();
+
+    photoEntries.forEach((photo) => {
+      if (
+        !photo ||
+        typeof photo.id !== "string" ||
+        !photo.id.trim() ||
+        (photo.folder !== null && typeof photo.folder !== "string") ||
+        !Number.isFinite(photo.width) ||
+        photo.width <= 0 ||
+        !Number.isFinite(photo.height) ||
+        photo.height <= 0 ||
+        seenPhotoIds.has(photo.id)
+      ) {
+        throw new Error("Invalid photo entry");
+      }
+
+      seenPhotoIds.add(photo.id);
+    });
+  } catch (error) {
+    showPhotoLibraryError(error);
+    return;
+  }
+
+  photoEventLabelMap = Object.freeze(
+    Object.fromEntries(
+      folderEntries.map(([folderSlug, folder]) => [folderSlug, folder.label])
+    )
+  );
+  const photoTabFolderMap = Object.freeze(
+    Object.fromEntries(
+      projectEntries.map(([projectKey, project]) => [
+        projectKey,
+        project.folder,
+      ])
+    )
+  );
+  const photoEditorialLayouts = Object.freeze(
+    Object.fromEntries(
+      projectEntries.map(([projectKey, project]) => [
+        projectKey,
+        project.layout,
+      ])
+    )
+  );
+  const getLayoutPhotoIds = (layout) =>
+    layout
+      .flatMap((row) => {
+        if (row?.type === "featured") {
+          return [row.photo];
+        }
+
+        if (row?.type === "composition") {
+          return [
+            row.portrait,
+            ...(Array.isArray(row.landscapes) ? row.landscapes : []),
+          ];
+        }
+
+        return row?.type === "pair" && Array.isArray(row.photos)
+          ? row.photos
+          : [];
+      })
+      .filter((photoId) => typeof photoId === "string" && photoId);
+  const encodePhotoIdForUrl = (photoId) =>
+    String(photoId || "")
+      .split("/")
+      .map((segment) => encodeURIComponent(segment))
+      .join("/");
+  const createPhotoTile = (photo, index) => {
+    const tile = document.createElement("article");
+    const image = document.createElement("img");
+    tile.className = "photo-tile";
+    tile.dataset.photoFolder = photo.folder || "";
+    tile.dataset.photoId = photo.id;
+    image.className = "photo-image";
+    image.src = photoPlaceholderSource;
+    image.dataset.src = `/rsrc/photos/${encodePhotoIdForUrl(
+      photo.id.replace(/^\/+/, "")
+    )}`;
+    image.alt = "";
+    image.width = photo.width;
+    image.height = photo.height;
+    image.loading = index === 0 ? "eager" : "lazy";
+    image.decoding = "async";
+    tile.appendChild(image);
+    return tile;
+  };
+  const photoById = new Map(photoEntries.map((photo) => [photo.id, photo]));
+  const requestedProject = requestedPhotoProjectKey
+    ? photoLibrary.projects[requestedPhotoProjectKey]
+    : null;
+
+  if (requestedPhotoProjectKey && !requestedProject) {
+    showPhotoLibraryError(
+      new Error(`Unknown photo project: ${requestedPhotoProjectKey}`)
+    );
+    return;
+  }
+
+  const renderedPhotos = requestedProject
+    ? getLayoutPhotoIds(requestedProject.layout)
+        .map((photoId) => photoById.get(photoId))
+        .filter(Boolean)
+    : photoEntries;
+  const photoFragment = document.createDocumentFragment();
+
+  renderedPhotos.forEach((photo, index) => {
+    photoFragment.appendChild(createPhotoTile(photo, index));
+  });
+  photoGrid.replaceChildren(photoFragment);
+  photoGrid.removeAttribute("aria-busy");
+
+  if (photoTabsList) {
+    const tabFragment = document.createDocumentFragment();
+    const createPhotoTab = (tabKey, label, isActive, route = "") => {
+      const tab = document.createElement("button");
+      tab.className = `photo-tab${isActive ? " is-active" : ""}`;
+      tab.type = "button";
+      tab.setAttribute("role", "tab");
+      tab.setAttribute("aria-selected", String(isActive));
+      tab.setAttribute("aria-controls", "photo-grid");
+      tab.dataset.photoTab = tabKey;
+      tab.tabIndex = isActive ? 0 : -1;
+      tab.textContent = label;
+
+      if (route) {
+        tab.dataset.photoProjectRoute = route;
+      }
+
+      return tab;
+    };
+
+    tabFragment.appendChild(createPhotoTab("gallery", "Gallery", true));
+    projectEntries.forEach(([projectKey, project]) => {
+      tabFragment.appendChild(
+        createPhotoTab(projectKey, project.label, false, project.route)
+      );
+    });
+    photoTabsList.replaceChildren(tabFragment);
+    photoTabsList.closest(".photo-tabs")?.removeAttribute("hidden");
+    photoTabs = Array.from(photoTabsList.querySelectorAll(".photo-tab"));
+  }
+
   let currentPhotoColumns = 0;
   let currentPhotoLayout = "masonry";
   let currentPhotoTabKey = "gallery";
@@ -2080,237 +2291,6 @@ if (photoGrid) {
   const mobilePhotoPatternLineOffsets = [160, 360, 225];
   const desktopPhotoPatternVerticalStep = 1080;
   const mobilePhotoPatternVerticalStep = 540;
-  const photoTabFolderMap = {
-    "esports-world-cup": "esports-world-cup-2026",
-    rlcs: "rlcs-paris-major-2026",
-    "paris-games-week": "paris-games-week-2025",
-  };
-  const requestedPhotoProjectKey =
-    document.body.dataset.photoProject?.trim() || "";
-  const photoEditorialLayouts = {
-    "esports-world-cup": [
-      {
-        type: "featured",
-        photo:
-          "esports-world-cup-2026/@jeremy.delobel_18072026_130034.webp",
-      },
-      {
-        type: "composition",
-        portrait:
-          "esports-world-cup-2026/@jeremy.delobel_19072026_120030.webp",
-        landscapes: [
-          "esports-world-cup-2026/@jeremy.delobel_18072026_150701.webp",
-          "esports-world-cup-2026/@jeremy.delobel_19072026_120040.webp",
-        ],
-        portraitSide: "left",
-      },
-      {
-        type: "featured",
-        photo:
-          "esports-world-cup-2026/@jeremy.delobel_19072026_150701.webp",
-      },
-      {
-        type: "composition",
-        portrait:
-          "esports-world-cup-2026/@jeremy.delobel_18072026_130018.webp",
-        landscapes: [
-          "esports-world-cup-2026/@jeremy.delobel_18072026_153854.webp",
-          "esports-world-cup-2026/@jeremy.delobel_19072026_143612.webp",
-        ],
-        portraitSide: "right",
-      },
-      {
-        type: "featured",
-        photo:
-          "esports-world-cup-2026/@jeremy.delobel_19072026_175809.webp",
-      },
-      {
-        type: "composition",
-        portrait:
-          "esports-world-cup-2026/@jeremy.delobel_19072026_180039.webp",
-        landscapes: [
-          "esports-world-cup-2026/@jeremy.delobel_19072026_175733.webp",
-          "esports-world-cup-2026/@jeremy.delobel_19072026_180202.webp",
-        ],
-        portraitSide: "left",
-      },
-      {
-        type: "composition",
-        portrait:
-          "esports-world-cup-2026/@jeremy.delobel_19072026_151044.webp",
-        landscapes: [
-          "esports-world-cup-2026/@jeremy.delobel_17072026_165923.webp",
-          "esports-world-cup-2026/@jeremy.delobel_17072026_170008.webp",
-        ],
-        portraitSide: "right",
-      },
-      {
-        type: "featured",
-        photo:
-          "esports-world-cup-2026/@jeremy.delobel_09072026_211521.webp",
-      },
-      {
-        type: "composition",
-        portrait:
-          "esports-world-cup-2026/@jeremy.delobel_09072026_211410.webp",
-        landscapes: [
-          "esports-world-cup-2026/@jeremy.delobel_09072026_212053.webp",
-          "esports-world-cup-2026/@jeremy.delobel_09072026_211848-2.webp",
-        ],
-        portraitSide: "left",
-      },
-      {
-        type: "featured",
-        photo:
-          "esports-world-cup-2026/@jeremy.delobel_12072026_193753.webp",
-      },
-      {
-        type: "composition",
-        portrait:
-          "esports-world-cup-2026/@jeremy.delobel_12072026_193853.webp",
-        landscapes: [
-          "esports-world-cup-2026/@jeremy.delobel_12072026_195114.webp",
-          "esports-world-cup-2026/@jeremy.delobel_12072026_193932.webp",
-        ],
-        portraitSide: "left",
-      },
-      {
-        type: "composition",
-        portrait:
-          "esports-world-cup-2026/@jeremy.delobel_12072026_195442.webp",
-        landscapes: [
-          "esports-world-cup-2026/@jeremy.delobel_12072026_193500.webp",
-          "esports-world-cup-2026/@jeremy.delobel_09072026_200824.webp",
-        ],
-        portraitSide: "right",
-      },
-      {
-        type: "pair",
-        photos: [
-          "esports-world-cup-2026/@jeremy.delobel_09072026_212116.webp",
-          "esports-world-cup-2026/@jeremy.delobel_10072026_142157.webp",
-        ],
-      },
-      {
-        type: "featured",
-        photo:
-          "esports-world-cup-2026/@jeremy.delobel_09072026_212124.webp",
-      },
-      {
-        type: "composition",
-        portrait:
-          "esports-world-cup-2026/@jeremy.delobel_10072026_141040.webp",
-        landscapes: [
-          "esports-world-cup-2026/@jeremy.delobel_09072026_211942.webp",
-          "esports-world-cup-2026/@jeremy.delobel_09072026_173349.webp",
-        ],
-        portraitSide: "left",
-      },
-      {
-        type: "featured",
-        photo:
-          "esports-world-cup-2026/@jeremy.delobel_09072026_165849.webp",
-      },
-    ],
-    rlcs: [
-      {
-        type: "featured",
-        photo: "rlcs-paris-major-2026/@jeremy.delobel_24052026_212602.webp",
-      },
-      {
-        type: "pair",
-        photos: [
-          "rlcs-paris-major-2026/@jeremy.delobel_24052026_140142.webp",
-          "rlcs-paris-major-2026/@jeremy.delobel_24052026_212433.webp",
-        ],
-      },
-      {
-        type: "featured",
-        photo: "rlcs-paris-major-2026/@jeremy.delobel_24052026_181701.webp",
-      },
-      {
-        type: "composition",
-        portrait:
-          "rlcs-paris-major-2026/@jeremy.delobel_24052026_211630.webp",
-        landscapes: [
-          "rlcs-paris-major-2026/@jeremy.delobel_24052026_212927.webp",
-          "rlcs-paris-major-2026/@jeremy.delobel_24052026_211618.webp",
-        ],
-        portraitSide: "left",
-      },
-      {
-        type: "featured",
-        photo: "rlcs-paris-major-2026/@jeremy.delobel_24052026_211504.webp",
-      },
-      {
-        type: "pair",
-        photos: [
-          "rlcs-paris-major-2026/@jeremy.delobel_24052026_212818.webp",
-          "rlcs-paris-major-2026/@jeremy.delobel_24052026_212752.webp",
-        ],
-      },
-      {
-        type: "featured",
-        photo: "rlcs-paris-major-2026/@jeremy.delobel_24052026_212643.webp",
-      },
-      {
-        type: "pair",
-        photos: [
-          "rlcs-paris-major-2026/@jeremy.delobel_24052026_212542.webp",
-          "rlcs-paris-major-2026/@jeremy.delobel_24052026_212112.webp",
-        ],
-      },
-      {
-        type: "featured",
-        photo: "rlcs-paris-major-2026/@jeremy.delobel_24052026_175741.webp",
-      },
-      {
-        type: "pair",
-        photos: [
-          "rlcs-paris-major-2026/@jeremy.delobel_24052026_212558.webp",
-          "rlcs-paris-major-2026/@jeremy.delobel_24052026_213150.webp",
-        ],
-      },
-    ],
-    "paris-games-week": [
-      {
-        type: "featured",
-        photo:
-          "paris-games-week-2025/A7404964_JérémyDelobel_2025.webp",
-      },
-      {
-        type: "composition",
-        portrait:
-          "paris-games-week-2025/A7405020_JérémyDelobel_2025.webp",
-        landscapes: [
-          "paris-games-week-2025/A7404967_JérémyDelobel_2025.webp",
-          "paris-games-week-2025/A7404644_JérémyDelobel_2025.webp",
-        ],
-        portraitSide: "left",
-      },
-      {
-        type: "composition",
-        portrait:
-          "paris-games-week-2025/A7407158_JérémyDelobel_2025.webp",
-        landscapes: [
-          "paris-games-week-2025/A7407151_JérémyDelobel_2025.webp",
-          "paris-games-week-2025/A7404435_JérémyDelobel_2025.webp",
-        ],
-        portraitSide: "right",
-      },
-      {
-        type: "featured",
-        photo:
-          "paris-games-week-2025/A7406101_JérémyDelobel_2025.webp",
-      },
-      {
-        type: "featured",
-        photo:
-          "paris-games-week-2025/A7405910_JérémyDelobel_2025.webp",
-      },
-    ],
-  };
-
   const shuffleArray = (items) => {
     const shuffled = [...items];
 
@@ -2348,7 +2328,7 @@ if (photoGrid) {
       const height =
         Number(image?.getAttribute("height")) || image?.naturalHeight || 1;
       const ratio = width / height;
-      const photoId = normalizePhotoId(image?.dataset.src);
+      const photoId = tile.dataset.photoId || normalizePhotoId(image?.dataset.src);
       const kind =
         ratio < 0.9 ? "portrait" : ratio > 1.65 ? "wide" : "landscape";
 
@@ -2361,6 +2341,7 @@ if (photoGrid) {
 
       return {
         id: photoId,
+        folder: tile.dataset.photoFolder || null,
         tile,
         image,
         ratio,
@@ -2380,9 +2361,7 @@ if (photoGrid) {
     currentPhotoTabKey = tabKey;
     const selectedFolder = photoTabFolderMap[tabKey];
     const selectedModels = selectedFolder
-      ? allPhotoModels.filter((model) =>
-          (model.image.dataset.src || "").includes(`/${selectedFolder}/`)
-        )
+      ? allPhotoModels.filter((model) => model.folder === selectedFolder)
       : allPhotoModels;
 
     currentPhotoLayout = selectedFolder ? "editorial" : "masonry";
@@ -3436,13 +3415,14 @@ if (photoGrid) {
     const preloadPhotoTabLeadImage = (tabToSelect) => {
       const tabKey = tabToSelect?.dataset.photoTab;
       const leadRow = photoEditorialLayouts[tabKey]?.[0];
+      const [leadPhotoId] = leadRow ? getLayoutPhotoIds([leadRow]) : [];
 
-      if (!leadRow || leadRow.type !== "featured") {
+      if (!leadPhotoId) {
         return Promise.resolve(null);
       }
 
       const leadModel = allPhotoModels.find(
-        (model) => model.id === leadRow.photo
+        (model) => model.id === leadPhotoId
       );
 
       return leadModel
@@ -4301,7 +4281,15 @@ if (photoGrid) {
   };
 
   initPhotographyPattern();
-}
+};
+
+const photoGridReady = initPhotoGrid();
+const playFolioPageEntry = () => {
+  void photoGridReady.then(
+    () => playPageEntry(),
+    () => playPageEntry()
+  );
+};
 
 if (isFolioPage) {
   const folioLenisDesktopLayout = window.matchMedia(
@@ -6177,7 +6165,10 @@ if (categorySection && categoryCards.length) {
   };
 
   const prepareNextPhotographySlide = () => {
-    if (photographySlideshowPreloadedSource) {
+    if (
+      photographySlideshowPreloadedSource ||
+      !photographySlideshowSources.length
+    ) {
       return;
     }
 
@@ -6191,7 +6182,11 @@ if (categorySection && categoryCards.length) {
   const scheduleNextPhotographySlide = () => {
     window.clearTimeout(photographySlideshowTimer);
 
-    if (document.hidden || photographySlideshowImages.length < 2) {
+    if (
+      document.hidden ||
+      photographySlideshowImages.length < 2 ||
+      !photographySlideshowSources.length
+    ) {
       return;
     }
 
@@ -6204,7 +6199,8 @@ if (categorySection && categoryCards.length) {
     if (
       isPhotographySlideshowChanging ||
       !photographySlideshowCard ||
-      photographySlideshowImages.length < 2
+      photographySlideshowImages.length < 2 ||
+      !photographySlideshowSources.length
     ) {
       return;
     }
@@ -6249,8 +6245,13 @@ if (categorySection && categoryCards.length) {
     });
   };
 
-  if (photographySlideshowImages.length >= 2) {
+  if (
+    photographySlideshowImages.length >= 2 &&
+    photographySlideshowSources.length
+  ) {
     void showNextPhotographySlide();
+  } else if (photographySlideshowCard) {
+    markCategoryCardMediaReady(photographySlideshowCard, true);
   }
 
   cards.forEach(({ element: card }) => {
@@ -6506,7 +6507,7 @@ if (categorySection && categoryCards.length) {
 
   syncLayout();
 } else if (isFolioPage) {
-  playPageEntry();
+  playFolioPageEntry();
 } else if (isBackForwardLoad) {
   playPageEntry({ withWhiteFade: true });
 } else {
@@ -6524,7 +6525,7 @@ window.addEventListener("pageshow", (event) => {
   }
 
   if (isFolioPage) {
-    playPageEntry();
+    playFolioPageEntry();
     return;
   }
 

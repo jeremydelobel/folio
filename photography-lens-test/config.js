@@ -25,7 +25,6 @@ export const PHOTOS = [
   { src: "/rsrc/photos/esports-world-cup-2026/@jeremy.delobel_18072026_153854.webp", width: 1000, height: 667, aspect: 1000 / 667 },
   { src: "/rsrc/photos/esports-world-cup-2026/@jeremy.delobel_19072026_120030.webp", width: 867, height: 1300, aspect: 867 / 1300 },
   { src: "/rsrc/photos/esports-world-cup-2026/@jeremy.delobel_19072026_120040.webp", width: 1000, height: 667, aspect: 1000 / 667 },
-  { src: "/rsrc/photos/esports-world-cup-2026/@jeremy.delobel_19072026_143612.webp", width: 1000, height: 667, aspect: 1000 / 667 },
   { src: "/rsrc/photos/esports-world-cup-2026/@jeremy.delobel_19072026_150701.webp", width: 1000, height: 667, aspect: 1000 / 667 },
   { src: "/rsrc/photos/esports-world-cup-2026/@jeremy.delobel_19072026_151044.webp", width: 867, height: 1300, aspect: 867 / 1300 },
   { src: "/rsrc/photos/esports-world-cup-2026/@jeremy.delobel_19072026_175733.webp", width: 1000, height: 667, aspect: 1000 / 667 },

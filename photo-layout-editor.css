@@ -23,6 +23,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   width: 100%;
@@ -55,13 +59,52 @@ button {
   position: relative;
   z-index: 10;
   min-height: 76px;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
   gap: 2rem;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid rgba(17, 17, 17, 0.14);
   background: rgba(247, 247, 245, 0.96);
+}
+
+.editor-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  gap: 0.45rem;
+}
+
+.editor-tab {
+  appearance: none;
+  min-width: 98px;
+  min-height: 34px;
+  border: 1px solid #111111;
+  border-radius: 0;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  color: #111111;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.editor-tab:hover,
+.editor-tab:focus-visible {
+  background: rgba(17, 17, 17, 0.07);
+}
+
+.editor-tab:focus-visible {
+  outline: 2px solid rgba(17, 17, 17, 0.35);
+  outline-offset: 2px;
+}
+
+.editor-tab.is-active,
+.editor-tab.is-active:hover,
+.editor-tab.is-active:focus-visible {
+  background: #111111;
+  color: #ffffff;
 }
 
 .editor-heading {
@@ -92,6 +135,11 @@ button {
   align-items: center;
   justify-content: flex-end;
   gap: 0.45rem;
+}
+
+.editor-heading,
+.editor-actions {
+  min-width: 0;
 }
 
 .collection-control {
@@ -156,6 +204,183 @@ button {
   min-height: 0;
   display: grid;
   grid-template-columns: minmax(570px, 1fr) 326px;
+}
+
+.editor-view {
+  min-height: 0;
+}
+
+.photo-manager {
+  overflow: auto;
+  padding: 1.35rem 1.5rem 5rem;
+}
+
+.photo-manager-toolbar {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.14);
+}
+
+.photo-manager-toolbar .collection-control {
+  margin-right: 0;
+}
+
+.photo-manager-count {
+  color: rgba(17, 17, 17, 0.52);
+  font-size: 12px;
+}
+
+.photo-folder-actions {
+  display: flex;
+  gap: 0.45rem;
+  margin-left: auto;
+}
+
+.photo-import-zone {
+  display: grid;
+  min-height: 72px;
+  margin: 1rem 0;
+  place-items: center;
+  border: 1px dashed rgba(17, 17, 17, 0.3);
+  color: rgba(17, 17, 17, 0.58);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.photo-import-zone:hover,
+.photo-import-zone:focus-within,
+.photo-import-zone.is-drag-over {
+  border-color: #111111;
+  color: #111111;
+}
+
+.photo-import-zone.is-disabled {
+  border-color: rgba(17, 17, 17, 0.14);
+  color: rgba(17, 17, 17, 0.3);
+  cursor: default;
+}
+
+.photo-import-link {
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+}
+
+.photo-import-progress {
+  display: grid;
+  grid-template-columns: minmax(120px, 240px) auto;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+  color: rgba(17, 17, 17, 0.62);
+  font-size: 12px;
+}
+
+.photo-import-progress progress {
+  width: 100%;
+  height: 3px;
+  border: 0;
+  border-radius: 0;
+  appearance: none;
+  background: rgba(17, 17, 17, 0.12);
+}
+
+.photo-import-progress progress::-webkit-progress-bar {
+  background: rgba(17, 17, 17, 0.12);
+}
+
+.photo-import-progress progress::-webkit-progress-value,
+.photo-import-progress progress::-moz-progress-bar {
+  background: #111111;
+}
+
+.managed-photo-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 1rem 0.7rem;
+}
+
+.managed-photo {
+  position: relative;
+  min-width: 0;
+}
+
+.managed-photo-delete {
+  position: absolute;
+  top: 0.42rem;
+  right: 0.42rem;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  appearance: none;
+  border: 1px solid rgba(17, 17, 17, 0.18);
+  border-radius: 0;
+  padding: 0;
+  background: rgba(247, 247, 245, 0.94);
+  color: #111111;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-3px);
+  transition: opacity 140ms ease, transform 140ms ease,
+    background-color 140ms ease;
+}
+
+.managed-photo:hover .managed-photo-delete,
+.managed-photo:focus-within .managed-photo-delete,
+.managed-photo-delete:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.managed-photo-delete:hover,
+.managed-photo-delete:focus-visible {
+  background: #ffffff;
+  outline: 2px solid rgba(17, 17, 17, 0.35);
+  outline-offset: 1px;
+}
+
+.managed-photo-delete:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+.managed-photo.is-deleting .managed-photo-preview {
+  opacity: 0.5;
+}
+
+.managed-photo-preview {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: rgba(17, 17, 17, 0.06);
+}
+
+.managed-photo-name,
+.managed-photo-folder {
+  overflow: hidden;
+  margin: 0.42rem 0 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
+
+.managed-photo-folder {
+  margin-top: 0.15rem;
+  color: rgba(17, 17, 17, 0.46);
+}
+
+.managed-photo-empty {
+  margin: 2rem 0;
+  color: rgba(17, 17, 17, 0.52);
+  font-size: 12px;
 }
 
 .canvas-panel,
@@ -680,6 +905,10 @@ body.is-dragging .placed-photo {
   .editor-heading {
     display: grid;
     gap: 0.35rem;
+  }
+
+  .editor-tabs {
+    align-self: flex-start;
   }
 
   .editor-actions {

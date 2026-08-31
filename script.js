@@ -3607,7 +3607,7 @@ const initPhotoGrid = async () => {
       event.preventDefault();
     }
   });
-  window.addEventListener("resize", rebuildPhotoColumns);
+  window.addEventListener("resize", () => rebuildPhotoColumns());
 
   const initPhotographyPattern = () => {
     if (!photographyPageShell || !photographyPatternBase) {

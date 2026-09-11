@@ -185,7 +185,9 @@ class PhotoManager:
     def __init__(self, site_root: Path, source_root: Path, token: str):
         self.site_root = site_root.resolve()
         self.source_root = source_root.resolve()
-        self.manifest_path = self.site_root / "rsrc" / "photo-library.json"
+        self.manifest_path = (
+            self.site_root / "rsrc" / "data" / "photo-library.json"
+        )
         self.web_root = self.site_root / "rsrc" / "photos"
         self.fullres_root = self.site_root / "rsrc" / "photos-fullres"
         self.token = token
@@ -888,7 +890,7 @@ class PhotoManager:
             "ewcCarouselTest": 0,
         }
 
-        script_path = self.site_root / "script.js"
+        script_path = self.site_root / "rsrc" / "js" / "site.js"
         if script_path.is_file():
             old_text = script_path.read_text(encoding="utf-8")
             new_text, removed = self._remove_reference_lines(
@@ -1296,7 +1298,9 @@ def main() -> int:
     arguments = parse_arguments()
     site_root = arguments.site_root.resolve()
     source_root = arguments.source_root.resolve()
-    if not site_root.is_dir() or not (site_root / "rsrc" / "photo-library.json").is_file():
+    if not site_root.is_dir() or not (
+        site_root / "rsrc" / "data" / "photo-library.json"
+    ).is_file():
         raise SystemExit("Dossier du site ou manifeste photo introuvable.")
     source_root.mkdir(parents=True, exist_ok=True)
     state_path = state_file(arguments.port)

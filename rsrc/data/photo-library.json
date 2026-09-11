@@ -1,0 +1,881 @@
+{
+  "version": 1,
+  "folders": {
+    "coupe-de-france-slash-2025": {
+      "label": "Coupe de France Slash 2025"
+    },
+    "editing-con-paris-2026": {
+      "label": "Editing Con Paris 2026"
+    },
+    "esports-world-cup-2026": {
+      "label": "Esports World Cup 2026"
+    },
+    "living-the-dream-2026": {
+      "label": "Living The Dream 2026"
+    },
+    "paris-games-week-2025": {
+      "label": "Paris Games Week 2025"
+    },
+    "rlcs-paris-major-2026": {
+      "label": "RLCS Paris Major 2026"
+    },
+    "telethon-gaming-2025": {
+      "label": "Telethon Gaming 2025"
+    }
+  },
+  "photos": [
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_09072026_165849.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 563
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_09072026_173349.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_09072026_200824.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_09072026_211410.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_09072026_211521.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_09072026_211848-2.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_09072026_211942.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_09072026_212053.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_09072026_212116.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_09072026_212124.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 563
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_10072026_141040.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_10072026_142157.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_12072026_193500.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_12072026_193753.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_12072026_193853.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_12072026_193932.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_12072026_195114.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_12072026_195442.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_17072026_165923.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_17072026_170008.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_18072026_130018.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_18072026_130034.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_18072026_150701.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_18072026_153854.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_19072026_120030.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_19072026_120040.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_19072026_150701.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_19072026_151044.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_19072026_175733.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_19072026_175809.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_19072026_180039.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_19072026_180202.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "telethon-gaming-2025/@jeremy.delobel_0027_05122025.webp",
+      "folder": "telethon-gaming-2025",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "telethon-gaming-2025/@jeremy.delobel_0028_05122025.webp",
+      "folder": "telethon-gaming-2025",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "telethon-gaming-2025/@jeremy.delobel_0052_05122025.webp",
+      "folder": "telethon-gaming-2025",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "telethon-gaming-2025/@jeremy.delobel_0117_06122025.webp",
+      "folder": "telethon-gaming-2025",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "telethon-gaming-2025/@jeremy.delobel_0170_06122025.webp",
+      "folder": "telethon-gaming-2025",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "telethon-gaming-2025/@jeremy.delobel_0227_06122025.webp",
+      "folder": "telethon-gaming-2025",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "telethon-gaming-2025/@jeremy.delobel_0236_06122025.webp",
+      "folder": "telethon-gaming-2025",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "telethon-gaming-2025/@jeremy.delobel_0351_07122025.webp",
+      "folder": "telethon-gaming-2025",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "living-the-dream-2026/@jeremy.delobel_10042026_143132.webp",
+      "folder": "living-the-dream-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "living-the-dream-2026/@jeremy.delobel_10042026_185452.webp",
+      "folder": "living-the-dream-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "living-the-dream-2026/@jeremy.delobel_11042026_153043.webp",
+      "folder": "living-the-dream-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "living-the-dream-2026/@jeremy.delobel_11042026_155649.webp",
+      "folder": "living-the-dream-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "living-the-dream-2026/@jeremy.delobel_11042026_203014-2.webp",
+      "folder": "living-the-dream-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "living-the-dream-2026/@jeremy.delobel_11042026_203016.webp",
+      "folder": "living-the-dream-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "living-the-dream-2026/@jeremy.delobel_11042026_204006.webp",
+      "folder": "living-the-dream-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "living-the-dream-2026/@jeremy.delobel_12042026_180334.webp",
+      "folder": "living-the-dream-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "living-the-dream-2026/@jeremy.delobel_12042026_232258-2.webp",
+      "folder": "living-the-dream-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "living-the-dream-2026/@jeremy.delobel_13042026_000503.webp",
+      "folder": "living-the-dream-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "editing-con-paris-2026/@jeremy.delobel_15022026_133629.webp",
+      "folder": "editing-con-paris-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "editing-con-paris-2026/@jeremy.delobel_15022026_143139.webp",
+      "folder": "editing-con-paris-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "editing-con-paris-2026/@jeremy.delobel_15022026_143933.webp",
+      "folder": "editing-con-paris-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "editing-con-paris-2026/@jeremy.delobel_15022026_160914.webp",
+      "folder": "editing-con-paris-2026",
+      "width": 1000,
+      "height": 563
+    },
+    {
+      "id": "editing-con-paris-2026/@jeremy.delobel_15022026_171146.webp",
+      "folder": "editing-con-paris-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "editing-con-paris-2026/@jeremy.delobel_15022026_171313.webp",
+      "folder": "editing-con-paris-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "editing-con-paris-2026/@jeremy.delobel_15022026_185303.webp",
+      "folder": "editing-con-paris-2026",
+      "width": 1000,
+      "height": 563
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_140142.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_175741.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_181701.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_211504.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 1000,
+      "height": 563
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_211618.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_211630.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_212112.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_212433.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_212542.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_212558.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_212602.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_212643.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 1000,
+      "height": 563
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_212752.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_212818.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_212927.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_213150.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "A7400251.webp",
+      "folder": null,
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "A7400255.webp",
+      "folder": null,
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "A7403115_JérémyDelobel_2025.webp",
+      "folder": null,
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "paris-games-week-2025/A7404435_JérémyDelobel_2025.webp",
+      "folder": "paris-games-week-2025",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "paris-games-week-2025/A7404644_JérémyDelobel_2025.webp",
+      "folder": "paris-games-week-2025",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "paris-games-week-2025/A7404964_JérémyDelobel_2025.webp",
+      "folder": "paris-games-week-2025",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "paris-games-week-2025/A7404967_JérémyDelobel_2025.webp",
+      "folder": "paris-games-week-2025",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "paris-games-week-2025/A7405020_JérémyDelobel_2025.webp",
+      "folder": "paris-games-week-2025",
+      "width": 976,
+      "height": 1300
+    },
+    {
+      "id": "paris-games-week-2025/A7405910_JérémyDelobel_2025.webp",
+      "folder": "paris-games-week-2025",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "paris-games-week-2025/A7406101_JérémyDelobel_2025.webp",
+      "folder": "paris-games-week-2025",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "coupe-de-france-slash-2025/A7406797_JérémyDelobel_2025.webp",
+      "folder": "coupe-de-france-slash-2025",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "coupe-de-france-slash-2025/A7406899_JérémyDelobel_2025.webp",
+      "folder": "coupe-de-france-slash-2025",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "coupe-de-france-slash-2025/A7406927_JérémyDelobel_2025.webp",
+      "folder": "coupe-de-france-slash-2025",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "paris-games-week-2025/A7407151_JérémyDelobel_2025.webp",
+      "folder": "paris-games-week-2025",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "paris-games-week-2025/A7407158_JérémyDelobel_2025.webp",
+      "folder": "paris-games-week-2025",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "A7408572.webp",
+      "folder": null,
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "A7409992.webp",
+      "folder": null,
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "DSC03436.webp",
+      "folder": null,
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "JérémyDelobel_2025_150746.webp",
+      "folder": null,
+      "width": 1040,
+      "height": 1300
+    },
+    {
+      "id": "JérémyDelobel_2025_155301.webp",
+      "folder": null,
+      "width": 1000,
+      "height": 800
+    },
+    {
+      "id": "rlcs-paris-major-2026/@jeremy.delobel_24052026_212707.webp",
+      "folder": "rlcs-paris-major-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_16082026_193337.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_15082026_170843.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_15082026_153119.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_15082026_153549.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 867,
+      "height": 1300
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_15082026_182756.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_15082026_183002-2.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_15082026_184104.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 1000,
+      "height": 667
+    },
+    {
+      "id": "esports-world-cup-2026/@jeremy.delobel_15082026_182949.webp",
+      "folder": "esports-world-cup-2026",
+      "width": 867,
+      "height": 1300
+    }
+  ],
+  "projects": {
+    "esports-world-cup": {
+      "folder": "esports-world-cup-2026",
+      "label": "Esports World Cup",
+      "route": "/photography/ewc26/",
+      "layout": [
+        {
+          "type": "featured",
+          "photo": "esports-world-cup-2026/@jeremy.delobel_15082026_184104.webp"
+        },
+        {
+          "type": "pair",
+          "photos": [
+            "esports-world-cup-2026/@jeremy.delobel_15082026_153119.webp",
+            "esports-world-cup-2026/@jeremy.delobel_15082026_182949.webp"
+          ]
+        },
+        {
+          "type": "composition",
+          "portrait": "esports-world-cup-2026/@jeremy.delobel_15082026_153549.webp",
+          "landscapes": [
+            "esports-world-cup-2026/@jeremy.delobel_15082026_182756.webp",
+            "esports-world-cup-2026/@jeremy.delobel_15082026_183002-2.webp"
+          ],
+          "portraitSide": "left"
+        },
+        {
+          "type": "featured",
+          "photo": "esports-world-cup-2026/@jeremy.delobel_16082026_193337.webp"
+        },
+        {
+          "type": "featured",
+          "photo": "esports-world-cup-2026/@jeremy.delobel_19072026_120040.webp"
+        },
+        {
+          "type": "composition",
+          "portrait": "esports-world-cup-2026/@jeremy.delobel_19072026_120030.webp",
+          "landscapes": [
+            "esports-world-cup-2026/@jeremy.delobel_18072026_150701.webp",
+            "esports-world-cup-2026/@jeremy.delobel_18072026_130034.webp"
+          ],
+          "portraitSide": "left"
+        },
+        {
+          "type": "featured",
+          "photo": "esports-world-cup-2026/@jeremy.delobel_19072026_150701.webp"
+        },
+        {
+          "type": "composition",
+          "portrait": "esports-world-cup-2026/@jeremy.delobel_18072026_130018.webp",
+          "landscapes": [
+            "esports-world-cup-2026/@jeremy.delobel_18072026_153854.webp",
+            "esports-world-cup-2026/@jeremy.delobel_15082026_170843.webp"
+          ],
+          "portraitSide": "right"
+        },
+        {
+          "type": "featured",
+          "photo": "esports-world-cup-2026/@jeremy.delobel_19072026_175809.webp"
+        },
+        {
+          "type": "composition",
+          "portrait": "esports-world-cup-2026/@jeremy.delobel_19072026_180039.webp",
+          "landscapes": [
+            "esports-world-cup-2026/@jeremy.delobel_19072026_175733.webp",
+            "esports-world-cup-2026/@jeremy.delobel_19072026_180202.webp"
+          ],
+          "portraitSide": "left"
+        },
+        {
+          "type": "composition",
+          "portrait": "esports-world-cup-2026/@jeremy.delobel_19072026_151044.webp",
+          "landscapes": [
+            "esports-world-cup-2026/@jeremy.delobel_17072026_165923.webp",
+            "esports-world-cup-2026/@jeremy.delobel_17072026_170008.webp"
+          ],
+          "portraitSide": "right"
+        },
+        {
+          "type": "featured",
+          "photo": "esports-world-cup-2026/@jeremy.delobel_09072026_211521.webp"
+        },
+        {
+          "type": "composition",
+          "portrait": "esports-world-cup-2026/@jeremy.delobel_09072026_211410.webp",
+          "landscapes": [
+            "esports-world-cup-2026/@jeremy.delobel_09072026_212053.webp",
+            "esports-world-cup-2026/@jeremy.delobel_09072026_211848-2.webp"
+          ],
+          "portraitSide": "left"
+        },
+        {
+          "type": "featured",
+          "photo": "esports-world-cup-2026/@jeremy.delobel_12072026_193753.webp"
+        },
+        {
+          "type": "composition",
+          "portrait": "esports-world-cup-2026/@jeremy.delobel_12072026_193853.webp",
+          "landscapes": [
+            "esports-world-cup-2026/@jeremy.delobel_12072026_195114.webp",
+            "esports-world-cup-2026/@jeremy.delobel_12072026_193932.webp"
+          ],
+          "portraitSide": "left"
+        },
+        {
+          "type": "composition",
+          "portrait": "esports-world-cup-2026/@jeremy.delobel_12072026_195442.webp",
+          "landscapes": [
+            "esports-world-cup-2026/@jeremy.delobel_12072026_193500.webp",
+            "esports-world-cup-2026/@jeremy.delobel_09072026_200824.webp"
+          ],
+          "portraitSide": "right"
+        },
+        {
+          "type": "pair",
+          "photos": [
+            "esports-world-cup-2026/@jeremy.delobel_09072026_212116.webp",
+            "esports-world-cup-2026/@jeremy.delobel_10072026_142157.webp"
+          ]
+        },
+        {
+          "type": "featured",
+          "photo": "esports-world-cup-2026/@jeremy.delobel_09072026_212124.webp"
+        },
+        {
+          "type": "composition",
+          "portrait": "esports-world-cup-2026/@jeremy.delobel_10072026_141040.webp",
+          "landscapes": [
+            "esports-world-cup-2026/@jeremy.delobel_09072026_211942.webp",
+            "esports-world-cup-2026/@jeremy.delobel_09072026_173349.webp"
+          ],
+          "portraitSide": "left"
+        },
+        {
+          "type": "featured",
+          "photo": "esports-world-cup-2026/@jeremy.delobel_09072026_165849.webp"
+        }
+      ]
+    },
+    "rlcs": {
+      "folder": "rlcs-paris-major-2026",
+      "label": "RLCS",
+      "route": "/photography/rlcsparismajor/",
+      "layout": [
+        {
+          "type": "featured",
+          "photo": "rlcs-paris-major-2026/@jeremy.delobel_24052026_212602.webp"
+        },
+        {
+          "type": "pair",
+          "photos": [
+            "rlcs-paris-major-2026/@jeremy.delobel_24052026_140142.webp",
+            "rlcs-paris-major-2026/@jeremy.delobel_24052026_212433.webp"
+          ]
+        },
+        {
+          "type": "featured",
+          "photo": "rlcs-paris-major-2026/@jeremy.delobel_24052026_181701.webp"
+        },
+        {
+          "type": "composition",
+          "portrait": "rlcs-paris-major-2026/@jeremy.delobel_24052026_211630.webp",
+          "landscapes": [
+            "rlcs-paris-major-2026/@jeremy.delobel_24052026_212927.webp",
+            "rlcs-paris-major-2026/@jeremy.delobel_24052026_211618.webp"
+          ],
+          "portraitSide": "left"
+        },
+        {
+          "type": "featured",
+          "photo": "rlcs-paris-major-2026/@jeremy.delobel_24052026_211504.webp"
+        },
+        {
+          "type": "pair",
+          "photos": [
+            "rlcs-paris-major-2026/@jeremy.delobel_24052026_212818.webp",
+            "rlcs-paris-major-2026/@jeremy.delobel_24052026_212752.webp"
+          ]
+        },
+        {
+          "type": "featured",
+          "photo": "rlcs-paris-major-2026/@jeremy.delobel_24052026_212643.webp"
+        },
+        {
+          "type": "pair",
+          "photos": [
+            "rlcs-paris-major-2026/@jeremy.delobel_24052026_212542.webp",
+            "rlcs-paris-major-2026/@jeremy.delobel_24052026_212112.webp"
+          ]
+        },
+        {
+          "type": "featured",
+          "photo": "rlcs-paris-major-2026/@jeremy.delobel_24052026_175741.webp"
+        },
+        {
+          "type": "pair",
+          "photos": [
+            "rlcs-paris-major-2026/@jeremy.delobel_24052026_212558.webp",
+            "rlcs-paris-major-2026/@jeremy.delobel_24052026_213150.webp"
+          ]
+        }
+      ]
+    },
+    "paris-games-week": {
+      "folder": "paris-games-week-2025",
+      "label": "Paris Games Week",
+      "route": "/photography/paris-games-week-2025/",
+      "layout": [
+        {
+          "type": "featured",
+          "photo": "paris-games-week-2025/A7404964_JérémyDelobel_2025.webp"
+        },
+        {
+          "type": "composition",
+          "portrait": "paris-games-week-2025/A7405020_JérémyDelobel_2025.webp",
+          "landscapes": [
+            "paris-games-week-2025/A7404967_JérémyDelobel_2025.webp",
+            "paris-games-week-2025/A7404644_JérémyDelobel_2025.webp"
+          ],
+          "portraitSide": "left"
+        },
+        {
+          "type": "composition",
+          "portrait": "paris-games-week-2025/A7407158_JérémyDelobel_2025.webp",
+          "landscapes": [
+            "paris-games-week-2025/A7407151_JérémyDelobel_2025.webp",
+            "paris-games-week-2025/A7404435_JérémyDelobel_2025.webp"
+          ],
+          "portraitSide": "right"
+        },
+        {
+          "type": "featured",
+          "photo": "paris-games-week-2025/A7406101_JérémyDelobel_2025.webp"
+        },
+        {
+          "type": "featured",
+          "photo": "paris-games-week-2025/A7405910_JérémyDelobel_2025.webp"
+        }
+      ]
+    }
+  }
+}

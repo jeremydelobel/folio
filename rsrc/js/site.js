@@ -1,4 +1,4 @@
-const pageTransition = document.querySelector(".page-transition");
+const pageTransition = window.PageTransition;
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const backButton = document.querySelector(".back-button");
 const showreelButton = document.querySelector(".showreel-button");
@@ -30,8 +30,6 @@ const photoProjectMark = document.querySelector(".photo-project-mark");
 const photoProjectMarkImage = photoProjectMark?.querySelector(
   ".photo-project-mark-image"
 );
-const navigationEntry = performance.getEntriesByType("navigation")[0];
-const isBackForwardLoad = navigationEntry?.type === "back_forward";
 const isPhotographyPage = document.body.classList.contains("photography-page");
 const isVideoPage = document.body.classList.contains("video-page");
 const isMotionDesignPage = document.body.classList.contains("motion-design-page");
@@ -1839,49 +1837,9 @@ const resetIntroAnimation = () => {
   void document.body.offsetWidth;
 };
 
-const playPageEntry = ({ withWhiteFade = false } = {}) => {
-  const reveal = () => {
-    if (pageTransition) {
-      if (withWhiteFade && !prefersReducedMotion.matches) {
-        pageTransition.classList.add("is-visible");
-      } else {
-        pageTransition.classList.remove("is-visible");
-      }
-    }
-
-    resetIntroAnimation();
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (pageTransition && !prefersReducedMotion.matches) {
-          pageTransition.classList.remove("is-visible");
-        }
-
-        startIntroAnimation();
-      });
-    });
-  };
-
-  if (prefersReducedMotion.matches) {
-    if (pageTransition) {
-      pageTransition.classList.remove("is-visible");
-    }
-    resetIntroAnimation();
-    startIntroAnimation();
-    return;
-  }
-
-  if (withWhiteFade) {
-    reveal();
-    return;
-  }
-
-  if (pageTransition) {
-    window.setTimeout(reveal, 90);
-    return;
-  }
-
-  reveal();
+const playPageEntry = () => {
+  resetIntroAnimation();
+  return pageTransition.reveal({ onReveal: startIntroAnimation });
 };
 
 const getProjectHeaderGlassThreshold = () =>
@@ -1931,34 +1889,24 @@ if (isPhotographyPage) {
   });
 }
 
-const navigateWithFade = (href) => {
-  if (!href) {
-    return;
-  }
-
-  stopFolioLenis({ freeze: true });
-
-  if (prefersReducedMotion.matches || !pageTransition) {
-    window.location.href = href;
-    return;
-  }
-
-  pageTransition.classList.add("is-visible");
-
-  window.setTimeout(() => {
-    window.location.href = href;
-  }, 460);
+const navigateWithCurtain = (href) => {
+  void pageTransition.navigate(href, {
+    beforeNavigate: () => stopFolioLenis({ freeze: true }),
+  });
 };
 
 document.querySelectorAll("[data-route]").forEach((element) => {
-  element.addEventListener("click", () => {
-    navigateWithFade(element.dataset.route);
+  element.addEventListener("click", (event) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey ||
+        event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    navigateWithCurtain(element.dataset.route);
   });
 });
 
 if (backButton) {
   backButton.addEventListener("click", () => {
-    navigateWithFade("/");
+    navigateWithCurtain(pageTransition.landingHref);
   });
 }
 
@@ -2079,7 +2027,7 @@ const initPhotoGrid = async () => {
   photoGrid.setAttribute("aria-busy", "true");
 
   try {
-    const response = await fetch(photoLibrarySource, { cache: "no-cache" });
+    const response = await fetch(photoLibrarySource, { cache: "no-cache", signal: AbortSignal.timeout(15000) });
 
     if (!response.ok) {
       throw new Error(`Unable to load ${photoLibrarySource} (${response.status})`);
@@ -6490,29 +6438,23 @@ if (categorySection && categoryCards.length) {
     document.fonts.ready.then(() => {
       syncLayout();
       if (!isFolioPage) {
-        if (isBackForwardLoad) {
-          playPageEntry({ withWhiteFade: true });
-        } else {
-          startIntroAnimation();
-        }
+        playPageEntry();
       }
     });
   } else if (!isFolioPage) {
-    if (isBackForwardLoad) {
-      playPageEntry({ withWhiteFade: true });
-    } else {
-      startIntroAnimation();
-    }
+    playPageEntry();
   }
 
   syncLayout();
 } else if (isFolioPage) {
   playFolioPageEntry();
-} else if (isBackForwardLoad) {
-  playPageEntry({ withWhiteFade: true });
 } else {
-  startIntroAnimation();
+  playPageEntry();
 }
+
+document.addEventListener("page-transition:revealed", () => {
+  syncFolioLenis?.();
+});
 
 window.addEventListener("pageshow", (event) => {
   updatePhotographyTitleVisibility();
@@ -6529,5 +6471,5 @@ window.addEventListener("pageshow", (event) => {
     return;
   }
 
-  playPageEntry({ withWhiteFade: true });
+  playPageEntry();
 });

@@ -47,20 +47,6 @@ body {
   color: #111111;
 }
 
-.page-transition {
-  position: fixed;
-  inset: 0;
-  background: #ffffff;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 999;
-  transition: opacity 480ms ease;
-}
-
-.page-transition.is-visible {
-  opacity: 1;
-}
-
 button {
   font: inherit;
 }

@@ -1,0 +1,48 @@
+.page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  isolation: isolate;
+  transform: translate3d(0, 0, 0);
+  pointer-events: auto;
+}
+
+.page-transition__surface {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  transform: translate3d(0, 0, 0);
+}
+
+.page-transition.is-open {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.page-transition.is-moving,
+.page-transition.is-moving .page-transition__surface {
+  will-change: transform;
+}
+
+html.is-page-transitioning {
+  overflow: hidden;
+  scrollbar-color: #000 #000;
+}
+
+/* Remove Photography's reserved scrollbar strip until the curtain is open. */
+html:has(body.photography-page > .page-transition:not(.is-open)) {
+  scrollbar-gutter: auto;
+}
+
+html.is-page-transitioning::-webkit-scrollbar,
+html.is-page-transitioning::-webkit-scrollbar-thumb {
+  background: #000;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition,
+  .page-transition__surface {
+    will-change: auto;
+  }
+}

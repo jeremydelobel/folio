@@ -49,10 +49,32 @@
       name="twitter:image:alt"
       content="Collage showcasing Jérémy Delobel's YouTube and esports portfolio."
     />
-    <link rel="stylesheet" href="./rsrc/css/landing.css?v=20260912-2" />
-    <script src="./rsrc/js/landing.js?v=20260911-10" defer></script>
+    <link rel="preload" href="./rsrc/font/JetBrainsMono-Regular.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="stylesheet" href="https://use.typekit.net/jlt3mmk.css" />
+    <link rel="stylesheet" href="./rsrc/css/landing.css?v=20260912-video-render-1" />
+    <link rel="stylesheet" href="./rsrc/css/page-transition.css?v=20260912-loader-3" />
+    <script src="./rsrc/js/page-transition.js?v=20260912-loader-6" defer></script>
+    <noscript><style>.page-transition { display: none; }</style></noscript>
+    <script src="./rsrc/js/landing.js?v=20260912-forma-3" defer></script>
   </head>
   <body class="landing-v2-page">
+    <div class="page-transition" aria-hidden="true">
+      <div class="page-transition__surface">
+        <div class="landing-loader" hidden>
+          <div class="landing-loader__command" aria-hidden="true"></div>
+          <div
+            class="landing-loader__track"
+            role="progressbar"
+            aria-label="Preparing portfolio media"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <div class="landing-loader__progress"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <main class="landing-v2" aria-label="Portfolio categories">
       <a
         class="landing-v2-panel landing-v2-panel--motion"

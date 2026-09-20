@@ -16,6 +16,20 @@
   let revealTimer = 0;
   let currentMove = Promise.resolve(true);
 
+  const syncTransitionViewport = () => {
+    const scrollbarWidth = Math.max(
+      window.innerWidth - document.documentElement.clientWidth,
+      0
+    );
+    document.documentElement.style.setProperty(
+      "--page-transition-scrollbar-width",
+      `${scrollbarWidth}px`
+    );
+  };
+
+  syncTransitionViewport();
+  window.addEventListener("resize", syncTransitionViewport);
+
   const isLandingUrl = (url) => url.origin === siteRoot.origin && (
     url.pathname === siteRoot.pathname || url.pathname === `${siteRoot.pathname}index.html`
   );
@@ -54,7 +68,11 @@
   };
 
   const unlock = () => {
-    document.documentElement.classList.remove("is-page-transitioning");
+    document.getElementById("page-transition-critical")?.remove();
+    document.documentElement.classList.remove(
+      "is-page-transitioning",
+      "is-page-transition-revealing"
+    );
     lockedElements.forEach((wasInert, element) => {
       element.inert = wasInert;
     });
@@ -84,6 +102,13 @@
       onReveal?.();
     };
     curtain.classList.remove("is-open");
+    // The curtain is still fully covering the page here, so release the
+    // critical black background before the reveal animation begins. This
+    // keeps the destination background visible through the entire movement.
+    if (to < from) {
+      document.documentElement.classList.add("is-page-transition-revealing");
+      document.getElementById("page-transition-critical")?.remove();
+    }
     position(to);
 
     if (motionPreference.matches) {

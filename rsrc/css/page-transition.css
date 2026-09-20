@@ -1,6 +1,11 @@
 .page-transition {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: auto;
+  bottom: 0;
+  width: calc(100vw + var(--page-transition-scrollbar-width, 0px));
+  height: 100vh;
   z-index: 9999;
   overflow: hidden;
   isolation: isolate;
@@ -26,13 +31,17 @@
 }
 
 html.is-page-transitioning {
+  background: #000;
   overflow: hidden;
   scrollbar-color: #000 #000;
 }
 
-/* Remove Photography's reserved scrollbar strip until the curtain is open. */
-html:has(body.photography-page > .page-transition:not(.is-open)) {
-  scrollbar-gutter: auto;
+html.is-page-transitioning.is-page-transition-revealing {
+  background: #fff;
+}
+
+html.is-page-transitioning.is-page-transition-revealing:has(body.landing-v2-page) {
+  background: #000;
 }
 
 html.is-page-transitioning::-webkit-scrollbar,

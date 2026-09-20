@@ -43,9 +43,44 @@ const slideshowImages = slideshow
   ? Array.from(slideshow.querySelectorAll(".landing-v2-photo"))
   : [];
 
+const initialPhotoStorageKey = "landing-photography-initial-source";
+
+const chooseInitialPhotographySource = () => {
+  const fallbackSource = photographySources[0] || "";
+
+  if (photographySources.length < 2) {
+    return fallbackSource;
+  }
+
+  let previousSource = "";
+
+  try {
+    previousSource = window.localStorage.getItem(initialPhotoStorageKey) || "";
+  } catch {}
+
+  const availableSources = photographySources.filter(
+    (source) => source !== previousSource
+  );
+  const source =
+    availableSources[Math.floor(Math.random() * availableSources.length)] ||
+    fallbackSource;
+
+  try {
+    window.localStorage.setItem(initialPhotoStorageKey, source);
+  } catch {}
+
+  return source;
+};
+
+const slideshowInitialSource = chooseInitialPhotographySource();
+
+if (slideshowImages[0] && slideshowInitialSource) {
+  slideshowImages[0].src = slideshowInitialSource;
+}
+
 let slideshowQueue = [];
 let slideshowActiveIndex = 0;
-let slideshowCurrentSource = photographySources[0] || "";
+let slideshowCurrentSource = slideshowInitialSource;
 let slideshowTimer = 0;
 let slideshowIsChanging = false;
 let slideshowPreloadedSource = "";
@@ -374,7 +409,7 @@ const openLanding = async ({ restored = false } = {}) => {
     });
     const fonts = waitForAsset(Promise.all([
       document.fonts.load('400 12px "JetBrains Mono"'),
-      document.fonts.load('300 27.6px "forma-djr-micro"'),
+      document.fonts.load('700 34.5px "zuume"'),
     ]), signal).catch((error) => { if (signal.aborted) throw error; });
 
     await Promise.all([
@@ -685,12 +720,12 @@ const resetSlideshowToFirstImage = () => {
     return;
   }
 
-  slideshowImages[0].src = photographySources[0];
+  slideshowImages[0].src = slideshowInitialSource;
   slideshowImages.forEach((image, index) => {
     image.classList.toggle("is-active", index === 0);
   });
   slideshowActiveIndex = 0;
-  slideshowCurrentSource = photographySources[0];
+  slideshowCurrentSource = slideshowInitialSource;
   slideshowIsChanging = false;
   slideshowQueue = [];
   slideshowPreloadedSource = "";

@@ -1,5 +1,5 @@
 import { loadMediaImage, cancelImageLoad } from "/rsrc/js/media-loading.js";
-import { Gallery } from "./gallery.js";
+import { Gallery } from "./gallery.js?v=20260928-touch-drag";
 import { ProjectMetadata } from "./metadata.js";
 import { ProjectVideo } from "./video.js";
 import { loadContent } from "/rsrc/js/cms.js";

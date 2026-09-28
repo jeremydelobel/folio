@@ -78,7 +78,11 @@ class Line {
     this.el.addEventListener("pointermove", event => this.pointerMove(event), { signal });
     this.el.addEventListener("pointerup", () => this.endDrag(), { signal });
     this.el.addEventListener("pointercancel", () => this.endDrag(true), { signal });
-    this.el.addEventListener("lostpointercapture", () => this.endDrag(true), { signal });
+    this.el.addEventListener("lostpointercapture", event => {
+      // Touch initially captures the image. Its release bubbles when the rail
+      // takes over; only losing the rail's own capture ends the drag.
+      if (event.target === this.el && event.pointerId === this.drag?.id) this.endDrag(true);
+    }, { signal });
     this.el.addEventListener("click", event => {
       const button = event.target.closest(".photo");
       if (!button || performance.now() < (this.suppressClickUntil || 0)) return;

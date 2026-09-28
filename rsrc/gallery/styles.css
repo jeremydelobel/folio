@@ -339,12 +339,29 @@ body[data-category="video"] .project__meta { padding-top: 10px; }
   :root { --photo-gap: 12px; --row-gap: 0px; }
   .project__skill { font-size: 11px; padding: 5px 7px; }
   .project__back { font-size: 16px; }
+  body[data-category="video"] .project {
+    min-height: 0;
+    padding: max(64px, env(safe-area-inset-top)) 0 0;
+  }
+  body[data-category="video"] .project__hero { aspect-ratio: 1; }
+  body[data-category="video"] .project__meta {
+    padding: 12px max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
+    gap: 12px;
+  }
+  .project__stills { margin-top: 24px; }
+  .project__stills h2 {
+    margin-left: max(16px, env(safe-area-inset-left));
+    margin-right: max(16px, env(safe-area-inset-right));
+    font-size: 20px;
+  }
+  .project__stills .gallery { --photo-height: clamp(140px, 38vw, 180px); }
   .project__playback { right: max(16px, env(safe-area-inset-right)); bottom: 12px; }
   .contact { flex-direction: column; align-items: center; gap: 48px; }
   .contact__invitation { width: 100%; text-align: center; }
   .contact__links {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    font-size: 16.8px;
     align-items: center;
     width: 100%;
     gap: 0;

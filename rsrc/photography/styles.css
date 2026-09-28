@@ -60,8 +60,7 @@ button { font: inherit; }
 }
 
 .project__photos,
-.project__image,
-.project__shade {
+.project__image {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -77,11 +76,6 @@ button { font: inherit; }
   display: block;
   object-fit: cover;
   object-position: center;
-}
-
-.project__shade {
-  z-index: -1;
-  background: var(--shade);
 }
 
 .project__identity {

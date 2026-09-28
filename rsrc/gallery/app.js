@@ -25,7 +25,7 @@ const stage = document.querySelector(".lightbox__stage");
 const enlarged = document.querySelector(".lightbox__image");
 const lightboxMedia = document.querySelector(".lightbox__media");
 const close = document.querySelector(".lightbox__close");
-let gallery, project, activePhoto, origin, savedScroll, savedStyle;
+let gallery, project, activePhoto, origin, savedScroll;
 let request, lightboxRevision = 0;
 let closingAnimation, closingPhotoAnimation;
 
@@ -142,14 +142,6 @@ function openPhoto(photo, source, image) {
   enlarged.height = photo.height;
   loadMediaImage(enlarged, lightboxMedia, image?.naturalWidth ? image.currentSrc : photo.variants.small.url);
   savedScroll = { x: scrollX, y: scrollY };
-  savedStyle = { position: document.body.style.position, top: document.body.style.top,
-    left: document.body.style.left, width: document.body.style.width,
-    overflow: document.documentElement.style.overflow };
-  document.body.style.position = "fixed";
-  document.body.style.top = `${-savedScroll.y}px`;
-  document.body.style.left = `${-savedScroll.x}px`;
-  document.body.style.width = "100%";
-  document.documentElement.style.overflow = "hidden";
   dialog.showModal();
   fitPhoto();
   close.focus({ preventScroll: true });
@@ -191,9 +183,7 @@ function restorePage() {
   closingPhotoAnimation?.cancel();
   closingAnimation = closingPhotoAnimation = null;
   activePhoto = null;
-  for (const key of ["position", "top", "left", "width"]) document.body.style[key] = savedStyle[key];
-  document.documentElement.style.overflow = savedStyle.overflow;
-  window.scrollTo(savedScroll.x, savedScroll.y);
+  window.scrollTo({ left: savedScroll.x, top: savedScroll.y, behavior: "instant" });
   if (origin?.isConnected) origin.focus({ preventScroll: true });
   cancelImageLoad(enlarged);
   enlarged.removeAttribute("src");
@@ -209,9 +199,26 @@ dialog.addEventListener("cancel", event => {
   closePhoto();
 });
 dialog.addEventListener("close", restorePage);
-dialog.addEventListener("wheel", event => {
-  if (!event.ctrlKey && !event.metaKey) event.preventDefault();
+// Keep the document and its scrollbar in place while the modal owns input.
+window.addEventListener("wheel", event => {
+  if (dialog.open && !event.ctrlKey && !event.metaKey) event.preventDefault();
 }, { passive: false });
+window.addEventListener("touchmove", event => {
+  if (dialog.open && event.touches.length === 1) event.preventDefault();
+}, { passive: false });
+document.addEventListener("keydown", event => {
+  if (!dialog.open) return;
+  const scrollKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "PageUp", "PageDown", "Home", "End"];
+  if (scrollKeys.includes(event.key) || (event.key === " " && event.target !== close)) {
+    event.preventDefault();
+  }
+});
+window.addEventListener("scroll", () => {
+  // Also hold position if the native scrollbar is dragged or clicked.
+  if (dialog.open && (scrollX !== savedScroll.x || scrollY !== savedScroll.y)) {
+    window.scrollTo({ left: savedScroll.x, top: savedScroll.y, behavior: "instant" });
+  }
+});
 window.addEventListener("resize", fitPhoto);
 window.addEventListener("resize", fitTitle);
 // Only width changes trigger fitting, avoiding a loop when fitting changes

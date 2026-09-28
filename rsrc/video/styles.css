@@ -44,6 +44,7 @@ button { font: inherit; }
   isolation: isolate;
   display: grid;
   place-items: center;
+  grid-template-columns: minmax(0, 1fr);
   padding: 80px max(24px, env(safe-area-inset-right)) 80px max(24px, env(safe-area-inset-left));
   background: var(--black);
   clip-path: inset(0 100% 0 0);
@@ -118,7 +119,7 @@ button { font: inherit; }
   text-transform: uppercase;
   font-optical-sizing: auto;
   font-variation-settings: "wdth" 100;
-  font-size: clamp(72px, 17.5vw, 117.6px);
+  font-size: min(10vw, 117.6px);
   font-style: normal;
   font-weight: 700;
   line-height: 0.86;

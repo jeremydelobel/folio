@@ -1,24 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://jeremydelobel.fr/</loc>
-  </url>
-  <url>
-    <loc>https://jeremydelobel.fr/video-editing.html</loc>
-  </url>
-  <url>
-    <loc>https://jeremydelobel.fr/motion-design.html</loc>
-  </url>
-  <url>
-    <loc>https://jeremydelobel.fr/photography.html</loc>
-  </url>
-  <url>
-    <loc>https://jeremydelobel.fr/photography/ewc26/</loc>
-  </url>
-  <url>
-    <loc>https://jeremydelobel.fr/photography/rlcsparismajor/</loc>
-  </url>
-  <url>
-    <loc>https://jeremydelobel.fr/photography/paris-games-week-2025/</loc>
-  </url>
+  <url><loc>https://jeremydelobel.fr/</loc></url>
+  <url><loc>https://jeremydelobel.fr/video</loc></url>
+  <url><loc>https://jeremydelobel.fr/photography</loc></url>
+  <url><loc>https://jeremydelobel.fr/video/concept-projects</loc></url>
+  <url><loc>https://jeremydelobel.fr/video/mastu</loc></url>
+  <url><loc>https://jeremydelobel.fr/video/sameztwitch</loc></url>
+  <url><loc>https://jeremydelobel.fr/video/mcskyz-hvf</loc></url>
+  <url><loc>https://jeremydelobel.fr/photography/living-the-dream-2026</loc></url>
+  <url><loc>https://jeremydelobel.fr/photography/rlcs-paris-major</loc></url>
+  <url><loc>https://jeremydelobel.fr/photography/ewc-26</loc></url>
 </urlset>

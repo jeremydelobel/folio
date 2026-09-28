@@ -9,6 +9,7 @@
       name="description"
       content="Freelance video editor, motion designer and photographer specializing in YouTube content and esports events."
     />
+    <link rel="icon" href="/rsrc/social/favicon.svg" />
     <link rel="canonical" href="https://jeremydelobel.fr/" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
@@ -52,11 +53,15 @@
     />
     <link rel="preload" href="./rsrc/font/JetBrainsMono-Regular.ttf" as="font" type="font/ttf" crossorigin />
     <link rel="stylesheet" href="https://use.typekit.net/jlt3mmk.css" />
-    <link rel="stylesheet" href="./rsrc/css/landing.css?v=20260920-zuume-4" />
-    <link rel="stylesheet" href="./rsrc/css/page-transition.css?v=20260920-scrollbar-5" />
-    <script src="./rsrc/js/page-transition.js?v=20260920-transition-4" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Special+Gothic:wght@400..700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./rsrc/css/landing.css?v=20260928-v2" />
+    <link rel="stylesheet" href="./rsrc/css/page-transition.css?v=20260928-v2" />
+    <script src="./rsrc/js/page-transition.js?v=20260928-v2" defer></script>
     <noscript><style>.page-transition { display: none; }</style></noscript>
-    <script src="./rsrc/js/landing.js?v=20260920-zuume-2" defer></script>
+    <script src="./rsrc/js/landing.js?v=20260928-v2" type="module"></script>
+    <link rel="stylesheet" href="/rsrc/css/media-loading.css?v=20260928-v2" />
   </head>
   <body class="landing-v2-page">
     <div class="page-transition" aria-hidden="true">
@@ -78,35 +83,9 @@
     </div>
     <main class="landing-v2" aria-label="Portfolio categories">
       <a
-        class="landing-v2-panel landing-v2-panel--motion"
-        href="./motion-design.html"
-        aria-label="View motion design projects"
-      >
-        <span class="landing-v2-media" aria-hidden="true">
-          <span class="landing-v2-media-visual">
-            <video
-              class="landing-v2-video"
-              muted
-              loop
-              playsinline
-              preload="auto"
-              poster="./rsrc/landing/motion-design-poster.jpg"
-              tabindex="-1"
-            >
-              <source
-                src="./rsrc/landing/motion-design.mp4?v=20260911-10"
-                type="video/mp4"
-              />
-            </video>
-          </span>
-        </span>
-        <span class="landing-v2-title">MOTION DESIGN</span>
-      </a>
-
-      <a
         class="landing-v2-panel landing-v2-panel--video"
-        href="./video-editing.html"
-        aria-label="View video editing projects"
+        href="/video"
+        aria-label="View motion and editing projects"
       >
         <span class="landing-v2-media" aria-hidden="true">
           <span class="landing-v2-media-visual">
@@ -115,23 +94,19 @@
               muted
               loop
               playsinline
+              disablepictureinpicture
               preload="auto"
-              poster="./rsrc/landing/video-editing-poster.jpg"
               tabindex="-1"
             >
-              <source
-                src="./rsrc/landing/video-editing.mp4?v=20260911-10"
-                type="video/mp4"
-              />
             </video>
           </span>
         </span>
-        <span class="landing-v2-title">EDITING</span>
+        <span class="landing-v2-title">MOTION &amp; EDITING</span>
       </a>
 
       <a
         class="landing-v2-panel landing-v2-panel--photography"
-        href="./photography.html"
+        href="/photography"
         aria-label="View photography projects"
       >
         <span class="landing-v2-media" aria-hidden="true">
@@ -141,7 +116,6 @@
           >
             <img
               class="landing-v2-photo is-active"
-              src="./rsrc/photos-fullres/esports-world-cup-2026/@jeremy.delobel_09072026_165849.jpg"
               alt=""
               decoding="async"
               draggable="false"

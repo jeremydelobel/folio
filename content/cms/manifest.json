@@ -1,0 +1,2823 @@
+{
+  "collaborations": [
+    {
+      "category": "video",
+      "client": "",
+      "clientUrl": "",
+      "description": "I regularly explore new tools, software, and creative workflows through self-initiated projects and experiments. These projects give me the freedom to test new techniques, refine my process, and integrate new technologies into my work, with the goal of constantly expanding both my creative and technical approach to motion design.",
+      "endDate": "",
+      "id": "a8ad91c750724b23898f88857b499f1a",
+      "images": [
+        "bd971ae017e54767bbe9bac04558bbc2",
+        "bfdb5033d8ce4bc29057905ba292b128",
+        "0db5afe6153e453daae9a9abb0a1773c",
+        "21326e9b05eb4a5db380321812882c0f",
+        "81e1850ac201410ba113db874ef693ab",
+        "985348b143ea4feeb879dac2e99d1e34"
+      ],
+      "skills": [
+        "Motion design"
+      ],
+      "slug": "concept-projects",
+      "startDate": "",
+      "title": "Concept Projects",
+      "totalViews": null,
+      "url": "/video/concept-projects",
+      "videoId": "3628ce942d1444e9ac52a31e8a06beec"
+    },
+    {
+      "category": "video",
+      "client": "Mastu",
+      "clientUrl": "https://www.youtube.com/@Mastu",
+      "description": "Contributing to the visual direction of entertainment-driven videos through custom motion graphics and visual assets. My role was to strengthen the overall identity of each production, creating engaging graphic elements and animations designed to complement the editing, enhance key moments, and give each video a more distinctive visual presence.",
+      "endDate": "2025-03-22",
+      "id": "f5b51aba9dea485ea36f3b3d98be2c8f",
+      "images": [
+        "156fa00b8b1f4c7795a7bec0c63b32cd",
+        "74022a4f583149429542805c3e0e26a8",
+        "d85a884a2e744d289af4b91e8b167096",
+        "89e31d4d7287497587fb1f46653bd73f",
+        "51fb0670360b4f5f899f460ccfca7967",
+        "ead52cde64204459842d9075f5283be9"
+      ],
+      "skills": [
+        "VFX",
+        "Motion design"
+      ],
+      "slug": "mastu",
+      "startDate": "2024-11-17",
+      "title": "Mastu",
+      "totalViews": 14000000,
+      "url": "/video/mastu",
+      "videoId": "211e4ba0f5af4c4b85bfae8c558323e8"
+    },
+    {
+      "category": "video",
+      "client": "SamEzTwitch",
+      "clientUrl": "https://www.youtube.com/@sameztwitch",
+      "description": "Creating entertaining, fast-paced videos designed to showcase advanced editing techniques while promoting the Editing 360 training program. I contributed to the production of numerous projects, bringing a strong focus on visual effects and motion design to create distinctive, highly polished edits that could both engage viewers and highlight the possibilities of professional video editing.",
+      "endDate": "2026-03-21",
+      "id": "f549fdecc71042f5b4c6051cf63df935",
+      "images": [
+        "439a1cd78b3a48598b5d45ef7c306d17",
+        "c3b20937d3e64ae19ffa7ebe26b22d6a",
+        "8fcf58ef256d437ea27217fe05e9bf06",
+        "3bc70b7928a541ccb9942c33cf749df3",
+        "728d9f0235d045e2b11c750adf9ee8ee"
+      ],
+      "skills": [
+        "Editing",
+        "Motion design",
+        "VFX"
+      ],
+      "slug": "sameztwitch",
+      "startDate": "2024-10-06",
+      "title": "SamEzTwitch",
+      "totalViews": 24000000,
+      "url": "/video/sameztwitch",
+      "videoId": "121b2c12336b460abfd1b08f30ef7b1c"
+    },
+    {
+      "category": "video",
+      "client": "McSkyz",
+      "clientUrl": "https://www.youtube.com/@McSkyz",
+      "description": "Editing narrative-driven videos centered around disturbing criminal cases, with a strong focus on atmosphere and tension. The pacing, sound design, and visual direction were all shaped to create a heavy, unsettling tone, supported by dark motion graphics and animations that reinforce the storytelling without overpowering it.",
+      "endDate": "2026-06-05",
+      "id": "953c63b75b4c4b4aaf0133723787b6cb",
+      "images": [
+        "09e0062b82c14821863804f2786371cf",
+        "d209d2b0c14248ec873d59c0a15fa284",
+        "627c49bbb3fd43ce90b7de7132d5ad29",
+        "606ef3a7e5074c759b42d092df655d00",
+        "e0365d70deb74115a6df7cc76c526e74"
+      ],
+      "skills": [
+        "Editing",
+        "Motion design",
+        "Sound design"
+      ],
+      "slug": "mcskyz-hvf",
+      "startDate": "2026-02-06",
+      "title": "McSkyz : HVF",
+      "totalViews": 6000000,
+      "url": "/video/mcskyz-hvf",
+      "videoId": "1d182e74094147508827f2b2f5604c0f"
+    }
+  ],
+  "home": [
+    "04700f6b0cc940ebb6a6902f35ac4542",
+    "139519c8bb2645dab8f561bd01ce9af8",
+    "45cb0dd89619460f8c92eacbaa8775ee",
+    "4e27159136b64294967df76265a06a8e",
+    "594fec3d33674f1aaf927fed4d05e4b0",
+    "c3cba77aca164addab2b39b853647b4e",
+    "cf379d322dcd4d0c9b1f7673e5b77075",
+    "29891c6562b14829836c94fa4f078eb5",
+    "be7af9e8938844d2aede8c59e1a78239",
+    "7b78b25c6153482b83416d740462e0c7",
+    "b55d7c76504a4e008308cb866b85ac65",
+    "bbe85918fc3b4024924dacb1c8a22395",
+    "eb9ec97b8ccf4b049f99da1c58b2bb98",
+    "6f128a4dcd264d3596d2d28f37dfe773",
+    "0c1ff2ac98214856965ba6c6847180d7"
+  ],
+  "media": [
+    {
+      "id": "0011eb64660e4429a65638666849878e",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 233536,
+          "url": "/content/cms/media/photo/rlcs-paris-major/0011eb64660e4429a65638666849878e/c34cf534f73c7a393d01398ed81dd2f46048718160e396a78895f3f985b37a28/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 64600,
+          "url": "/content/cms/media/photo/rlcs-paris-major/0011eb64660e4429a65638666849878e/fb00af0ba35b3d3d959d4da642b3d5f4b0933f3cf4f94d02104386f097997c63/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "04700f6b0cc940ebb6a6902f35ac4542",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 133158,
+          "url": "/content/cms/media/photo/ewc-26/04700f6b0cc940ebb6a6902f35ac4542/b7d09812977e22f0c4aa67cf3e7d0b66e7b9c3447490e80d5f15602dd1111ed5/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 40778,
+          "url": "/content/cms/media/photo/ewc-26/04700f6b0cc940ebb6a6902f35ac4542/92dd8f813e28008e165c7d36d1be6b92ddc3420234442d12c7241eab207e981b/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "083af9ecf8274a72bbe33cd251a14562",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 85784,
+          "url": "/content/cms/media/photo/rlcs-paris-major/083af9ecf8274a72bbe33cd251a14562/1f31e8e6673d9ab458248527b1f2e3283ac3f19e95eaa544236127fa68a3eb7c/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 26782,
+          "url": "/content/cms/media/photo/rlcs-paris-major/083af9ecf8274a72bbe33cd251a14562/756070bce7ac088673c181659a095aba60c00976597e474d756b2a4d7e341091/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "09e0062b82c14821863804f2786371cf",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 61572,
+          "url": "/content/cms/media/video/mcskyz-hvf/09e0062b82c14821863804f2786371cf/3402eb9a1db96c516571bc145560acb9fd1951958ee521910d72b1de78a7aa0a/large.webp",
+          "width": 1920
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 12814,
+          "url": "/content/cms/media/video/mcskyz-hvf/09e0062b82c14821863804f2786371cf/9dca2dd02c55bbfc5d957a1964babe3dcad05beac9be33c10302800c45b289f5/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "0c1ff2ac98214856965ba6c6847180d7",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 88214,
+          "url": "/content/cms/media/photo/ewc-26/0c1ff2ac98214856965ba6c6847180d7/8a2f42e65e1445cb4024265c9488dacd7631561bf19b54afd8c550a0c847325b/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 26318,
+          "url": "/content/cms/media/photo/ewc-26/0c1ff2ac98214856965ba6c6847180d7/7d3e1e6016b3cc9368822b2e1bc6c2f3b8b6b2d1ea92455c090525d39a64e8fa/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "0db5afe6153e453daae9a9abb0a1773c",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 19608,
+          "url": "/content/cms/media/video/concept-projects/0db5afe6153e453daae9a9abb0a1773c/0664b3dfff7e523b85cb22bfc29c39308a652a5b9381895b9b08abf99d1b8871/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 7510,
+          "url": "/content/cms/media/video/concept-projects/0db5afe6153e453daae9a9abb0a1773c/67a6db67ca140951214b1338a975bb4c0915d01a826541ae447a20d8c2b93a80/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "0dd7f2b63a4a4a88b23a9f16d8d5215f",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 83118,
+          "url": "/content/cms/media/photo/living-the-dream-2026/0dd7f2b63a4a4a88b23a9f16d8d5215f/27978afd0c0385ad23ab5361a2ffa3c26008afe097d100ab604b00f357796b9b/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 43802,
+          "url": "/content/cms/media/photo/living-the-dream-2026/0dd7f2b63a4a4a88b23a9f16d8d5215f/6258a3c9d257b73db7722099917dc574d811a63b79552eb422f1cbf4455efe33/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "0ddf4c411e2d4b7bae2689f5b82433b8",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 61372,
+          "url": "/content/cms/media/photo/living-the-dream-2026/0ddf4c411e2d4b7bae2689f5b82433b8/8839891aff52fccb62e32eb23fa414fcf7966c6fdd5bc3a282beb317afcb0b80/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 32218,
+          "url": "/content/cms/media/photo/living-the-dream-2026/0ddf4c411e2d4b7bae2689f5b82433b8/e8c1a72224e59d9f16c4a53bb44f162b37d28c31dd589f126228fb1f1d8273a8/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "1209a50a1cef44f7b8408f4731a066f6",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 86284,
+          "url": "/content/cms/media/photo/ewc-26/1209a50a1cef44f7b8408f4731a066f6/9fd15bf8aa2cd11396bb37d48851770838534de0ddff47227e2af3047feae600/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 47854,
+          "url": "/content/cms/media/photo/ewc-26/1209a50a1cef44f7b8408f4731a066f6/772343ff25ba9c5302c6a4e10603be24d3f2b5ec0c4ab6d2ddd1cfbe113e113b/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "121b2c12336b460abfd1b08f30ef7b1c",
+      "kind": "video",
+      "projectId": null,
+      "variants": {
+        "video": {
+          "duration": 39.08,
+          "fps": 25,
+          "height": 900,
+          "mimeType": "video/mp4",
+          "size": 13045193,
+          "url": "/content/cms/media/video/sameztwitch/121b2c12336b460abfd1b08f30ef7b1c/a47ff376b0b3638c2cf826efc9e851df6338c5363b57136c5a5c4f6dd56f3f18/video.mp4",
+          "width": 1600
+        }
+      }
+    },
+    {
+      "id": "139519c8bb2645dab8f561bd01ce9af8",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 366942,
+          "url": "/content/cms/media/photo/living-the-dream-2026/139519c8bb2645dab8f561bd01ce9af8/7ad2ee72f081e96372fdeebee7b6cce1d09a2fd6010afa050c09976a32eae54c/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 102952,
+          "url": "/content/cms/media/photo/living-the-dream-2026/139519c8bb2645dab8f561bd01ce9af8/a50e30610b0aa840b9045f4e4a28a3934fdeb6c48e647aad5a70344112bc483f/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "156fa00b8b1f4c7795a7bec0c63b32cd",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 74598,
+          "url": "/content/cms/media/video/mastu/156fa00b8b1f4c7795a7bec0c63b32cd/12c0272c4b976b0a2a056b67a31ac4eb05d0f7a097bce48fbe105ed763589258/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 25326,
+          "url": "/content/cms/media/video/mastu/156fa00b8b1f4c7795a7bec0c63b32cd/9ddc7b32514edbf93536c238d44fdc3a22479eb87f4776fdd2baa8aa8ed50f1c/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "163c5ef149794bc29d93eb0f1d0a7b2e",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 170990,
+          "url": "/content/cms/media/photo/rlcs-paris-major/163c5ef149794bc29d93eb0f1d0a7b2e/586c7f1188f99d5d06d3ba1bb9d373fb6dcf653aa288c335ab4d447e527d8127/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 55300,
+          "url": "/content/cms/media/photo/rlcs-paris-major/163c5ef149794bc29d93eb0f1d0a7b2e/b4b1f605bf7e2fe645e48c470460b327d626ebe03aad44da7a35df26c9e1629a/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "1adc112b180b4854881664dff14e034e",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 88068,
+          "url": "/content/cms/media/photo/living-the-dream-2026/1adc112b180b4854881664dff14e034e/1ca8d90be3fa6a5e0a390063cb6d401ff50a540c515246fbbbf454af8a244be1/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 48300,
+          "url": "/content/cms/media/photo/living-the-dream-2026/1adc112b180b4854881664dff14e034e/a099fda5da6303d9d5eab5cc47d17e3dd484d128c24832282b5d5679db05b218/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "1d182e74094147508827f2b2f5604c0f",
+      "kind": "video",
+      "projectId": null,
+      "variants": {
+        "video": {
+          "duration": 30.6,
+          "fps": 25,
+          "height": 900,
+          "mimeType": "video/mp4",
+          "size": 7704965,
+          "url": "/content/cms/media/video/mcskyz-hvf/1d182e74094147508827f2b2f5604c0f/0d9dd8e543d209197cc33ae4ed974c78b35ca65bbb6a4fd640e13773ec6ed23e/video.mp4",
+          "width": 1600
+        }
+      }
+    },
+    {
+      "id": "211e4ba0f5af4c4b85bfae8c558323e8",
+      "kind": "video",
+      "projectId": null,
+      "variants": {
+        "video": {
+          "duration": 42.48,
+          "fps": 25,
+          "height": 900,
+          "mimeType": "video/mp4",
+          "size": 13614428,
+          "url": "/content/cms/media/video/mastu/211e4ba0f5af4c4b85bfae8c558323e8/09587c0328be11c311bee94e260383d085811cc4e80b7158253b40bc555e7d7f/video.mp4",
+          "width": 1600
+        }
+      }
+    },
+    {
+      "id": "21326e9b05eb4a5db380321812882c0f",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 56208,
+          "url": "/content/cms/media/video/concept-projects/21326e9b05eb4a5db380321812882c0f/d2e6970b3d426d4d5263aac1decd3b6c79d6f5f905afcee1621a3210ea9bf324/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 21474,
+          "url": "/content/cms/media/video/concept-projects/21326e9b05eb4a5db380321812882c0f/68fc6a104b4c2aa63b5553ea98225ffa28194a6ae6d9dfc7cd7d3d8c9ccb25fc/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "27213b3220f042c384cc0a358dd28653",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 73536,
+          "url": "/content/cms/media/photo/rlcs-paris-major/27213b3220f042c384cc0a358dd28653/77cd1f83b61e6843fd1693401a91fb4c2a77919e0c872dea8ec32a21833dd79c/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 38808,
+          "url": "/content/cms/media/photo/rlcs-paris-major/27213b3220f042c384cc0a358dd28653/25e67ba532bd3152019333ab01c04e4cc1d3a977eead50ad24c394914d6b8939/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "29891c6562b14829836c94fa4f078eb5",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 75952,
+          "url": "/content/cms/media/photo/ewc-26/29891c6562b14829836c94fa4f078eb5/3b9f4c8c5818dde8d04d223ec9966b56e5442a0cbd21c74ed846c43b416869d3/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 21130,
+          "url": "/content/cms/media/photo/ewc-26/29891c6562b14829836c94fa4f078eb5/3db35682c9f806095f45f85aa879da0d471124341b8d77c5fdfc93bfaa35d5fa/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "2a04ff7608a64653ac6f1abb81cab613",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 90578,
+          "url": "/content/cms/media/photo/ewc-26/2a04ff7608a64653ac6f1abb81cab613/7a7d454a299ccb10f70cbd7611ca63b95f88ae0db25262d974c0f2f373642c5e/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 52622,
+          "url": "/content/cms/media/photo/ewc-26/2a04ff7608a64653ac6f1abb81cab613/fc34687efb08c1955c37038ec74b0668ce2eca60412c2f363013dad6176b6636/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "2a477f6ade5643f5b3f69a9bef0959ed",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 126652,
+          "url": "/content/cms/media/photo/rlcs-paris-major/2a477f6ade5643f5b3f69a9bef0959ed/29f467cafedf05c8935e3829e31c9fd9eba000ba47b1d1edb6614fce58e454d3/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 37160,
+          "url": "/content/cms/media/photo/rlcs-paris-major/2a477f6ade5643f5b3f69a9bef0959ed/4c8cacb436a4c7d84cda9693a5a6519521e184a9d6e46209abbb815c2e1fdcb8/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "2b673c0b275c46eba36e3bce0188008a",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 99396,
+          "url": "/content/cms/media/photo/living-the-dream-2026/2b673c0b275c46eba36e3bce0188008a/1d1f9cef0e09b784d87580b9520eb1ec1b283b0a82546bb884d153f53de8c0d3/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 55168,
+          "url": "/content/cms/media/photo/living-the-dream-2026/2b673c0b275c46eba36e3bce0188008a/f3fdffc8cb89de493969a6db908b87f84dbeda9c873f9ad6a5e7333e5d466ec8/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "2d6095bcc2594e9c97b66602e299a00a",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 121226,
+          "url": "/content/cms/media/photo/ewc-26/2d6095bcc2594e9c97b66602e299a00a/fb89294db8665e13208dd72d1a717c9eaed81aa2a36db8bcdde068531cde30cf/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 37020,
+          "url": "/content/cms/media/photo/ewc-26/2d6095bcc2594e9c97b66602e299a00a/d40391ccb47750804d79d7de03e88748c5e949b93ba280eb2c408234d3cb2a6b/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "3281a434498d48ffa63a8cb47bfabc61",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 67018,
+          "url": "/content/cms/media/photo/rlcs-paris-major/3281a434498d48ffa63a8cb47bfabc61/4e90775bd340ca156083f2f24b0b23aa58701422e408dc0c0f6e895506a7639c/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 39888,
+          "url": "/content/cms/media/photo/rlcs-paris-major/3281a434498d48ffa63a8cb47bfabc61/4e268be221a2ec0f78947536b23cfdae8f439ac48ae81efe1875423b3a2eaa39/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "3628ce942d1444e9ac52a31e8a06beec",
+      "kind": "video",
+      "projectId": null,
+      "variants": {
+        "video": {
+          "duration": 45.6,
+          "fps": 25,
+          "height": 900,
+          "mimeType": "video/mp4",
+          "size": 3780815,
+          "url": "/content/cms/media/video/concept-projects/3628ce942d1444e9ac52a31e8a06beec/5cdbe78eee73ba51d560df948209f3ece603413827b572c05d0a66ef51eaf1d2/video.mp4",
+          "width": 1600
+        }
+      }
+    },
+    {
+      "id": "387a53ad2b544dedb46679e20906b54b",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 134094,
+          "url": "/content/cms/media/photo/ewc-26/387a53ad2b544dedb46679e20906b54b/dfb906d83d60f8a7720aa13b02d438150bcbe2281ee615e862a9d947f4623185/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 41892,
+          "url": "/content/cms/media/photo/ewc-26/387a53ad2b544dedb46679e20906b54b/eb364eb68c0bc088774b58fbd99cd6bb44d064ab876e7cc279c0fc9461d65b0d/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "38e55021938b423e8cd12bb4eb70d42d",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 81570,
+          "url": "/content/cms/media/photo/ewc-26/38e55021938b423e8cd12bb4eb70d42d/90f1cfc88a325dd7a15b66f0006ab8946ef4ee16947682837300ee1f0daf442c/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 44426,
+          "url": "/content/cms/media/photo/ewc-26/38e55021938b423e8cd12bb4eb70d42d/be31b57b86f7fe9d4c854eced63e9d0e5b6a1510fb9a5faa83ed698c84c3452d/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "3b7d128e035444d1898d94d8347319b5",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 56740,
+          "url": "/content/cms/media/photo/living-the-dream-2026/3b7d128e035444d1898d94d8347319b5/b87f44f16071fbe327ac7b08b4d6eeb615677d41f0e5fac7a8f26bf1c987ccc1/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 31484,
+          "url": "/content/cms/media/photo/living-the-dream-2026/3b7d128e035444d1898d94d8347319b5/21d4a14a430c3f6a0dbc842e54929ccd13e51cef7713051b425855148cde651f/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "3bc70b7928a541ccb9942c33cf749df3",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 46968,
+          "url": "/content/cms/media/video/sameztwitch/3bc70b7928a541ccb9942c33cf749df3/04e61dae859a5090b954f43592719046d8458c89cda593f7dffd34c9e8c463a8/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 17686,
+          "url": "/content/cms/media/video/sameztwitch/3bc70b7928a541ccb9942c33cf749df3/4df32c37a7523c4544c6f79a6e14a8e14835f79eb0268274b2f9252c95dc04fc/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "3c61dfa40d114db8ab1118995a9e1840",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 85418,
+          "url": "/content/cms/media/photo/ewc-26/3c61dfa40d114db8ab1118995a9e1840/17e8aee163045b89a3b7a456f379ee82bbadf91ad6c332cbde26343426e6e0e2/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 44396,
+          "url": "/content/cms/media/photo/ewc-26/3c61dfa40d114db8ab1118995a9e1840/83d3bf42012896a388c541d5c24fbbfac7a523365502a22cfad273eebca2d230/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "41970d622b62440e899059035545c7e8",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 241900,
+          "url": "/content/cms/media/photo/rlcs-paris-major/41970d622b62440e899059035545c7e8/2ca83c5cf6998f6e75b607a8c7e3e951e2008b5954b6e488e5f50550fcb87a2a/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 81146,
+          "url": "/content/cms/media/photo/rlcs-paris-major/41970d622b62440e899059035545c7e8/ce1013debeb747cc6044fcc21637ad2b5b421de52f6db3a109e2991c0f23cfb5/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "41f41b825da8463ebd4dabe686b27fd8",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 73334,
+          "url": "/content/cms/media/photo/ewc-26/41f41b825da8463ebd4dabe686b27fd8/4f0d2765d030ce96d92f5dbc7b39fb054f4ee1a935e361fe36823db74335151f/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 41328,
+          "url": "/content/cms/media/photo/ewc-26/41f41b825da8463ebd4dabe686b27fd8/4fbad480adc9ecab0be80b5e7134934ff63700224065e1d077833396916130d6/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "439a1cd78b3a48598b5d45ef7c306d17",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 54610,
+          "url": "/content/cms/media/video/sameztwitch/439a1cd78b3a48598b5d45ef7c306d17/0f5f7ece93dfedc897557bd549a60ddca483867699a9394802bde061e3cb3f91/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 18306,
+          "url": "/content/cms/media/video/sameztwitch/439a1cd78b3a48598b5d45ef7c306d17/bca2c2240c19e5a43b4a9fce8656d4668146428a43ead8fdae38a9f297562385/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "45cb0dd89619460f8c92eacbaa8775ee",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 143776,
+          "url": "/content/cms/media/photo/living-the-dream-2026/45cb0dd89619460f8c92eacbaa8775ee/461afb7c9eea97dbb8dd33ca8e10374635a52a611bce07b4b80ce31f170d52b4/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 38158,
+          "url": "/content/cms/media/photo/living-the-dream-2026/45cb0dd89619460f8c92eacbaa8775ee/0bc4649792f122a9d694ac3658b7bee81b0d37de23ed3c4244560bbabf2d1e1e/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "46b34a505efc493b893cad01bcd47c76",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 120752,
+          "url": "/content/cms/media/photo/living-the-dream-2026/46b34a505efc493b893cad01bcd47c76/0f7c5503a54aea199f94239f294cd7daabe286741bddbd17356e4fa19abefb0f/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 32292,
+          "url": "/content/cms/media/photo/living-the-dream-2026/46b34a505efc493b893cad01bcd47c76/d14e64b791918a13be826e28bc9964678d9f86f2ede6cd6214de966d26b340a0/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "4a8cedf57afb48f28f8fb348d160f9f1",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 82290,
+          "url": "/content/cms/media/photo/ewc-26/4a8cedf57afb48f28f8fb348d160f9f1/b6cae16f195ffe46e4e435d67840e6ac3e712edcdfd1b1ce86ae83f16e9911d5/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 47556,
+          "url": "/content/cms/media/photo/ewc-26/4a8cedf57afb48f28f8fb348d160f9f1/89e71340666308633afad0811c1a7f94fb8983c60a49f27979311b6c04d73352/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "4b590005dc644721b92a3383c18fef94",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 102194,
+          "url": "/content/cms/media/photo/ewc-26/4b590005dc644721b92a3383c18fef94/041291829479602d9265436c7437d3462558691d145d5411a34e9d9cafe1451b/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 34018,
+          "url": "/content/cms/media/photo/ewc-26/4b590005dc644721b92a3383c18fef94/e50502aec68c475c0b85240b06f6579dd71a4d2e23f40dd2be29dcf7294a21f3/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "4e27159136b64294967df76265a06a8e",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 147578,
+          "url": "/content/cms/media/photo/ewc-26/4e27159136b64294967df76265a06a8e/e3fac970e10f67d95a3ad448ad951584b551995b7c601402a75aa581783f27c3/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 43746,
+          "url": "/content/cms/media/photo/ewc-26/4e27159136b64294967df76265a06a8e/e73fe373d364863653479b12d45bbfc6f0599987c744788ff53ac893ffa4d9c2/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "51aa46cdadcb4b1592f060b3991fa5b0",
+      "kind": "video",
+      "projectId": null,
+      "variants": {
+        "video": {
+          "duration": 56.84,
+          "fps": 25,
+          "height": 900,
+          "mimeType": "video/mp4",
+          "size": 17928195,
+          "url": "/content/cms/media/video/vitrine/51aa46cdadcb4b1592f060b3991fa5b0/1786decd60772911caa9060f6bb441abddb6e908f269334f3a564b24cc878834/video.mp4",
+          "width": 1600
+        }
+      }
+    },
+    {
+      "id": "51fb0670360b4f5f899f460ccfca7967",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 90464,
+          "url": "/content/cms/media/video/mastu/51fb0670360b4f5f899f460ccfca7967/41e83bb4d8cf753158c02c3172ba3e1b3a5f5a2cb531e246936df446d5af33a7/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 31196,
+          "url": "/content/cms/media/video/mastu/51fb0670360b4f5f899f460ccfca7967/eab2a0a8d4346da9bddc94b926a5c0d7769da45dad689d85f572d428685ee527/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "53894c67ff744526be24ba6b118120d5",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 156128,
+          "url": "/content/cms/media/photo/ewc-26/53894c67ff744526be24ba6b118120d5/417a5c6fe4cd3783a66a7eb12fbef03ea5c023e1d6aaebf715853581f68a0fb5/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 51260,
+          "url": "/content/cms/media/photo/ewc-26/53894c67ff744526be24ba6b118120d5/cae24298a68b1fda544626e6d2b0df96b7070368d10472fa1f4eb1dabd90f994/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "56a50599a6e241c1ab235e5acf2fa635",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 107070,
+          "url": "/content/cms/media/photo/ewc-26/56a50599a6e241c1ab235e5acf2fa635/e61c55c1c80d265e54473bdbe26b58dac4be091f223fa0b17e0d011535a16b21/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 31968,
+          "url": "/content/cms/media/photo/ewc-26/56a50599a6e241c1ab235e5acf2fa635/b824dd18ca83b40399d9f984cf5486e205321a42f8d7c70480694cce698e230e/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "57138bab22c24e898836c7b730fc290e",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 120788,
+          "url": "/content/cms/media/photo/ewc-26/57138bab22c24e898836c7b730fc290e/4c6ae7d1b784d5fd52a76c34a5ee166f3af278cdb9a58632c0003bd95b10594f/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 40064,
+          "url": "/content/cms/media/photo/ewc-26/57138bab22c24e898836c7b730fc290e/7c8626a7c27c68f9b4ecb7ec6177ad7f92be596258cc52c02c0d32babdaf8e97/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "594fec3d33674f1aaf927fed4d05e4b0",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 76462,
+          "url": "/content/cms/media/photo/ewc-26/594fec3d33674f1aaf927fed4d05e4b0/514dd8d15759a0cbab1e44541be03d8a5e3eb4d09e1a083d8bd6e5b429746edc/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 26148,
+          "url": "/content/cms/media/photo/ewc-26/594fec3d33674f1aaf927fed4d05e4b0/fd93b01a63ef508de95efa0da5c5985814b592effb8ffcc3cb179e070d5f41f3/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "5c092e99deb24f7787cf43735cb4d729",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 77784,
+          "url": "/content/cms/media/photo/ewc-26/5c092e99deb24f7787cf43735cb4d729/2ac6f674287b28abcde68a06073397ff5e0f860fca560a8b87231fcbe203d676/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 21848,
+          "url": "/content/cms/media/photo/ewc-26/5c092e99deb24f7787cf43735cb4d729/7e4fa2aa4de7ffe8542dfbaee06a0bff16960745d38c5d16d5121a169dd3d2a8/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "5c6947434fec4ed1aafc1a8b1df68361",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 50562,
+          "url": "/content/cms/media/photo/ewc-26/5c6947434fec4ed1aafc1a8b1df68361/56ca69a48045502f54bf6f40d803793e5c4cc322a809bf3b2e4661d52e6e88e3/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 29658,
+          "url": "/content/cms/media/photo/ewc-26/5c6947434fec4ed1aafc1a8b1df68361/18a27b1e8a71b452de3ab7cc7ecf05283090acdb74cf3dbb520de13b567a9d72/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "5d770a2b41c44ec9ae719d6f22d15652",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 61052,
+          "url": "/content/cms/media/photo/ewc-26/5d770a2b41c44ec9ae719d6f22d15652/b23d57106d269676f59f30ede550896cf54a145f6af0ddfe8c5c4aaf28b04873/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 34762,
+          "url": "/content/cms/media/photo/ewc-26/5d770a2b41c44ec9ae719d6f22d15652/aa007fa1d26516eb75fa80da34dd7941887595c79eda0a410d02b8acce38a999/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "606ef3a7e5074c759b42d092df655d00",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 69912,
+          "url": "/content/cms/media/video/mcskyz-hvf/606ef3a7e5074c759b42d092df655d00/bad8b5987cd17a07bf12051a2da82d69427e83c3452f110506073b66b2447fea/large.webp",
+          "width": 1920
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 21770,
+          "url": "/content/cms/media/video/mcskyz-hvf/606ef3a7e5074c759b42d092df655d00/8d293e8b900409aa331431e7e9d4b48afd90cbdbd10b819cc9c1e19cd81e4912/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "627c49bbb3fd43ce90b7de7132d5ad29",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 41622,
+          "url": "/content/cms/media/video/mcskyz-hvf/627c49bbb3fd43ce90b7de7132d5ad29/f74e45e6259980f06d651ddb1655548d22774d704065b2de7a076cecb1c00bdb/large.webp",
+          "width": 1920
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 9430,
+          "url": "/content/cms/media/video/mcskyz-hvf/627c49bbb3fd43ce90b7de7132d5ad29/e346e4df44fb405a2677584008e0ca7947172947b1f8f086b3c3733b3a438f6f/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "62f8f7a63c1748bf844cf6cc8ddc561d",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 111014,
+          "url": "/content/cms/media/photo/ewc-26/62f8f7a63c1748bf844cf6cc8ddc561d/29c04c54ab73cc127f422319333f0eb83fd21cd5ce8264bc39f5d07d876a5541/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 34884,
+          "url": "/content/cms/media/photo/ewc-26/62f8f7a63c1748bf844cf6cc8ddc561d/b653e4f491ece9a09c84d83dbfd6e4cd2af42c6b9772e3f9f8c950587f58660b/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "6819f99b842a4e27981ae45257d7c1c9",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 54706,
+          "url": "/content/cms/media/photo/ewc-26/6819f99b842a4e27981ae45257d7c1c9/54cb14a6c5374ae2949c7850727b72129471a9677bb0b9f97c2449c2c45d28b3/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 31816,
+          "url": "/content/cms/media/photo/ewc-26/6819f99b842a4e27981ae45257d7c1c9/64cd69e9c690eab122fed017ca493fa3e4372473220966174653c827f0e9aa70/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "6f128a4dcd264d3596d2d28f37dfe773",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 120474,
+          "url": "/content/cms/media/photo/ewc-26/6f128a4dcd264d3596d2d28f37dfe773/0402cf2f7fb7043e760a312ea883910d664e250ace990dcd632850776b5e8abc/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 32548,
+          "url": "/content/cms/media/photo/ewc-26/6f128a4dcd264d3596d2d28f37dfe773/f0f1ad451cb6810aeca20efc39d75428afdb0dde31772eab61397c8e4efb1ac0/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "71f6a9710c21441991618dada6fc6cb5",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 87906,
+          "url": "/content/cms/media/photo/ewc-26/71f6a9710c21441991618dada6fc6cb5/d584e400a5c6e10afcbab3bcbb7a6168c563e1ead992ab1898a4dc3dd780d8ae/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 23768,
+          "url": "/content/cms/media/photo/ewc-26/71f6a9710c21441991618dada6fc6cb5/d6daf3561cd7d9dc3517d42ce1fcc742260256d1ab6926a4e01e7003f2fe540c/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "728d9f0235d045e2b11c750adf9ee8ee",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 44992,
+          "url": "/content/cms/media/video/sameztwitch/728d9f0235d045e2b11c750adf9ee8ee/e206ded46f05da2bbcf965f81c5dd8e5684fe919aa00c440c37079d69560a714/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 16702,
+          "url": "/content/cms/media/video/sameztwitch/728d9f0235d045e2b11c750adf9ee8ee/f7b743720f8b7795e2183fa7f1957b2ab4b0788e1e148a17a6707a5818d6099a/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "74022a4f583149429542805c3e0e26a8",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 100226,
+          "url": "/content/cms/media/video/mastu/74022a4f583149429542805c3e0e26a8/0fdddbf90acfe0838653ba00c405dd1dd9b6d30c990124d6f54df8c163dc8b7f/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 25142,
+          "url": "/content/cms/media/video/mastu/74022a4f583149429542805c3e0e26a8/d09ab92a065ee18c067bd37f16caded48ddddb2378a81e31931433ca8945ae6f/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "7adbf675591a4c78a9760d7477505d2a",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 53414,
+          "url": "/content/cms/media/photo/living-the-dream-2026/7adbf675591a4c78a9760d7477505d2a/37267aab2ef366d72dbf59c49f65f08a22ce3c90e25795b07e42f61208c2354d/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 27904,
+          "url": "/content/cms/media/photo/living-the-dream-2026/7adbf675591a4c78a9760d7477505d2a/2d0e48415fbfd3c37d4b4aaa34993f099cac9508c0779d66cbe0641f22fbd11b/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "7b78b25c6153482b83416d740462e0c7",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 84568,
+          "url": "/content/cms/media/photo/rlcs-paris-major/7b78b25c6153482b83416d740462e0c7/a68fa723135e680ac8f61a86f6be73aedca91b09cbdffbdec91a8a465e80f08e/large.webp",
+          "width": 1920
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 21778,
+          "url": "/content/cms/media/photo/rlcs-paris-major/7b78b25c6153482b83416d740462e0c7/97754207e7a11406db6344f14d7293642f8189d299a98a608cea10d89fd1a207/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "7d49c42631ea49f1945e0cbe129d521b",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 73824,
+          "url": "/content/cms/media/photo/living-the-dream-2026/7d49c42631ea49f1945e0cbe129d521b/d753a3663c5d6d57ee45d38f646cd33a4a350df6eacc9f3a27f1660a910c2e14/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 41708,
+          "url": "/content/cms/media/photo/living-the-dream-2026/7d49c42631ea49f1945e0cbe129d521b/11da80b744f4933819b473bcdb7c1bd2ae5e9fe96613f37de4dadd67ed9159ba/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "7d7b086d12b448f2b9818b3550975a92",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 128822,
+          "url": "/content/cms/media/photo/ewc-26/7d7b086d12b448f2b9818b3550975a92/d3df11fbacc815fce15f7ccd32f7069ab694eec8c493e2ea720ffc7c6f754c99/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 41946,
+          "url": "/content/cms/media/photo/ewc-26/7d7b086d12b448f2b9818b3550975a92/415767043a556cb73c34ded15c3ae679e2a5d590b24a002a535e864d4cd9ca3c/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "81e1850ac201410ba113db874ef693ab",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 7846,
+          "url": "/content/cms/media/video/concept-projects/81e1850ac201410ba113db874ef693ab/abc5fa3a53ccaa2b4137a14183fb35052a4af4e211629379ee0f41092ae6c666/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 2966,
+          "url": "/content/cms/media/video/concept-projects/81e1850ac201410ba113db874ef693ab/e19c0ab7af70be1e903c9648098a47711aa56ba2417ac7fe017a3325d7f2d014/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "88066dba9bd04648897dfbb0db56e198",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 90032,
+          "url": "/content/cms/media/photo/rlcs-paris-major/88066dba9bd04648897dfbb0db56e198/7ab6307288e96a2914e5f516f2673574b339dac171fe2e91bccfd11127167544/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 50094,
+          "url": "/content/cms/media/photo/rlcs-paris-major/88066dba9bd04648897dfbb0db56e198/37f0df9a15f4591daa3f251f64fae060a28bfac4a879f2db7ed12c731cd659b9/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "89e31d4d7287497587fb1f46653bd73f",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 65614,
+          "url": "/content/cms/media/video/mastu/89e31d4d7287497587fb1f46653bd73f/1ab26164742eeba322b2adf8b015c492c11672879ba78213aa57c7fec396fd38/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 17828,
+          "url": "/content/cms/media/video/mastu/89e31d4d7287497587fb1f46653bd73f/0f86376ffa3e5a0b34b1abfff2e9584ee013480e079bf8309b0d71ee001e583e/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "8d0d83eea1814de9850735a1504bb16e",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 183344,
+          "url": "/content/cms/media/photo/ewc-26/8d0d83eea1814de9850735a1504bb16e/51bd9579ffbf2837d9c10ef964c9f4d9de4afde7e146725922d9b16de55cf29f/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 63418,
+          "url": "/content/cms/media/photo/ewc-26/8d0d83eea1814de9850735a1504bb16e/d108d25643f650ee1fff83bd7c0758063c9628f75afc07301d802a2f87fd3e0f/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "8fcf58ef256d437ea27217fe05e9bf06",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 49104,
+          "url": "/content/cms/media/video/sameztwitch/8fcf58ef256d437ea27217fe05e9bf06/b3147953f2d571b460b5ccc85adb69fe79d018ff22dbe0f5a051ae1f1c9b65a8/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 17612,
+          "url": "/content/cms/media/video/sameztwitch/8fcf58ef256d437ea27217fe05e9bf06/3e3fdf289638fb8b6bea5a619ba73f1f6ca95b9fe5cd6e3e76fdeadd0ce7e8b4/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "9025acdd108d40ed838c2308967fa087",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 180736,
+          "url": "/content/cms/media/photo/ewc-26/9025acdd108d40ed838c2308967fa087/f7eea98fe1db38b30883f2af5ff53fe719a65d75e2633595a058c86d7f8888f3/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 42584,
+          "url": "/content/cms/media/photo/ewc-26/9025acdd108d40ed838c2308967fa087/d50adb6a1568a7a061681b03f5e9c5da3e436374e2485ccd794b472cce69efef/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "985348b143ea4feeb879dac2e99d1e34",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 17578,
+          "url": "/content/cms/media/video/concept-projects/985348b143ea4feeb879dac2e99d1e34/deb39bad99e8277d96858486826536974f9ab78634db52d26e9a0fefc7dbbd9a/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 5820,
+          "url": "/content/cms/media/video/concept-projects/985348b143ea4feeb879dac2e99d1e34/7c05a1c8f49f9bf40fd443fa067087cf616944919bfddf30ec70255d531fe341/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "99f17309fe5f41f484536cb37448503f",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 111272,
+          "url": "/content/cms/media/photo/rlcs-paris-major/99f17309fe5f41f484536cb37448503f/d104c71efc64db6e8c339068ea82c6631e271162c9841391bce6d38b51cb1225/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 58312,
+          "url": "/content/cms/media/photo/rlcs-paris-major/99f17309fe5f41f484536cb37448503f/78eab5eb8e969074c29f312f5525613454e1336563c0c4661163ceee12eeddf4/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "9d18069c76b84916b49404a79ae5020d",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 148774,
+          "url": "/content/cms/media/photo/ewc-26/9d18069c76b84916b49404a79ae5020d/26faa7badbb7cdccd675417e742fe4ffca147f470bdecab7e0e329b5170d08a6/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 49772,
+          "url": "/content/cms/media/photo/ewc-26/9d18069c76b84916b49404a79ae5020d/cbc0544121ef17182517f9a6bf9277f59c2bf139ea311f54618c3882be2c50b4/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "a17905b3ce134f079d893dfd384290c7",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 87570,
+          "url": "/content/cms/media/photo/ewc-26/a17905b3ce134f079d893dfd384290c7/3a03a68e907687511ed0544ebc5355c09adab99f8a1513d1bde9754035c1f77b/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 51032,
+          "url": "/content/cms/media/photo/ewc-26/a17905b3ce134f079d893dfd384290c7/bc9b6a792d432f6522bf576a1e0ca01c8485eee0530b23384ffdded840341916/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "a28b7fe72cc24fbf83cba80ab2440ea2",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 56128,
+          "url": "/content/cms/media/photo/ewc-26/a28b7fe72cc24fbf83cba80ab2440ea2/364c6d74dd26d0a04b6f09a341620f948aa4c25a81e80464e48d5fcd62d1379e/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 30282,
+          "url": "/content/cms/media/photo/ewc-26/a28b7fe72cc24fbf83cba80ab2440ea2/57744bda97078e23cdc30a13d833507f20e9cfa4fc1631899ac842280badb1a4/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "a5e27f99576b40868e284a9b289c4a99",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 61392,
+          "url": "/content/cms/media/photo/ewc-26/a5e27f99576b40868e284a9b289c4a99/de8be4aeb7eca4f5cb8d10a0f9f8dd04d14015c0848eab1fa0efa61d2211abec/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 32402,
+          "url": "/content/cms/media/photo/ewc-26/a5e27f99576b40868e284a9b289c4a99/93f391c271bc893cfb6eeda9fd95d364c9345bf6f4964b5dd95fdea77bcbd20a/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "a712c2e96b8a436e9a185fb34c14a903",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 83990,
+          "url": "/content/cms/media/photo/ewc-26/a712c2e96b8a436e9a185fb34c14a903/15f3bf4c6bfce4e4baa2304b080aea5e279868c272c4fcf60503a33548794692/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 48852,
+          "url": "/content/cms/media/photo/ewc-26/a712c2e96b8a436e9a185fb34c14a903/2ad65b8f84c9c90ae7801bed3fc986bec861e1d455460fd53112dc85ee753800/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "a797caf070934b659ab780b026bcf5e5",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 53476,
+          "url": "/content/cms/media/photo/ewc-26/a797caf070934b659ab780b026bcf5e5/143a27590eb8856a7205a8b0598b89147a480cd5702ff821846b988fa9ca4327/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 27314,
+          "url": "/content/cms/media/photo/ewc-26/a797caf070934b659ab780b026bcf5e5/09223e8bca6705501dadc4236388787425c64a9406e3133958f757ae6579c0c6/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "a9820708ece9465888371d5dad9d260b",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 109180,
+          "url": "/content/cms/media/photo/rlcs-paris-major/a9820708ece9465888371d5dad9d260b/07784001d6e2a7aac2d0d1a0742472399566be9159441a5e0336f0772419eb50/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 61298,
+          "url": "/content/cms/media/photo/rlcs-paris-major/a9820708ece9465888371d5dad9d260b/4e88f1547c6c9ca3256e977117719de6e3efc3558814fbbea23a4eec5e91afcb/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "aa546046bd994840baa636c7a373ca2a",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 85388,
+          "url": "/content/cms/media/photo/ewc-26/aa546046bd994840baa636c7a373ca2a/d80adcc45ff9e448717794b45add0012d824e5d88a8209da703e6ced4bc58cd6/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 46360,
+          "url": "/content/cms/media/photo/ewc-26/aa546046bd994840baa636c7a373ca2a/f36889ee008c74d003228830d5159e2f5e71905e4f8f039146ceb7c289568d9a/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "adb51190f0e94cc98eecd57e3aa54a9d",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 151192,
+          "url": "/content/cms/media/photo/rlcs-paris-major/adb51190f0e94cc98eecd57e3aa54a9d/3fb143b8e3fb013a0bd52248370c95f7cc9f248957cbcccd7160e0fcd6d5ab43/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 85670,
+          "url": "/content/cms/media/photo/rlcs-paris-major/adb51190f0e94cc98eecd57e3aa54a9d/8a1795cf02f6a07d9b13c74314f63ad9c6eba508cc9e19a279aa0c3d869b2918/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "b0407dc4795e4e9e94fba9409bc46295",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 73130,
+          "url": "/content/cms/media/photo/ewc-26/b0407dc4795e4e9e94fba9409bc46295/b758bb9c0146ae9534940e01a55ca4598153b8cfaf8443d4356ab0359d25e394/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 41382,
+          "url": "/content/cms/media/photo/ewc-26/b0407dc4795e4e9e94fba9409bc46295/0f137d1a66fac1e353a8a292167d2691d917a165b2e26cf1146e49f3582f6bee/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "b55d7c76504a4e008308cb866b85ac65",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 359186,
+          "url": "/content/cms/media/photo/rlcs-paris-major/b55d7c76504a4e008308cb866b85ac65/e19fdf5c71204a029e1e4b9abe8510e41314779e44a51bffe23aa3e92e46256c/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 111124,
+          "url": "/content/cms/media/photo/rlcs-paris-major/b55d7c76504a4e008308cb866b85ac65/7effd362e1f3e00455693fe06e9de89e085f646d833e99aaa1d841b1f7d703f0/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "b8efc9dae371430dad4cf2722eb3a50d",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 185104,
+          "url": "/content/cms/media/photo/living-the-dream-2026/b8efc9dae371430dad4cf2722eb3a50d/f54a0e2901324ad4f7c7c29576384201edd37f1c079b3873fe5174cfd8aca04f/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 53400,
+          "url": "/content/cms/media/photo/living-the-dream-2026/b8efc9dae371430dad4cf2722eb3a50d/f7e524a26b6c44614b5b2288ebdca26f25cfef973d733e252258e7e7856e1c64/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "bbe85918fc3b4024924dacb1c8a22395",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 116876,
+          "url": "/content/cms/media/photo/ewc-26/bbe85918fc3b4024924dacb1c8a22395/529013a05ae806cf915f2276ba063600c6440fb258afa02a7ce0ebaa71fa9890/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 41446,
+          "url": "/content/cms/media/photo/ewc-26/bbe85918fc3b4024924dacb1c8a22395/eaa94db62538cc8cae2e128742f3b826efb9956d37e97504b1b0d31baad1a86b/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "bd1988c7254a4e5993ac4338a9b52db8",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 90036,
+          "url": "/content/cms/media/photo/ewc-26/bd1988c7254a4e5993ac4338a9b52db8/6301ec6bd49869342c67e8d2e7e388a95d7a95a568a500aa3ee62529623fd4cd/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 49120,
+          "url": "/content/cms/media/photo/ewc-26/bd1988c7254a4e5993ac4338a9b52db8/e2cc772871c929ab7367a1510fd367b4a41c9e8b22e85dae4bcbb6360be5f521/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "bd745fd88ec8482dbef358b6d262670d",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 181068,
+          "url": "/content/cms/media/photo/living-the-dream-2026/bd745fd88ec8482dbef358b6d262670d/2e7852badd6de7d124c7255d510931b6508013d1238f6ca0f9815b7ec220d6b7/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 45728,
+          "url": "/content/cms/media/photo/living-the-dream-2026/bd745fd88ec8482dbef358b6d262670d/63dfe276f80b2023ef2c08b15d0e766ee18d9bb7c08d0a2c594a66ffe00b406e/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "bd971ae017e54767bbe9bac04558bbc2",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 16650,
+          "url": "/content/cms/media/video/concept-projects/bd971ae017e54767bbe9bac04558bbc2/8eadc42374d269e021ba14d275b5f95d0b696407730f92f8afafe715bf8518cd/large.webp",
+          "width": 1920
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 4548,
+          "url": "/content/cms/media/video/concept-projects/bd971ae017e54767bbe9bac04558bbc2/acaef97577d391b882079d4a4c825de1532830e6ce83864f324741bf6cbc77a7/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "bdd92fc0c5754b07a25fe2a7645618c4",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 106994,
+          "url": "/content/cms/media/photo/ewc-26/bdd92fc0c5754b07a25fe2a7645618c4/951f948a5a7654a75f2804d7fe07fd0a50adfefb3ea16cce748e21bc6f7ecb9e/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 33132,
+          "url": "/content/cms/media/photo/ewc-26/bdd92fc0c5754b07a25fe2a7645618c4/f9000f6a7f75efdcd19bb8fd8203a3d05ecfed549caf3d3f1df1ed3e52326da7/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "be7af9e8938844d2aede8c59e1a78239",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 274538,
+          "url": "/content/cms/media/photo/rlcs-paris-major/be7af9e8938844d2aede8c59e1a78239/255fec5d140919574b51f5c0d6bb54ac2e9ad12e2ab00d38c219bc8c3f135d87/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 75094,
+          "url": "/content/cms/media/photo/rlcs-paris-major/be7af9e8938844d2aede8c59e1a78239/5d560fa59d3d76074635347e95eaedf950b69b9053bf66aa0b252c6e38af8a8b/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "bfdb5033d8ce4bc29057905ba292b128",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 23020,
+          "url": "/content/cms/media/video/concept-projects/bfdb5033d8ce4bc29057905ba292b128/59af075a614a508b4e6154f2a34b9535eac133fceea0a14cea9bb6cab47d1e54/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 7676,
+          "url": "/content/cms/media/video/concept-projects/bfdb5033d8ce4bc29057905ba292b128/37c1f9766c10f7fd4e329cafbd5c69f65037422c458316b3eeb5040935165677/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "c163462cb2614f30954b75d94fe3d0de",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 134728,
+          "url": "/content/cms/media/photo/living-the-dream-2026/c163462cb2614f30954b75d94fe3d0de/ba650d324da758377013d49b5a1ceea28bb1c59a3cfa4e962bd9fc63a1efb5df/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 41182,
+          "url": "/content/cms/media/photo/living-the-dream-2026/c163462cb2614f30954b75d94fe3d0de/4e3fe91d8151dbc29be1f12bb31da755286b6296d7889eb1a7a83cb435ab233f/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "c348b68d52f34c4886508e8a8582da5b",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 125966,
+          "url": "/content/cms/media/photo/living-the-dream-2026/c348b68d52f34c4886508e8a8582da5b/d908248b7e5d66190e45dcde3b3378954dbfb6399da6ef0185d16ba54c16c7c3/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 36070,
+          "url": "/content/cms/media/photo/living-the-dream-2026/c348b68d52f34c4886508e8a8582da5b/1c3378a0769a6f9e52ceda92307bc36b75ad118f1943c7f74b479b7c92a9535f/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "c3b20937d3e64ae19ffa7ebe26b22d6a",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 116588,
+          "url": "/content/cms/media/video/sameztwitch/c3b20937d3e64ae19ffa7ebe26b22d6a/b7088f6a92536635ba47aebe422dfe0d798dc9a2236fc8a41956885338fa3c0c/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 38764,
+          "url": "/content/cms/media/video/sameztwitch/c3b20937d3e64ae19ffa7ebe26b22d6a/20e8073287959722538c3facdbb1ed8fa53489daed90678e334a69dd31c76c05/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "c3cba77aca164addab2b39b853647b4e",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 110804,
+          "url": "/content/cms/media/photo/ewc-26/c3cba77aca164addab2b39b853647b4e/6a9b84a22571cd796598eed8ccd70a9ea9ba924d5a0a103d3347a97632302e2e/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 29866,
+          "url": "/content/cms/media/photo/ewc-26/c3cba77aca164addab2b39b853647b4e/5b13329689b16a2a074128873d13647ccbf5c3e06b3ab389a5f9915f3ced1644/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "c3feafd8b513445e88644f6e29104f2e",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 129110,
+          "url": "/content/cms/media/photo/ewc-26/c3feafd8b513445e88644f6e29104f2e/30ca3475d33818cf705e545ac42388df1bbef290f0881583f8bcaebd61e66f55/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 39548,
+          "url": "/content/cms/media/photo/ewc-26/c3feafd8b513445e88644f6e29104f2e/bc2f19d724d5ca626f975006cf163906f89f487049ab0f87f1082e930eb7f75e/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "c574ee0969274d9ebb6ae56ae6be539a",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 96582,
+          "url": "/content/cms/media/photo/living-the-dream-2026/c574ee0969274d9ebb6ae56ae6be539a/f2679e1a38b2dfa28eeaf683eac9a10f2fb523ed9724524c7b2febaa0a34d72c/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 52304,
+          "url": "/content/cms/media/photo/living-the-dream-2026/c574ee0969274d9ebb6ae56ae6be539a/f997ca0d7b8bf73aa25d2e2e9ba708b4d72ab145c2afa253f80783371023be54/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "c66ac74710024e50b088db9e4acd00b0",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 101218,
+          "url": "/content/cms/media/photo/rlcs-paris-major/c66ac74710024e50b088db9e4acd00b0/ccc237265c38c2535b4068052c80603617327cb29caa8793cf6e906ff0af2351/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 55370,
+          "url": "/content/cms/media/photo/rlcs-paris-major/c66ac74710024e50b088db9e4acd00b0/92e6793df4747607a9f3d4c852618517b623754c4bca3f3b0246b7794518e3f9/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "c7a3e2d60c49401d8a2c6bded1958719",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 168920,
+          "url": "/content/cms/media/photo/rlcs-paris-major/c7a3e2d60c49401d8a2c6bded1958719/3c3bbaacd89d48efe9dcb2c96d112d1801bf20527847f6ff42c2a24b97f4521d/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 56396,
+          "url": "/content/cms/media/photo/rlcs-paris-major/c7a3e2d60c49401d8a2c6bded1958719/f0925c77152dcc5ff193fa481369772ee7d4c43b2553d2db4b477f5b476d04a9/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "c8877b4d814d41b381a99ef8f63d349b",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 62934,
+          "url": "/content/cms/media/photo/ewc-26/c8877b4d814d41b381a99ef8f63d349b/7f15f313d568181f8b55bd235ae7f8b3255da901678d7b60d3c8a1cacb2c6d38/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 34018,
+          "url": "/content/cms/media/photo/ewc-26/c8877b4d814d41b381a99ef8f63d349b/8ea3fbb532e892b2b722c71444107bb24ea57994bbf2294ef17680fe1288872f/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "cc3dd04356de4f5eb36231a5518807ea",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 76482,
+          "url": "/content/cms/media/photo/rlcs-paris-major/cc3dd04356de4f5eb36231a5518807ea/be6d072476480c72da108402bbe6d7962f3113e403b5040ac979a72c35d3d022/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 38010,
+          "url": "/content/cms/media/photo/rlcs-paris-major/cc3dd04356de4f5eb36231a5518807ea/4f593cbb92e9acba18904ff9c4e6fc20099c8a88680cd93417c50fcce4599caf/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "ce01c1fbe62f49a281097d0d956e363a",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 54282,
+          "url": "/content/cms/media/photo/living-the-dream-2026/ce01c1fbe62f49a281097d0d956e363a/9908187fc54877ea26806e14638d9b867510a07e011ecb721ecdbf4b4638f884/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 30424,
+          "url": "/content/cms/media/photo/living-the-dream-2026/ce01c1fbe62f49a281097d0d956e363a/85f84154d31239c4199d6c1c3faa11b85ed63461e84428e0ed808b9385badae9/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "cf379d322dcd4d0c9b1f7673e5b77075",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 115532,
+          "url": "/content/cms/media/photo/ewc-26/cf379d322dcd4d0c9b1f7673e5b77075/22b5a2039608cc32d38bb8238c82c2425cfdf3e9b4c5c7f554c9715edd0d43f0/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 36558,
+          "url": "/content/cms/media/photo/ewc-26/cf379d322dcd4d0c9b1f7673e5b77075/ec925c33212bb9a35930611c19af2223784910fcfbdc6762cc9bcd71ebcc2593/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "d209d2b0c14248ec873d59c0a15fa284",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 53742,
+          "url": "/content/cms/media/video/mcskyz-hvf/d209d2b0c14248ec873d59c0a15fa284/c87124c3b9abfb77a3cdffa91e8f7621ecb68dcd83086ec3f5dc927092ab056c/large.webp",
+          "width": 1920
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 14126,
+          "url": "/content/cms/media/video/mcskyz-hvf/d209d2b0c14248ec873d59c0a15fa284/eb1f6d597aa7c22095920c2be6ce4510403cb3dd61d7f4567d6757514223f99e/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "d6212d67600c42aa8ec2a76d1e48ff86",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 80670,
+          "url": "/content/cms/media/photo/living-the-dream-2026/d6212d67600c42aa8ec2a76d1e48ff86/4e3a83d83990ec81bc899e658e0626f19ede64b76ea497a4d983e6603b41ab22/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 26544,
+          "url": "/content/cms/media/photo/living-the-dream-2026/d6212d67600c42aa8ec2a76d1e48ff86/cdfd1b876e39e4710b0a1b0d65d10ec293067e34b134416e80228b1855e43c8b/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "d7cae93438c346efb377b1a4704e296a",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 41222,
+          "url": "/content/cms/media/photo/ewc-26/d7cae93438c346efb377b1a4704e296a/5891610141e46c7cb3b8931724f797c664d6f1a57482095ec9a85b231d730393/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 23766,
+          "url": "/content/cms/media/photo/ewc-26/d7cae93438c346efb377b1a4704e296a/3df0fb147dd3d95b47d7a8bbe0f2959387651a6e433b8bce5416abd6fd42d7f0/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "d85a884a2e744d289af4b91e8b167096",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 39558,
+          "url": "/content/cms/media/video/mastu/d85a884a2e744d289af4b91e8b167096/0872630e5cdd8467c5eefd069cf7d0c951c26cb60e6db2a0217cf7ac4a4dfb29/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 14520,
+          "url": "/content/cms/media/video/mastu/d85a884a2e744d289af4b91e8b167096/222975b895fe6fbc94a71e3c67e279e33c13621602acb98c5b39bb9693ba7948/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "dd20130c87064611884b922d2b229ad8",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 57566,
+          "url": "/content/cms/media/photo/rlcs-paris-major/dd20130c87064611884b922d2b229ad8/c3a68e1e5ec4dec14ecd0cd80af0dee3190a255aa081057d088693e45f050c92/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 32916,
+          "url": "/content/cms/media/photo/rlcs-paris-major/dd20130c87064611884b922d2b229ad8/04dc0a057c05846768d06651a24da7950ace450bd986132420855e6be581668e/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "ddb4619fc09e4efc97d74880df457f56",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 100012,
+          "url": "/content/cms/media/photo/rlcs-paris-major/ddb4619fc09e4efc97d74880df457f56/0791a0e3aced8fc1d1f4551fd1ab2312b108fefe74646ff87cc05398633be937/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 49480,
+          "url": "/content/cms/media/photo/rlcs-paris-major/ddb4619fc09e4efc97d74880df457f56/dbe595163480a4d1b98056431323412f11c23b1795a1c5cee7b8eb176a12877a/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "de54111819ae49d4899fac61acf0be4d",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 63068,
+          "url": "/content/cms/media/photo/ewc-26/de54111819ae49d4899fac61acf0be4d/e40c070383c700c20d080cf4637f27e95b6f50e90864802b314dad1c7d731a86/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 20382,
+          "url": "/content/cms/media/photo/ewc-26/de54111819ae49d4899fac61acf0be4d/4d63a77702bea3d8832118b482b964077a0bc47f3c67fa94d5acb21e1518511e/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "df3a8c3c1b4540ffa602d127d52dcafd",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 88928,
+          "url": "/content/cms/media/photo/ewc-26/df3a8c3c1b4540ffa602d127d52dcafd/94db7dc1ebffc137d43f7f965e21c69d2d1f3d149923418e5b42b6d990cd4f09/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 47816,
+          "url": "/content/cms/media/photo/ewc-26/df3a8c3c1b4540ffa602d127d52dcafd/5c9bc7e6ad847030e71d970f586c455ea7956b3a864dea70a904890e3a9773e4/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "e0365d70deb74115a6df7cc76c526e74",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 56970,
+          "url": "/content/cms/media/video/mcskyz-hvf/e0365d70deb74115a6df7cc76c526e74/cd61a99be0ac5d66c19beffddd979af7606e62b21c4e64d7662d2f0a5a094a50/large.webp",
+          "width": 1920
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 6938,
+          "url": "/content/cms/media/video/mcskyz-hvf/e0365d70deb74115a6df7cc76c526e74/7ed2b4af4236dc78771dbadede1cc2447587b850926a6df147f6bad0d1fb08e5/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "ea05fb389d404b09b3d5bdd60375a62b",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 56930,
+          "url": "/content/cms/media/photo/ewc-26/ea05fb389d404b09b3d5bdd60375a62b/d6c31f52c2495d5958ad2f04967bee9aea0c966b50f5373d30e9e9ed80b02d27/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 33084,
+          "url": "/content/cms/media/photo/ewc-26/ea05fb389d404b09b3d5bdd60375a62b/3d4be7ac133ce42fd8a0bb861e11ec73dd23df0c0d4d09c5a03abfa47bec3d05/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "ea9e14b0f1ce4755aa4d038229fd7978",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 340004,
+          "url": "/content/cms/media/photo/living-the-dream-2026/ea9e14b0f1ce4755aa4d038229fd7978/f2ca1b173395242426d707378b2c506bdcc27bdc5a356027b98b562f9c3b6bbd/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 92670,
+          "url": "/content/cms/media/photo/living-the-dream-2026/ea9e14b0f1ce4755aa4d038229fd7978/24e42a93d045307a2730a543e9d6b762fda814745fd836c67afbaaaf9e755e58/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "ead52cde64204459842d9075f5283be9",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 900,
+          "mimeType": "image/webp",
+          "size": 89474,
+          "url": "/content/cms/media/video/mastu/ead52cde64204459842d9075f5283be9/eb74db62a2ccbc6d825c679d4b6a7afcdda0881efa72620d7c2fb7b54fcc7f74/large.webp",
+          "width": 1600
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 21024,
+          "url": "/content/cms/media/video/mastu/ead52cde64204459842d9075f5283be9/6d528167bab4f23f668da735a304d6a7abb2055ec2cb99cb70e8b4fb75e31a9a/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "eb9ec97b8ccf4b049f99da1c58b2bb98",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 136584,
+          "url": "/content/cms/media/photo/rlcs-paris-major/eb9ec97b8ccf4b049f99da1c58b2bb98/2c0b21a3b609f8d706d624efc79f3dd1cbd3d81faaaa17e389aa9b899f887785/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 42498,
+          "url": "/content/cms/media/photo/rlcs-paris-major/eb9ec97b8ccf4b049f99da1c58b2bb98/b13895d7b86fc205fb9f8fc2b5b7f557754201fb94127557dafda3ec3a1e9b5d/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "ec7079b2fb534d9596b5690c76275015",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 95370,
+          "url": "/content/cms/media/photo/ewc-26/ec7079b2fb534d9596b5690c76275015/2480aed6f2e951f8d8da29774c17d19307a584c30e22c7efc29566ecac9bb636/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 25684,
+          "url": "/content/cms/media/photo/ewc-26/ec7079b2fb534d9596b5690c76275015/e1c23fdbc847dd7e711d3b5055da1ea704755b6709e9e0f3d907371f436c688b/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "ec8688c4460d41618984a23593df3316",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 144040,
+          "url": "/content/cms/media/photo/ewc-26/ec8688c4460d41618984a23593df3316/9980db0683b1909b6ca8dcf1542b7c050278a67c04a6859a55418d6fd03806cd/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 48730,
+          "url": "/content/cms/media/photo/ewc-26/ec8688c4460d41618984a23593df3316/33347679c26d6cf4d61bebbd81be1f88826e396bd1e319c8fa66d1631eddb53c/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "f0baa048f3de4b81adfb3859e12e2c1b",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 151628,
+          "url": "/content/cms/media/photo/rlcs-paris-major/f0baa048f3de4b81adfb3859e12e2c1b/1a7b8329c3eafa934511c20b6d3ad370dd08b2b2d99f8c473233bdc48ef7c8e8/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 36630,
+          "url": "/content/cms/media/photo/rlcs-paris-major/f0baa048f3de4b81adfb3859e12e2c1b/80a6dc062f5e8cce990b59e2ae4735a46a858304f465210e6e22e6c771f3e487/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "f1555adc21464220a4cec7dde53dc20b",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 172288,
+          "url": "/content/cms/media/photo/ewc-26/f1555adc21464220a4cec7dde53dc20b/a136518c7e23c8b0518a2fd898fcc6137163173d12f416b319c71b416c701a48/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 41432,
+          "url": "/content/cms/media/photo/ewc-26/f1555adc21464220a4cec7dde53dc20b/e8a2a6b099731f6bfabf9fe254427c90a40394b1fa3860387ae65fca1ec821f5/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "f3d9b8078f6549cfb7f403c050ac5d92",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 78936,
+          "url": "/content/cms/media/photo/ewc-26/f3d9b8078f6549cfb7f403c050ac5d92/5af16f541e942ec180651b03ce3998a649c34eb1f4911e6ddfc03529dd625536/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 46282,
+          "url": "/content/cms/media/photo/ewc-26/f3d9b8078f6549cfb7f403c050ac5d92/a8c3ea16f470968253dd8f113cc6fb9369f95a4932acd4b98c81deac40a4b4e9/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "f98b49979ad94f67b6d6bbffd033ccf9",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 99778,
+          "url": "/content/cms/media/photo/ewc-26/f98b49979ad94f67b6d6bbffd033ccf9/6416b7f2c65dcfa51717b4d53a02f27eb9fac3ff34e1d790a0e690a138c62883/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 33888,
+          "url": "/content/cms/media/photo/ewc-26/f98b49979ad94f67b6d6bbffd033ccf9/a46a94a6c1f40fcf589d1164cc2aac43f52bc7e334a34bf1aadcc3c8dfe37674/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "f9a8d340cfe14b318ca4723b9ef4ec2a",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 60570,
+          "url": "/content/cms/media/photo/ewc-26/f9a8d340cfe14b318ca4723b9ef4ec2a/fad6d6773e58af7f50618b828c4d7df6a74522847d94b4383b5c6d7e69e414ce/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 32572,
+          "url": "/content/cms/media/photo/ewc-26/f9a8d340cfe14b318ca4723b9ef4ec2a/4b7df34150593bd14616ffe8a39c1a782de4e45f1fbe5358f7048765822312cf/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "fa8eee4faa5a4dee8925a52906170ee4",
+      "kind": "photo",
+      "projectId": "1279eabc229d45c39bbd24231a1c52da",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 103176,
+          "url": "/content/cms/media/photo/rlcs-paris-major/fa8eee4faa5a4dee8925a52906170ee4/2a5094a163e1889f6858b65d01705dd18af7ead5543c3bfe653137ae4d12687e/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 59782,
+          "url": "/content/cms/media/photo/rlcs-paris-major/fa8eee4faa5a4dee8925a52906170ee4/688336dd48cfe1b2519e87b5bdefe2da433ccea606438b18f2b042a19f27814a/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "fb79fe9993dd4e4a802ccde2f96f1947",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 72580,
+          "url": "/content/cms/media/photo/ewc-26/fb79fe9993dd4e4a802ccde2f96f1947/fa25b20fef7d7bf027ddd236c5946ecc234f638268c8655db7aa0867938fe9b2/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 42714,
+          "url": "/content/cms/media/photo/ewc-26/fb79fe9993dd4e4a802ccde2f96f1947/6adad8f60f9a93144ad8dd6d1e4d781fbb442e9f21652dede910fd86a429397c/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "fe618bb77b514d58a7376db98b3444a5",
+      "kind": "photo",
+      "projectId": "1951c72835c741df9e413eec412706b6",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 144286,
+          "url": "/content/cms/media/photo/living-the-dream-2026/fe618bb77b514d58a7376db98b3444a5/8bdac69e31fbced085f2286116d2747cb256392f30322730802fcdb965d18a3e/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 35142,
+          "url": "/content/cms/media/photo/living-the-dream-2026/fe618bb77b514d58a7376db98b3444a5/8e94e69444e646010397e9f4b1c4f4dca236401c27edfda78800f1a80911d4f1/small.webp",
+          "width": 800
+        }
+      }
+    }
+  ],
+  "photos": [
+    "57138bab22c24e898836c7b730fc290e",
+    "9d18069c76b84916b49404a79ae5020d",
+    "04700f6b0cc940ebb6a6902f35ac4542",
+    "62f8f7a63c1748bf844cf6cc8ddc561d",
+    "38e55021938b423e8cd12bb4eb70d42d",
+    "f9a8d340cfe14b318ca4723b9ef4ec2a",
+    "71f6a9710c21441991618dada6fc6cb5",
+    "6819f99b842a4e27981ae45257d7c1c9",
+    "bdd92fc0c5754b07a25fe2a7645618c4",
+    "a17905b3ce134f079d893dfd384290c7",
+    "d7cae93438c346efb377b1a4704e296a",
+    "ec7079b2fb534d9596b5690c76275015",
+    "b8efc9dae371430dad4cf2722eb3a50d",
+    "fe618bb77b514d58a7376db98b3444a5",
+    "ea9e14b0f1ce4755aa4d038229fd7978",
+    "139519c8bb2645dab8f561bd01ce9af8",
+    "46b34a505efc493b893cad01bcd47c76",
+    "c348b68d52f34c4886508e8a8582da5b",
+    "1adc112b180b4854881664dff14e034e",
+    "0dd7f2b63a4a4a88b23a9f16d8d5215f",
+    "ce01c1fbe62f49a281097d0d956e363a",
+    "7adbf675591a4c78a9760d7477505d2a",
+    "2b673c0b275c46eba36e3bce0188008a",
+    "3b7d128e035444d1898d94d8347319b5",
+    "c574ee0969274d9ebb6ae56ae6be539a",
+    "45cb0dd89619460f8c92eacbaa8775ee",
+    "0ddf4c411e2d4b7bae2689f5b82433b8",
+    "c163462cb2614f30954b75d94fe3d0de",
+    "bd745fd88ec8482dbef358b6d262670d",
+    "d6212d67600c42aa8ec2a76d1e48ff86",
+    "7d49c42631ea49f1945e0cbe129d521b",
+    "1209a50a1cef44f7b8408f4731a066f6",
+    "4e27159136b64294967df76265a06a8e",
+    "f1555adc21464220a4cec7dde53dc20b",
+    "387a53ad2b544dedb46679e20906b54b",
+    "4b590005dc644721b92a3383c18fef94",
+    "594fec3d33674f1aaf927fed4d05e4b0",
+    "3c61dfa40d114db8ab1118995a9e1840",
+    "a5e27f99576b40868e284a9b289c4a99",
+    "de54111819ae49d4899fac61acf0be4d",
+    "b0407dc4795e4e9e94fba9409bc46295",
+    "5d770a2b41c44ec9ae719d6f22d15652",
+    "41f41b825da8463ebd4dabe686b27fd8",
+    "53894c67ff744526be24ba6b118120d5",
+    "a797caf070934b659ab780b026bcf5e5",
+    "5c092e99deb24f7787cf43735cb4d729",
+    "2d6095bcc2594e9c97b66602e299a00a",
+    "ec8688c4460d41618984a23593df3316",
+    "cf379d322dcd4d0c9b1f7673e5b77075",
+    "c3cba77aca164addab2b39b853647b4e",
+    "df3a8c3c1b4540ffa602d127d52dcafd",
+    "56a50599a6e241c1ab235e5acf2fa635",
+    "aa546046bd994840baa636c7a373ca2a",
+    "0c1ff2ac98214856965ba6c6847180d7",
+    "f98b49979ad94f67b6d6bbffd033ccf9",
+    "a28b7fe72cc24fbf83cba80ab2440ea2",
+    "9025acdd108d40ed838c2308967fa087",
+    "bd1988c7254a4e5993ac4338a9b52db8",
+    "6f128a4dcd264d3596d2d28f37dfe773",
+    "c3feafd8b513445e88644f6e29104f2e",
+    "ea05fb389d404b09b3d5bdd60375a62b",
+    "29891c6562b14829836c94fa4f078eb5",
+    "7b78b25c6153482b83416d740462e0c7",
+    "0011eb64660e4429a65638666849878e",
+    "3281a434498d48ffa63a8cb47bfabc61",
+    "be7af9e8938844d2aede8c59e1a78239",
+    "083af9ecf8274a72bbe33cd251a14562",
+    "dd20130c87064611884b922d2b229ad8",
+    "adb51190f0e94cc98eecd57e3aa54a9d",
+    "c7a3e2d60c49401d8a2c6bded1958719",
+    "cc3dd04356de4f5eb36231a5518807ea",
+    "eb9ec97b8ccf4b049f99da1c58b2bb98",
+    "27213b3220f042c384cc0a358dd28653",
+    "163c5ef149794bc29d93eb0f1d0a7b2e",
+    "fa8eee4faa5a4dee8925a52906170ee4",
+    "ddb4619fc09e4efc97d74880df457f56",
+    "2a477f6ade5643f5b3f69a9bef0959ed",
+    "f0baa048f3de4b81adfb3859e12e2c1b",
+    "a9820708ece9465888371d5dad9d260b",
+    "b55d7c76504a4e008308cb866b85ac65",
+    "41970d622b62440e899059035545c7e8",
+    "88066dba9bd04648897dfbb0db56e198",
+    "99f17309fe5f41f484536cb37448503f",
+    "c66ac74710024e50b088db9e4acd00b0",
+    "c8877b4d814d41b381a99ef8f63d349b",
+    "f3d9b8078f6549cfb7f403c050ac5d92",
+    "8d0d83eea1814de9850735a1504bb16e",
+    "7d7b086d12b448f2b9818b3550975a92",
+    "2a04ff7608a64653ac6f1abb81cab613",
+    "5c6947434fec4ed1aafc1a8b1df68361",
+    "a712c2e96b8a436e9a185fb34c14a903",
+    "4a8cedf57afb48f28f8fb348d160f9f1",
+    "fb79fe9993dd4e4a802ccde2f96f1947",
+    "bbe85918fc3b4024924dacb1c8a22395"
+  ],
+  "projects": [
+    {
+      "client": "Make A Wish",
+      "clientUrl": "https://www.makeawishfrance.org/",
+      "date": "2026-04-12",
+      "deliveredPhotos": 556,
+      "description": "",
+      "id": "1951c72835c741df9e413eec412706b6",
+      "showcase": [
+        "139519c8bb2645dab8f561bd01ce9af8",
+        "fe618bb77b514d58a7376db98b3444a5",
+        "46b34a505efc493b893cad01bcd47c76",
+        "b8efc9dae371430dad4cf2722eb3a50d",
+        "c348b68d52f34c4886508e8a8582da5b",
+        "45cb0dd89619460f8c92eacbaa8775ee",
+        "c163462cb2614f30954b75d94fe3d0de",
+        "bd745fd88ec8482dbef358b6d262670d",
+        "d6212d67600c42aa8ec2a76d1e48ff86"
+      ],
+      "skills": [
+        "LIVE PHOTOGTAPHY"
+      ],
+      "slug": "living-the-dream-2026",
+      "title": "LIVING THE DREAM 2026",
+      "url": "/photography/living-the-dream-2026"
+    },
+    {
+      "client": "EsportNews",
+      "clientUrl": "https://www.esportnews.fr/",
+      "date": "2026-05-24",
+      "deliveredPhotos": 241,
+      "description": "",
+      "id": "1279eabc229d45c39bbd24231a1c52da",
+      "showcase": [
+        "eb9ec97b8ccf4b049f99da1c58b2bb98",
+        "b55d7c76504a4e008308cb866b85ac65",
+        "2a477f6ade5643f5b3f69a9bef0959ed",
+        "163c5ef149794bc29d93eb0f1d0a7b2e",
+        "f0baa048f3de4b81adfb3859e12e2c1b",
+        "7b78b25c6153482b83416d740462e0c7",
+        "be7af9e8938844d2aede8c59e1a78239",
+        "083af9ecf8274a72bbe33cd251a14562"
+      ],
+      "skills": [
+        "LIVE PHOTOGRAPHY"
+      ],
+      "slug": "rlcs-paris-major",
+      "title": "RLCS PARIS MAJOR",
+      "url": "/photography/rlcs-paris-major"
+    },
+    {
+      "client": "ProdigyAgency",
+      "clientUrl": "https://prodigy-agency.gg/",
+      "date": "2026-08-24",
+      "deliveredPhotos": 1355,
+      "description": "",
+      "id": "5c562dc6c60840268c041bb284b7bb5e",
+      "showcase": [
+        "8d0d83eea1814de9850735a1504bb16e",
+        "7d7b086d12b448f2b9818b3550975a92",
+        "bbe85918fc3b4024924dacb1c8a22395",
+        "594fec3d33674f1aaf927fed4d05e4b0",
+        "ec8688c4460d41618984a23593df3316",
+        "29891c6562b14829836c94fa4f078eb5",
+        "6f128a4dcd264d3596d2d28f37dfe773",
+        "4e27159136b64294967df76265a06a8e",
+        "387a53ad2b544dedb46679e20906b54b",
+        "ec7079b2fb534d9596b5690c76275015",
+        "57138bab22c24e898836c7b730fc290e",
+        "9d18069c76b84916b49404a79ae5020d",
+        "04700f6b0cc940ebb6a6902f35ac4542",
+        "71f6a9710c21441991618dada6fc6cb5",
+        "bdd92fc0c5754b07a25fe2a7645618c4"
+      ],
+      "skills": [
+        "LIVE PHOTOGRAPHY"
+      ],
+      "slug": "ewc-26",
+      "title": "EWC 26",
+      "url": "/photography/ewc-26"
+    }
+  ],
+  "revision": "adb3b6eec25c09e8766db25636605511d5b64695bd7345ef679e99c6ac43f546",
+  "version": 1,
+  "videoShowcaseId": "51aa46cdadcb4b1592f060b3991fa5b0"
+}

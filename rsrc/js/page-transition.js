@@ -7,7 +7,9 @@
   const easing = "cubic-bezier(0.76, 0, 0.24, 1)";
   const siteRoot = new URL("../../", document.currentScript.src);
   const landingUrl = new URL(siteRoot.protocol === "file:" ? "index.html" : "./", siteRoot);
-  const landingReturnKey = "landing-return-navigation";
+  const landingReturnKey = "page-transition-navigation";
+  const coverDuration = 950 * 0.7;
+  const fadeDuration = 550;
   const lockedElements = new Map();
   let phase = "covered";
   let navigating = false;
@@ -15,24 +17,7 @@
   let animations = [];
   let revealTimer = 0;
   let currentMove = Promise.resolve(true);
-
-  const syncTransitionViewport = () => {
-    const scrollbarWidth = Math.max(
-      window.innerWidth - document.documentElement.clientWidth,
-      0
-    );
-    document.documentElement.style.setProperty(
-      "--page-transition-scrollbar-width",
-      `${scrollbarWidth}px`
-    );
-  };
-
-  syncTransitionViewport();
-  window.addEventListener("resize", syncTransitionViewport);
-
-  const isLandingUrl = (url) => url.origin === siteRoot.origin && (
-    url.pathname === siteRoot.pathname || url.pathname === `${siteRoot.pathname}index.html`
-  );
+  let readyDeadline = 0;
 
   const consumeCategoryReturn = () => {
     let pendingReturn = null;
@@ -49,9 +34,9 @@
     if (!document.referrer) return false;
     const referrer = new URL(document.referrer);
     if (referrer.origin !== siteRoot.origin) return false;
-    return ["motion-design.html", "video-editing.html", "photography.html"].some(
+    return ["video", "photography"].some(
       (page) => referrer.pathname === `${siteRoot.pathname}${page}`
-    ) || referrer.pathname.startsWith(`${siteRoot.pathname}photography/`);
+    ) || referrer.pathname.startsWith(`${siteRoot.pathname}photography/`) || referrer.pathname.startsWith(`${siteRoot.pathname}video/`);
   };
 
   const lock = () => {
@@ -80,6 +65,7 @@
   };
 
   const position = (offset) => {
+    curtain.style.opacity = "1";
     curtain.style.transform = `translate3d(0, ${offset}%, 0)`;
     surface.style.transform = `translate3d(0, ${-offset}%, 0)`;
   };
@@ -89,7 +75,7 @@
     window.clearTimeout(revealTimer);
     animations.forEach((animation) => animation.cancel());
     animations = [];
-    curtain.classList.remove("is-moving");
+    curtain.classList.remove("is-moving", "is-fading");
   };
 
   const move = async (from, to, duration, onReveal) => {
@@ -154,7 +140,7 @@
       currentMove = Promise.resolve(true);
     } else if (phase === "open") {
       phase = "covering";
-      currentMove = move(100, 0, 700).then((completed) => {
+      currentMove = move(100, 0, coverDuration).then((completed) => {
         if (completed) phase = "covered";
         return completed;
       });
@@ -162,10 +148,36 @@
     return currentMove;
   };
 
-  const reveal = ({ onReveal } = {}) => {
+  const fade = async (onReveal) => {
+    cancelMove();
+    const moveGeneration = generation;
+    position(0);
+    curtain.classList.remove("is-open");
+    document.getElementById("page-transition-critical")?.remove();
+    onReveal?.();
+    if (!motionPreference.matches) {
+      curtain.classList.add("is-fading");
+      const animation = curtain.animate({ opacity: [1, 0] }, {
+        duration: fadeDuration,
+        easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+        fill: "forwards",
+      });
+      animations = [animation];
+      await animation.finished.catch(() => {});
+    }
+    if (moveGeneration !== generation) return false;
+    curtain.style.opacity = "0";
+    animations.forEach((animation) => animation.cancel());
+    animations = [];
+    curtain.classList.remove("is-fading");
+    return true;
+  };
+
+  const reveal = ({ onReveal, style = "fade" } = {}) => {
     if (phase === "revealing" || phase === "open") return currentMove;
+    window.clearTimeout(readyDeadline);
     phase = "revealing";
-    currentMove = move(0, -100, 950, onReveal).then((completed) => {
+    currentMove = (style === "wipe" ? move(0, -100, 950, onReveal) : fade(onReveal)).then((completed) => {
       if (completed) {
         phase = "open";
         curtain.classList.add("is-open");
@@ -187,9 +199,8 @@
     if (loader) loader.hidden = true;
     if (await cover()) {
       const destination = new URL(href, window.location.href);
-      const isCategoryPage = document.body.matches(".video-page, .photography-page");
-      if (isCategoryPage && isLandingUrl(destination)) {
-        // A one-use marker also identifies Menu returns when file URLs omit the referrer.
+      if (destination.origin === window.location.origin) {
+        // A one-use marker distinguishes internal navigation from a fresh visit.
         try {
           sessionStorage.setItem(landingReturnKey, JSON.stringify({
             href: destination.href,
@@ -214,6 +225,31 @@
     if (motionPreference.matches) animations.forEach((animation) => animation.finish());
   });
 
+  document.addEventListener("click", (event) => {
+    const link = event.target.closest("a[href]");
+    if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey ||
+        event.shiftKey || event.altKey || link.hasAttribute("download") ||
+        (link.target && link.target !== "_self")) return;
+    const destination = new URL(link.href);
+    if (!["http:", "https:", "file:"].includes(destination.protocol) ||
+        destination.origin !== location.origin ||
+        (destination.pathname === location.pathname && destination.search === location.search)) return;
+    event.preventDefault();
+    void navigate(destination.href);
+  });
+
+  // Keep the existing scrollbar and layout width while preventing scroll input.
+  const preventScroll = (event) => {
+    if (phase !== "open" && !event.ctrlKey && !event.metaKey) event.preventDefault();
+  };
+  window.addEventListener("wheel", preventScroll, { passive: false });
+  window.addEventListener("touchmove", preventScroll, { passive: false });
+  document.addEventListener("keydown", (event) => {
+    if (phase !== "open" && [" ", "ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End"].includes(event.key)) {
+      event.preventDefault();
+    }
+  });
+
   window.addEventListener("pagehide", () => {
     const loader = curtain.querySelector(".landing-loader");
     if (loader) loader.hidden = true;
@@ -225,7 +261,12 @@
     if (!event.persisted) return;
     navigating = false;
     void cover({ immediate: true });
+    if (document.body.hasAttribute("data-page-transition")) void reveal();
   });
 
   lock();
+  if (document.body.hasAttribute("data-page-transition")) {
+    // Reveal the page's loading/error UI if its data or module fails to finish.
+    readyDeadline = window.setTimeout(() => { void reveal(); }, 12000);
+  }
 })();

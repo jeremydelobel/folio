@@ -31,7 +31,7 @@ body {
 
 .landing-v2 {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: calc(50% + var(--landing-v2-split-offset, 0px)) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
   width: 100%;
   height: 100vh;
@@ -95,11 +95,9 @@ body {
 
 .landing-v2-media {
   position: absolute;
-  inset: 0 -56px;
+  inset: 0;
   z-index: 0;
   display: block;
-  transform: translate3d(var(--landing-v2-magnet-x, 0px), 0, 0);
-  will-change: transform;
 }
 
 .landing-v2-media-visual {
@@ -117,13 +115,6 @@ body {
   will-change: transform;
 }
 
-.landing-v2-panel--video .landing-v2-media-visual {
-  background-image: url("../landing/video-editing-poster.jpg");
-}
-
-.landing-v2-panel--motion .landing-v2-media-visual {
-  background-image: url("../landing/motion-design-poster.jpg");
-}
 
 .landing-v2-video,
 .landing-v2-photo {
@@ -235,9 +226,12 @@ body {
   display: block;
   margin: 0;
   color: #ffffff;
-  font-family: "zuume", Arial, sans-serif;
+  font-family: "Special Gothic", sans-serif;
+  font-optical-sizing: auto;
   font-size: 34.5px;
-  font-weight: 700;
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
   line-height: 34.5px;
   letter-spacing: 0.04em;
   text-align: center;
@@ -272,7 +266,7 @@ body {
 @media (max-aspect-ratio: 1 / 1) {
   .landing-v2 {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
   }
 
   .landing-v2-title {
@@ -288,11 +282,6 @@ body {
   .landing-v2-media-visual,
   .landing-v2-photo {
     transition: none;
-  }
-
-  .landing-v2-media,
-  .landing-v2-panel:hover .landing-v2-media {
-    transform: translate3d(0, 0, 0);
   }
 
   .landing-v2-panel:hover .landing-v2-media-visual,

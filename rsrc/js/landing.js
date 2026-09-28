@@ -1,40 +1,13 @@
 "use strict";
 
-const photographySources = Object.freeze([
-  "./rsrc/photos-fullres/esports-world-cup-2026/@jeremy.delobel_09072026_165849.jpg",
-  "./rsrc/photos-fullres/esports-world-cup-2026/@jeremy.delobel_09072026_173349.jpg",
-  "./rsrc/photos-fullres/esports-world-cup-2026/@jeremy.delobel_09072026_200824.jpg",
-  "./rsrc/photos-fullres/esports-world-cup-2026/@jeremy.delobel_09072026_211521.jpg",
-  "./rsrc/photos-fullres/esports-world-cup-2026/@jeremy.delobel_09072026_211848-2.jpg",
-  "./rsrc/photos-fullres/esports-world-cup-2026/@jeremy.delobel_09072026_211942.jpg",
-  "./rsrc/photos-fullres/esports-world-cup-2026/@jeremy.delobel_09072026_212053.jpg",
-  "./rsrc/photos-fullres/esports-world-cup-2026/@jeremy.delobel_09072026_212124.jpg",
-  "./rsrc/photos-fullres/esports-world-cup-2026/@jeremy.delobel_12072026_193500.jpg",
-  "./rsrc/photos-fullres/esports-world-cup-2026/@jeremy.delobel_12072026_193753.jpg",
-  "./rsrc/photos-fullres/esports-world-cup-2026/@jeremy.delobel_12072026_193932.jpg",
-  "./rsrc/photos-fullres/esports-world-cup-2026/@jeremy.delobel_12072026_195114.jpg",
-  "./rsrc/photos-fullres/rlcs-paris-major-2026/@jeremy.delobel_24052026_175741.jpg",
-  "./rsrc/photos-fullres/rlcs-paris-major-2026/@jeremy.delobel_24052026_181701.jpg",
-  "./rsrc/photos-fullres/rlcs-paris-major-2026/@jeremy.delobel_24052026_211504.jpg",
-  "./rsrc/photos-fullres/rlcs-paris-major-2026/@jeremy.delobel_24052026_211618.jpg",
-  "./rsrc/photos-fullres/rlcs-paris-major-2026/@jeremy.delobel_24052026_212602.jpg",
-  "./rsrc/photos-fullres/rlcs-paris-major-2026/@jeremy.delobel_24052026_212643.jpg",
-  "./rsrc/photos-fullres/rlcs-paris-major-2026/@jeremy.delobel_24052026_212927.jpg",
-  "./rsrc/photos-fullres/editing-con-paris-2026/@jeremy.delobel_15022026_133629.jpg",
-  "./rsrc/photos-fullres/editing-con-paris-2026/@jeremy.delobel_15022026_160914.jpg",
-  "./rsrc/photos-fullres/editing-con-paris-2026/@jeremy.delobel_15022026_171313.jpg",
-  "./rsrc/photos-fullres/editing-con-paris-2026/@jeremy.delobel_15022026_185303.jpg",
-  "./rsrc/photos-fullres/paris-games-week-2025/A7404435_JérémyDelobel_2025.jpg",
-  "./rsrc/photos-fullres/paris-games-week-2025/A7404644_JérémyDelobel_2025.jpg",
-  "./rsrc/photos-fullres/paris-games-week-2025/A7404964_JérémyDelobel_2025.jpg",
-  "./rsrc/photos-fullres/paris-games-week-2025/A7404967_JérémyDelobel_2025.jpg",
-  "./rsrc/photos-fullres/paris-games-week-2025/A7405910_JérémyDelobel_2025.jpg",
-  "./rsrc/photos-fullres/paris-games-week-2025/A7406101_JérémyDelobel_2025.jpg",
-  "./rsrc/photos-fullres/paris-games-week-2025/A7407151_JérémyDelobel_2025.jpg",
-]);
+import { beginMediaLoad } from "./media-loading.js";
+import { loadContent } from "./cms.js";
+
+let photographySources = [];
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const pointerCanHover = window.matchMedia("(hover: hover) and (pointer: fine)");
+const stackedLayout = window.matchMedia("(max-aspect-ratio: 1 / 1)");
 const landing = document.querySelector(".landing-v2");
 const panels = Array.from(document.querySelectorAll(".landing-v2-panel"));
 const videos = Array.from(document.querySelectorAll(".landing-v2-video"));
@@ -43,7 +16,20 @@ const slideshowImages = slideshow
   ? Array.from(slideshow.querySelectorAll(".landing-v2-photo"))
   : [];
 
+const videoLoading = new Map();
+let photoLoading;
+
 const initialPhotoStorageKey = "landing-photography-initial-source";
+
+const getCmsPhotographySources = (manifest, media) => {
+  let selectedIds = manifest.home;
+  if (!selectedIds.length) {
+    const photosByImportOrder = manifest.photos.slice().reverse();
+    selectedIds = manifest.projects.flatMap(project => photosByImportOrder
+      .filter(id => media.get(id)?.projectId === project.id).slice(0, 3));
+  }
+  return [...new Set(selectedIds)].map(id => media.get(id)?.variants.large?.url).filter(Boolean);
+};
 
 const chooseInitialPhotographySource = () => {
   const fallbackSource = photographySources[0] || "";
@@ -72,20 +58,22 @@ const chooseInitialPhotographySource = () => {
   return source;
 };
 
-const slideshowInitialSource = chooseInitialPhotographySource();
-
-if (slideshowImages[0] && slideshowInitialSource) {
-  slideshowImages[0].src = slideshowInitialSource;
-}
+let slideshowInitialSource = "";
 
 let slideshowQueue = [];
 let slideshowActiveIndex = 0;
-let slideshowCurrentSource = slideshowInitialSource;
+let slideshowInitialIndex = 0;
+let slideshowInitialIsReady = false;
+let slideshowCurrentSource =
+  slideshowImages[0]?.getAttribute("src") || "";
 let slideshowTimer = 0;
 let slideshowIsChanging = false;
 let slideshowPreloadedSource = "";
 let slideshowPreloader = null;
-let magneticAnimationFrame = 0;
+let splitAnimationFrame = 0;
+let splitPreviousTime = 0;
+let splitCurrentOffset = 0;
+let splitTargetOffset = 0;
 let landingIsReady = false;
 let landingEntryController = null;
 let activeLoader = null;
@@ -255,8 +243,11 @@ const waitForAsset = (promise, signal, timeout = 15000) => new Promise((resolve,
   if (signal.aborted) abort();
 });
 
-const useVideoPoster = (video) => {
+const useVideoFallback = (video) => {
   video.pause();
+  // Keep an available frame on autoplay rejection or a later buffering failure.
+  if (video.readyState >= 2) { videoLoading.get(video)?.ready(); return; }
+  videoLoading.get(video)?.fail();
   video.classList.add("is-media-fallback");
 };
 
@@ -266,8 +257,53 @@ const prepareLandingImage = async (image, signal) => {
     image.classList.remove("is-media-fallback");
   } catch (error) {
     if (signal.aborted) throw error;
-    image.classList.add("is-media-fallback");
+    image.classList.toggle(
+      "is-media-fallback",
+      !image.complete || image.naturalWidth === 0
+    );
   }
+};
+
+const prepareInitialSlideshowImage = async (signal) => {
+  const fallbackImage = slideshowImages[0];
+
+  if (!fallbackImage) return;
+
+  if (slideshowInitialIsReady) {
+    await prepareLandingImage(slideshowImages[slideshowActiveIndex], signal);
+    return;
+  }
+
+  await prepareLandingImage(fallbackImage, signal);
+
+  if (
+    !slideshowInitialSource ||
+    slideshowInitialSource === fallbackImage.getAttribute("src") ||
+    slideshowImages.length < 2
+  ) {
+    slideshowInitialIsReady = true;
+    slideshowCurrentSource = fallbackImage.getAttribute("src") || "";
+    return;
+  }
+
+  const initialImage = slideshowImages[1];
+  initialImage.classList.remove("is-active", "is-media-fallback");
+  initialImage.src = slideshowInitialSource;
+  await prepareLandingImage(initialImage, signal);
+
+  if (!initialImage.complete || initialImage.naturalWidth === 0) {
+    initialImage.removeAttribute("src");
+    slideshowInitialIsReady = true;
+    slideshowCurrentSource = fallbackImage.getAttribute("src") || "";
+    return;
+  }
+
+  initialImage.classList.add("is-active");
+  fallbackImage.classList.remove("is-active");
+  slideshowActiveIndex = 1;
+  slideshowInitialIndex = 1;
+  slideshowCurrentSource = slideshowInitialSource;
+  slideshowInitialIsReady = true;
 };
 
 const prepareVideoBuffer = (video, report, signal) => new Promise((resolve, reject) => {
@@ -278,13 +314,16 @@ const prepareVideoBuffer = (video, report, signal) => new Promise((resolve, reje
   const cleanup = () => {
     window.clearInterval(timer);
     video.removeEventListener("error", fail, true);
+    video.removeEventListener("loadeddata", firstFrame);
     signal.removeEventListener("abort", abort);
   };
+  const firstFrame = () => { if (video.readyState >= 2) videoLoading.get(video)?.ready(); };
+  video.addEventListener("loadeddata", firstFrame);
   const finish = (fallback = false) => {
     if (finished) return;
     finished = true;
     cleanup();
-    if (fallback) useVideoPoster(video);
+    if (fallback) useVideoFallback(video);
     report(1);
     resolve();
   };
@@ -295,11 +334,14 @@ const prepareVideoBuffer = (video, report, signal) => new Promise((resolve, reje
     reject(signal.reason);
   };
   const inspect = () => {
-    if (reducedMotion.matches || video.classList.contains("is-media-fallback")) {
+    firstFrame();
+    if ((reducedMotion.matches && video.readyState >= 2) || video.classList.contains("is-media-fallback")) {
       finish();
       return;
     }
-    if (video.error || video.networkState === video.NETWORK_NO_SOURCE) {
+    // A dynamically assigned source briefly reports NETWORK_NO_SOURCE while
+    // load() queues resource selection. Only an actual media error is a failure.
+    if (video.error) {
       fail();
       return;
     }
@@ -370,7 +412,7 @@ const startPreparedVideo = async (video, signal) => {
     await waitForAsset(Promise.all([firstFrame, video.play()]), signal);
   } catch (error) {
     if (signal.aborted) throw error;
-    useVideoPoster(video);
+    useVideoFallback(video);
   } finally {
     video.cancelVideoFrameCallback(frameCallback);
     reducedMotion.removeEventListener("change", motionChanged);
@@ -394,28 +436,40 @@ const openLanding = async ({ restored = false } = {}) => {
   };
   activeLoader = loader;
   void window.PageTransition.cover({ immediate: true });
-  const stages = [0, 0, 0, 0];
+  const videoStageCount = videos.length;
+  const photoStageIndex = videoStageCount;
+  const assetsStageIndex = videoStageCount + 1;
+  const stages = Array(videoStageCount + 2).fill(0);
   const report = (index, value) => {
     if (signal.aborted) return;
     stages[index] = Math.max(stages[index], value);
-    loader.progress((stages[0] * 0.4 + stages[1] * 0.4 + stages[2] * 0.1 + stages[3] * 0.1) * 0.96);
+    const videoProgress = videoStageCount
+      ? stages.slice(0, videoStageCount).reduce((sum, stage) => sum + stage, 0) /
+        videoStageCount
+      : 1;
+    loader.progress(
+      (videoProgress * 0.8 +
+        stages[photoStageIndex] * 0.1 +
+        stages[assetsStageIndex] * 0.1) *
+        0.96
+    );
   };
 
   try {
-    const posters = videos.map((video) => {
-      const poster = new Image();
-      poster.src = video.poster;
-      return prepareLandingImage(poster, signal);
-    });
     const fonts = waitForAsset(Promise.all([
       document.fonts.load('400 12px "JetBrains Mono"'),
-      document.fonts.load('700 34.5px "zuume"'),
+      document.fonts.load('500 34.5px "Special Gothic"'),
     ]), signal).catch((error) => { if (signal.aborted) throw error; });
 
     await Promise.all([
       ...videos.map((video, index) => prepareVideoBuffer(video, (value) => report(index, value), signal)),
-      prepareLandingImage(slideshowImages[slideshowActiveIndex], signal).then(() => report(2, 1)),
-      Promise.all([...posters, fonts]).then(() => report(3, 1)),
+      prepareInitialSlideshowImage(signal).then(() => {
+        const visiblePhoto = slideshowImages.some(image =>
+          image.classList.contains("is-active") && image.complete && image.naturalWidth);
+        visiblePhoto ? photoLoading?.ready() : photoLoading?.fail();
+        report(photoStageIndex, 1);
+      }),
+      fonts.then(() => report(assetsStageIndex, 1)),
     ]);
     await waitForVisibleLanding(signal);
     await Promise.all(videos.map((video) => startPreparedVideo(video, signal)));
@@ -423,19 +477,20 @@ const openLanding = async ({ restored = false } = {}) => {
     await waitForMinimumLoading();
     await loader.finish();
     if (signal.aborted) return;
-    await window.PageTransition.reveal();
+    await window.PageTransition.reveal({ style: showLoader ? "wipe" : "fade" });
     if (signal.aborted) return;
     landingIsReady = true;
     loader.dispose();
     syncMotionPreference();
   } catch (error) {
     if (signal.aborted) return;
+    photoLoading?.fail();
     console.error("Unable to prepare landing media:", error);
-    videos.forEach(useVideoPoster);
+    videos.forEach(useVideoFallback);
     await waitForMinimumLoading().catch(() => {});
     loader.dispose();
     if (signal.aborted) return;
-    await window.PageTransition.reveal();
+    await window.PageTransition.reveal({ style: showLoader ? "wipe" : "fade" });
     if (!signal.aborted) {
       landingIsReady = true;
       syncMotionPreference();
@@ -443,133 +498,72 @@ const openLanding = async ({ restored = false } = {}) => {
   }
 };
 
-const magneticPanels = panels.map((panel) => ({
-  element: panel,
-  currentX: 0,
-  targetX: 0,
-  currentInfluence: 0,
-  targetInfluence: 0,
-}));
-
 const clamp = (value, minimum, maximum) =>
   Math.min(Math.max(value, minimum), maximum);
 
-const animateMagneticPanels = () => {
-  let shouldContinue = false;
+const animateSplit = (time) => {
+  const elapsed = splitPreviousTime ? Math.min(time - splitPreviousTime, 64) : 16;
+  splitPreviousTime = time;
+  splitCurrentOffset +=
+    (splitTargetOffset - splitCurrentOffset) * (1 - Math.exp(-elapsed / 140));
 
-  magneticPanels.forEach((panel) => {
-    panel.currentInfluence +=
-      (panel.targetInfluence - panel.currentInfluence) * 0.055;
+  if (Math.abs(splitTargetOffset - splitCurrentOffset) <= 0.05) {
+    splitCurrentOffset = splitTargetOffset;
+  }
 
-    if (
-      Math.abs(panel.targetInfluence - panel.currentInfluence) <= 0.001
-    ) {
-      panel.currentInfluence = panel.targetInfluence;
-    }
-
-    const softenedTargetX = panel.targetX * panel.currentInfluence;
-    panel.currentX += (softenedTargetX - panel.currentX) * 0.065;
-
-    if (Math.abs(softenedTargetX - panel.currentX) <= 0.02) {
-      panel.currentX = softenedTargetX;
-    }
-
-    if (
-      Math.abs(panel.targetInfluence - panel.currentInfluence) > 0.001 ||
-      Math.abs(softenedTargetX - panel.currentX) > 0.02
-    ) {
-      shouldContinue = true;
-    }
-
-    panel.element.style.setProperty(
-      "--landing-v2-magnet-x",
-      `${panel.currentX.toFixed(2)}px`
-    );
-  });
-
-  magneticAnimationFrame = shouldContinue
-    ? window.requestAnimationFrame(animateMagneticPanels)
+  landing.style.setProperty(
+    "--landing-v2-split-offset",
+    `${splitCurrentOffset.toFixed(2)}px`
+  );
+  splitAnimationFrame = splitCurrentOffset !== splitTargetOffset
+    ? window.requestAnimationFrame(animateSplit)
     : 0;
 };
 
-const requestMagneticAnimation = () => {
-  if (!magneticAnimationFrame) {
-    magneticAnimationFrame = window.requestAnimationFrame(
-      animateMagneticPanels
-    );
+const requestSplitAnimation = () => {
+  if (!splitAnimationFrame && splitCurrentOffset !== splitTargetOffset) {
+    splitPreviousTime = 0;
+    splitAnimationFrame = window.requestAnimationFrame(animateSplit);
   }
 };
 
-const resetMagneticPanel = (panel, immediate = false) => {
-  panel.targetInfluence = 0;
+const resetSplit = (immediate = false) => {
+  splitTargetOffset = 0;
 
   if (immediate) {
-    panel.targetX = 0;
-    panel.currentX = 0;
-    panel.currentInfluence = 0;
-    panel.element.style.setProperty("--landing-v2-magnet-x", "0px");
+    window.cancelAnimationFrame(splitAnimationFrame);
+    splitAnimationFrame = 0;
+    splitCurrentOffset = 0;
+    splitPreviousTime = 0;
+    landing.style.removeProperty("--landing-v2-split-offset");
     return;
   }
 
-  requestMagneticAnimation();
+  requestSplitAnimation();
 };
 
-const resetMagneticOffsets = (immediate = false) => {
-  if (immediate && magneticAnimationFrame) {
-    window.cancelAnimationFrame(magneticAnimationFrame);
-    magneticAnimationFrame = 0;
-  }
-
-  magneticPanels.forEach((panel) => resetMagneticPanel(panel, immediate));
-};
-
-const updateMagneticTarget = (panel, clientX) => {
-  const rect = panel.element.getBoundingClientRect();
-
-  if (rect.width <= 0) {
+const updateSplitTarget = (clientX) => {
+  if (!landingIsReady || !pointerCanHover.matches || reducedMotion.matches || stackedLayout.matches) {
+    resetSplit(true);
     return;
   }
 
+  if (landing.querySelector(".landing-v2-panel:focus-visible")) {
+    resetSplit();
+    return;
+  }
+
+  const rect = landing.getBoundingClientRect();
+  if (rect.width <= 0) return;
+
+  // Measure against the whole landing so the moving divider cannot shift the target.
   const normalizedX = clamp(
     (clientX - (rect.left + rect.width / 2)) / (rect.width / 2),
     -1,
     1
   );
-
-  panel.targetX = normalizedX * Math.min(36, rect.width * 0.1);
-};
-
-const updateMagneticTargetsFromMouse = (clientX, clientY) => {
-  if (!landingIsReady || !pointerCanHover.matches || reducedMotion.matches) {
-    resetMagneticOffsets(true);
-    return;
-  }
-
-  let hoveredPanel = null;
-
-  magneticPanels.forEach((panel) => {
-    const rect = panel.element.getBoundingClientRect();
-    const containsPointer =
-      clientX >= rect.left &&
-      clientX <= rect.right &&
-      clientY >= rect.top &&
-      clientY <= rect.bottom;
-
-    if (containsPointer) {
-      hoveredPanel = panel;
-    }
-  });
-
-  magneticPanels.forEach((panel) => {
-    if (panel === hoveredPanel) {
-      panel.targetInfluence = 1;
-      updateMagneticTarget(panel, clientX);
-    } else {
-      panel.targetInfluence = 0;
-    }
-  });
-
-  requestMagneticAnimation();
+  splitTargetOffset = -normalizedX * Math.min(96, rect.width * 0.06);
+  requestSplitAnimation();
 };
 
 const shuffle = (items) => {
@@ -704,7 +698,7 @@ const playVideos = () => {
     const playPromise = video.play();
 
     if (playPromise && typeof playPromise.catch === "function") {
-      playPromise.catch(() => useVideoPoster(video));
+      playPromise.catch(() => useVideoFallback(video));
     }
   });
 };
@@ -720,12 +714,12 @@ const resetSlideshowToFirstImage = () => {
     return;
   }
 
-  slideshowImages[0].src = slideshowInitialSource;
   slideshowImages.forEach((image, index) => {
-    image.classList.toggle("is-active", index === 0);
+    image.classList.toggle("is-active", index === slideshowInitialIndex);
   });
-  slideshowActiveIndex = 0;
-  slideshowCurrentSource = slideshowInitialSource;
+  slideshowActiveIndex = slideshowInitialIndex;
+  slideshowCurrentSource =
+    slideshowImages[slideshowInitialIndex]?.getAttribute("src") || "";
   slideshowIsChanging = false;
   slideshowQueue = [];
   slideshowPreloadedSource = "";
@@ -744,7 +738,7 @@ const syncMotionPreference = () => {
     clearSlideshowTimer();
     pauseVideos();
     resetSlideshowToFirstImage();
-    resetMagneticOffsets(true);
+    resetSplit(true);
     return;
   }
 
@@ -753,34 +747,28 @@ const syncMotionPreference = () => {
   playVideos();
 };
 
-magneticPanels.forEach((panel) => {
-  panel.element.addEventListener("focus", () => {
-    resetMagneticPanel(panel);
-  });
-});
+landing.addEventListener("focusin", () => resetSplit());
 
-window.addEventListener(
-  "mousemove",
+landing.addEventListener(
+  "pointermove",
   (event) => {
-    updateMagneticTargetsFromMouse(event.clientX, event.clientY);
+    if (event.pointerType !== "touch") updateSplitTarget(event.clientX);
   },
   { passive: true }
 );
 
-window.addEventListener("mouseout", (event) => {
-  if (!event.relatedTarget) {
-    resetMagneticOffsets();
-  }
-});
-
-window.addEventListener("pointercancel", () => resetMagneticOffsets());
-window.addEventListener("blur", () => resetMagneticOffsets());
-pointerCanHover.addEventListener("change", () => resetMagneticOffsets(true));
+landing.addEventListener("pointerleave", () => resetSplit());
+window.addEventListener("pointercancel", () => resetSplit());
+window.addEventListener("blur", () => resetSplit());
+window.addEventListener("resize", () => resetSplit(true), { passive: true });
+pointerCanHover.addEventListener("change", () => resetSplit(true));
+stackedLayout.addEventListener("change", () => resetSplit(true));
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     clearSlideshowTimer();
     pauseVideos();
+    resetSplit(true);
     return;
   }
 
@@ -810,11 +798,33 @@ window.addEventListener("pagehide", () => {
   landingIsReady = false;
   clearSlideshowTimer();
   pauseVideos();
-  resetMagneticOffsets(true);
+  resetSplit(true);
 });
 
 window.addEventListener("pageshow", (event) => {
   if (event.persisted) void openLanding({ restored: true });
 });
 
-void openLanding();
+const initializeLanding = async () => {
+  for (const video of videos) videoLoading.set(video, beginMediaLoad(video.parentElement));
+  if (slideshow) photoLoading = beginMediaLoad(slideshow);
+  try {
+    const { manifest, media } = await loadContent(AbortSignal.timeout(8000));
+    photographySources = getCmsPhotographySources(manifest, media);
+    const showcase = media.get(manifest.videoShowcaseId)?.variants.video;
+    for (const video of videos) {
+      if (showcase) {
+        video.src = showcase.url;
+        video.load();
+      } else useVideoFallback(video);
+    }
+  } catch {
+    videos.forEach(useVideoFallback);
+    photoLoading?.fail();
+  }
+
+  slideshowInitialSource = chooseInitialPhotographySource();
+  await openLanding();
+};
+
+void initializeLanding();

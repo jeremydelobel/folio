@@ -8,11 +8,11 @@
       "endDate": "",
       "id": "a8ad91c750724b23898f88857b499f1a",
       "images": [
+        "6e42272b499747ba965da6b85461103d",
         "bd971ae017e54767bbe9bac04558bbc2",
-        "bfdb5033d8ce4bc29057905ba292b128",
         "0db5afe6153e453daae9a9abb0a1773c",
+        "bfdb5033d8ce4bc29057905ba292b128",
         "21326e9b05eb4a5db380321812882c0f",
-        "81e1850ac201410ba113db874ef693ab",
         "985348b143ea4feeb879dac2e99d1e34"
       ],
       "skills": [
@@ -1137,6 +1137,27 @@
       }
     },
     {
+      "id": "6e42272b499747ba965da6b85461103d",
+      "kind": "image",
+      "projectId": null,
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 102340,
+          "url": "/content/cms/media/video/concept-projects/6e42272b499747ba965da6b85461103d/f3fc47766fc072e86440200a7128d003e7a0698d08c107769735367a56ba6887/large.webp",
+          "width": 1920
+        },
+        "small": {
+          "height": 450,
+          "mimeType": "image/webp",
+          "size": 14586,
+          "url": "/content/cms/media/video/concept-projects/6e42272b499747ba965da6b85461103d/3a2b85331b6849a7174d75ad9392bf148fc78a60ef47f857018011facf575bf8/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
       "id": "6f128a4dcd264d3596d2d28f37dfe773",
       "kind": "photo",
       "projectId": "5c562dc6c60840268c041bb284b7bb5e",
@@ -1300,27 +1321,6 @@
           "mimeType": "image/webp",
           "size": 41946,
           "url": "/content/cms/media/photo/ewc-26/7d7b086d12b448f2b9818b3550975a92/415767043a556cb73c34ded15c3ae679e2a5d590b24a002a535e864d4cd9ca3c/small.webp",
-          "width": 800
-        }
-      }
-    },
-    {
-      "id": "81e1850ac201410ba113db874ef693ab",
-      "kind": "image",
-      "projectId": null,
-      "variants": {
-        "large": {
-          "height": 900,
-          "mimeType": "image/webp",
-          "size": 7846,
-          "url": "/content/cms/media/video/concept-projects/81e1850ac201410ba113db874ef693ab/abc5fa3a53ccaa2b4137a14183fb35052a4af4e211629379ee0f41092ae6c666/large.webp",
-          "width": 1600
-        },
-        "small": {
-          "height": 450,
-          "mimeType": "image/webp",
-          "size": 2966,
-          "url": "/content/cms/media/video/concept-projects/81e1850ac201410ba113db874ef693ab/e19c0ab7af70be1e903c9648098a47711aa56ba2417ac7fe017a3325d7f2d014/small.webp",
           "width": 800
         }
       }
@@ -2817,7 +2817,7 @@
       "url": "/photography/ewc-26"
     }
   ],
-  "revision": "0701e08591ec612bddc9a2eb5fcaf0613550e307a1a9a7751a0d92db75ec4fd3",
+  "revision": "1ae314c340700b2526ffeaef129e257b8bee0d7bfb9cadd3115d4e631a6ce534",
   "version": 1,
   "videoShowcaseId": "f81fd93fcf7541bd9644a6e291ab60be"
 }

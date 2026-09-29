@@ -654,6 +654,22 @@
       }
     },
     {
+      "id": "3a99e22ecb5b430a93f5cdf50f1d10b1",
+      "kind": "video",
+      "projectId": null,
+      "variants": {
+        "video": {
+          "duration": 61.76,
+          "fps": 25,
+          "height": 900,
+          "mimeType": "video/mp4",
+          "size": 19731751,
+          "url": "/content/cms/media/video/vitrine/3a99e22ecb5b430a93f5cdf50f1d10b1/adbdf4f1df31f09003b73d3bdbfc7a1433e502a632f9ef16b906b75b7c4b277c/video.mp4",
+          "width": 1600
+        }
+      }
+    },
+    {
       "id": "3b7d128e035444d1898d94d8347319b5",
       "kind": "photo",
       "projectId": "1951c72835c741df9e413eec412706b6",
@@ -2518,22 +2534,6 @@
       }
     },
     {
-      "id": "f81fd93fcf7541bd9644a6e291ab60be",
-      "kind": "video",
-      "projectId": null,
-      "variants": {
-        "video": {
-          "duration": 61.76,
-          "fps": 25,
-          "height": 900,
-          "mimeType": "video/mp4",
-          "size": 19669604,
-          "url": "/content/cms/media/video/vitrine/f81fd93fcf7541bd9644a6e291ab60be/298e557d30472fb9067c4362736d2548a0f51c9c4f031f750a4c491622e30e81/video.mp4",
-          "width": 1600
-        }
-      }
-    },
-    {
       "id": "f98b49979ad94f67b6d6bbffd033ccf9",
       "kind": "photo",
       "projectId": "5c562dc6c60840268c041bb284b7bb5e",
@@ -2817,7 +2817,7 @@
       "url": "/photography/ewc-26"
     }
   ],
-  "revision": "1ae314c340700b2526ffeaef129e257b8bee0d7bfb9cadd3115d4e631a6ce534",
+  "revision": "dee99559cbe96bf6c22cdf76002858f64a3dcfc7d04e1c777de74fc96fd1a747",
   "version": 1,
-  "videoShowcaseId": "f81fd93fcf7541bd9644a6e291ab60be"
+  "videoShowcaseId": "3a99e22ecb5b430a93f5cdf50f1d10b1"
 }

@@ -23,7 +23,7 @@
       "title": "Concept Projects",
       "totalViews": null,
       "url": "/video/concept-projects",
-      "videoId": "3628ce942d1444e9ac52a31e8a06beec"
+      "videoId": "913dca647b364b71a946fa652f7df512"
     },
     {
       "category": "video",
@@ -612,22 +612,6 @@
       }
     },
     {
-      "id": "3628ce942d1444e9ac52a31e8a06beec",
-      "kind": "video",
-      "projectId": null,
-      "variants": {
-        "video": {
-          "duration": 45.6,
-          "fps": 25,
-          "height": 900,
-          "mimeType": "video/mp4",
-          "size": 3780815,
-          "url": "/content/cms/media/video/concept-projects/3628ce942d1444e9ac52a31e8a06beec/5cdbe78eee73ba51d560df948209f3ece603413827b572c05d0a66ef51eaf1d2/video.mp4",
-          "width": 1600
-        }
-      }
-    },
-    {
       "id": "387a53ad2b544dedb46679e20906b54b",
       "kind": "photo",
       "projectId": "5c562dc6c60840268c041bb284b7bb5e",
@@ -897,22 +881,6 @@
           "size": 43746,
           "url": "/content/cms/media/photo/ewc-26/4e27159136b64294967df76265a06a8e/e73fe373d364863653479b12d45bbfc6f0599987c744788ff53ac893ffa4d9c2/small.webp",
           "width": 800
-        }
-      }
-    },
-    {
-      "id": "51aa46cdadcb4b1592f060b3991fa5b0",
-      "kind": "video",
-      "projectId": null,
-      "variants": {
-        "video": {
-          "duration": 56.84,
-          "fps": 25,
-          "height": 900,
-          "mimeType": "video/mp4",
-          "size": 17928195,
-          "url": "/content/cms/media/video/vitrine/51aa46cdadcb4b1592f060b3991fa5b0/1786decd60772911caa9060f6bb441abddb6e908f269334f3a564b24cc878834/video.mp4",
-          "width": 1600
         }
       }
     },
@@ -1459,6 +1427,22 @@
           "size": 42584,
           "url": "/content/cms/media/photo/ewc-26/9025acdd108d40ed838c2308967fa087/d50adb6a1568a7a061681b03f5e9c5da3e436374e2485ccd794b472cce69efef/small.webp",
           "width": 800
+        }
+      }
+    },
+    {
+      "id": "913dca647b364b71a946fa652f7df512",
+      "kind": "video",
+      "projectId": null,
+      "variants": {
+        "video": {
+          "duration": 50.52,
+          "fps": 25,
+          "height": 900,
+          "mimeType": "video/mp4",
+          "size": 5910398,
+          "url": "/content/cms/media/video/concept-projects/913dca647b364b71a946fa652f7df512/dd5d216084582b4999dde53657ef0042b1a6bea126771e19633ed24d7e458f06/video.mp4",
+          "width": 1600
         }
       }
     },
@@ -2534,6 +2518,22 @@
       }
     },
     {
+      "id": "f81fd93fcf7541bd9644a6e291ab60be",
+      "kind": "video",
+      "projectId": null,
+      "variants": {
+        "video": {
+          "duration": 61.76,
+          "fps": 25,
+          "height": 900,
+          "mimeType": "video/mp4",
+          "size": 19669604,
+          "url": "/content/cms/media/video/vitrine/f81fd93fcf7541bd9644a6e291ab60be/298e557d30472fb9067c4362736d2548a0f51c9c4f031f750a4c491622e30e81/video.mp4",
+          "width": 1600
+        }
+      }
+    },
+    {
       "id": "f98b49979ad94f67b6d6bbffd033ccf9",
       "kind": "photo",
       "projectId": "5c562dc6c60840268c041bb284b7bb5e",
@@ -2817,7 +2817,7 @@
       "url": "/photography/ewc-26"
     }
   ],
-  "revision": "adb3b6eec25c09e8766db25636605511d5b64695bd7345ef679e99c6ac43f546",
+  "revision": "0701e08591ec612bddc9a2eb5fcaf0613550e307a1a9a7751a0d92db75ec4fd3",
   "version": 1,
-  "videoShowcaseId": "51aa46cdadcb4b1592f060b3991fa5b0"
+  "videoShowcaseId": "f81fd93fcf7541bd9644a6e291ab60be"
 }

@@ -226,6 +226,7 @@ document.fonts.addEventListener('loadingdone', fitProjectTitles);
 
 function createProject(data) {
   const element = template.content.firstElementChild.cloneNode(true);
+  element.dataset.projectSlug = data.slug;
   const video = element.querySelector('video');
   const link = element.querySelector('.project__link');
   const item = { data, element, video, link, readyPromise: null, failed: false };

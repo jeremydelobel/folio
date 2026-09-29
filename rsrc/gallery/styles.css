@@ -245,7 +245,7 @@ body[data-category="video"] .project__meta { padding-top: 10px; }
   border: 0;
   border-radius: 0;
   background: #00000026;
-  color: var(--muted);
+  color: var(--white);
   cursor: pointer;
 }
 .project__playback:focus-visible { outline: 2px solid var(--white); outline-offset: 4px; }

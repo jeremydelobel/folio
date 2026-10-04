@@ -670,6 +670,27 @@
       }
     },
     {
+      "id": "3b30992281654cc487076c46143a3e61",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 213264,
+          "url": "/content/cms/media/photo/ewc-26/3b30992281654cc487076c46143a3e61/71df2aeecce0238f98bf93d27fd2ce645526abfb9d80e43c96b332141bf2fe13/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 58366,
+          "url": "/content/cms/media/photo/ewc-26/3b30992281654cc487076c46143a3e61/58faca6c7092acd1701f1de06b5c553780213028cbd1c663d1b309b107e4b1da/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
       "id": "3b7d128e035444d1898d94d8347319b5",
       "kind": "photo",
       "projectId": "1951c72835c741df9e413eec412706b6",
@@ -791,6 +812,27 @@
           "mimeType": "image/webp",
           "size": 18306,
           "url": "/content/cms/media/video/sameztwitch/439a1cd78b3a48598b5d45ef7c306d17/bca2c2240c19e5a43b4a9fce8656d4668146428a43ead8fdae38a9f297562385/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
+      "id": "44670328dd81440caae046fa8c497686",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 180150,
+          "url": "/content/cms/media/photo/ewc-26/44670328dd81440caae046fa8c497686/c7124f0e2d6a6b314a9d227c8b4184bdc6518556655176b8aa8c27bf9004024f/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 54384,
+          "url": "/content/cms/media/photo/ewc-26/44670328dd81440caae046fa8c497686/963c084c10d7df8d8433cae1c89d58ab9a69a6596b4ecb3b84223d0ed476235c/small.webp",
           "width": 800
         }
       }
@@ -1904,6 +1946,27 @@
       }
     },
     {
+      "id": "c0db94a064894a5d8aa4b7a4e4e5f784",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 164416,
+          "url": "/content/cms/media/photo/ewc-26/c0db94a064894a5d8aa4b7a4e4e5f784/f18594d5386ed085046a849fb93e751a16cb2c7e685c3e127f37e23c9cfe55ba/large.webp",
+          "width": 1620
+        },
+        "small": {
+          "height": 533,
+          "mimeType": "image/webp",
+          "size": 51402,
+          "url": "/content/cms/media/photo/ewc-26/c0db94a064894a5d8aa4b7a4e4e5f784/470eaa5d171e0d1caa04eeab8eafbeb9298e1199c2e5e62561eb48185c0ea1dd/small.webp",
+          "width": 800
+        }
+      }
+    },
+    {
       "id": "c163462cb2614f30954b75d94fe3d0de",
       "kind": "photo",
       "projectId": "1951c72835c741df9e413eec412706b6",
@@ -2597,6 +2660,27 @@
       }
     },
     {
+      "id": "fb6ed85559e74b0393ad3771f9589d45",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 97152,
+          "url": "/content/cms/media/photo/ewc-26/fb6ed85559e74b0393ad3771f9589d45/ffefa584bd2f30848cb872743424462bc18873cb5a2672fca964cc49e2c8603e/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 50658,
+          "url": "/content/cms/media/photo/ewc-26/fb6ed85559e74b0393ad3771f9589d45/c978fd8010d9266076cfadfcac0f5d39622281d01095ca229f5c8cb61cb032df/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
       "id": "fb79fe9993dd4e4a802ccde2f96f1947",
       "kind": "photo",
       "projectId": "5c562dc6c60840268c041bb284b7bb5e",
@@ -2640,6 +2724,10 @@
     }
   ],
   "photos": [
+    "3b30992281654cc487076c46143a3e61",
+    "c0db94a064894a5d8aa4b7a4e4e5f784",
+    "44670328dd81440caae046fa8c497686",
+    "fb6ed85559e74b0393ad3771f9589d45",
     "57138bab22c24e898836c7b730fc290e",
     "9d18069c76b84916b49404a79ae5020d",
     "04700f6b0cc940ebb6a6902f35ac4542",
@@ -2807,7 +2895,9 @@
         "9d18069c76b84916b49404a79ae5020d",
         "04700f6b0cc940ebb6a6902f35ac4542",
         "71f6a9710c21441991618dada6fc6cb5",
-        "bdd92fc0c5754b07a25fe2a7645618c4"
+        "bdd92fc0c5754b07a25fe2a7645618c4",
+        "3b30992281654cc487076c46143a3e61",
+        "44670328dd81440caae046fa8c497686"
       ],
       "skills": [
         "LIVE PHOTOGRAPHY"
@@ -2817,7 +2907,7 @@
       "url": "/photography/ewc-26"
     }
   ],
-  "revision": "dee99559cbe96bf6c22cdf76002858f64a3dcfc7d04e1c777de74fc96fd1a747",
+  "revision": "858c4aba878d0153891523de73bef4e0de5b05cf7584a6153884bd4811328ab6",
   "version": 1,
   "videoShowcaseId": "3a99e22ecb5b430a93f5cdf50f1d10b1"
 }

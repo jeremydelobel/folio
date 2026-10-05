@@ -105,7 +105,6 @@
     }
   ],
   "home": [
-    "04700f6b0cc940ebb6a6902f35ac4542",
     "139519c8bb2645dab8f561bd01ce9af8",
     "45cb0dd89619460f8c92eacbaa8775ee",
     "4e27159136b64294967df76265a06a8e",
@@ -119,7 +118,10 @@
     "bbe85918fc3b4024924dacb1c8a22395",
     "eb9ec97b8ccf4b049f99da1c58b2bb98",
     "6f128a4dcd264d3596d2d28f37dfe773",
-    "0c1ff2ac98214856965ba6c6847180d7"
+    "0c1ff2ac98214856965ba6c6847180d7",
+    "44670328dd81440caae046fa8c497686",
+    "3b30992281654cc487076c46143a3e61",
+    "71f6a9710c21441991618dada6fc6cb5"
   ],
   "media": [
     {
@@ -607,6 +609,27 @@
           "mimeType": "image/webp",
           "size": 39888,
           "url": "/content/cms/media/photo/rlcs-paris-major/3281a434498d48ffa63a8cb47bfabc61/4e268be221a2ec0f78947536b23cfdae8f439ac48ae81efe1875423b3a2eaa39/small.webp",
+          "width": 533
+        }
+      }
+    },
+    {
+      "id": "3306b4974384446dbb57b53f064ceb54",
+      "kind": "photo",
+      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
+      "variants": {
+        "large": {
+          "height": 1080,
+          "mimeType": "image/webp",
+          "size": 97412,
+          "url": "/content/cms/media/photo/ewc-26/3306b4974384446dbb57b53f064ceb54/3b2ff4851b699c3565038c0e3c6ed89d9727e19c23fb882a6b4ac43db11e57af/large.webp",
+          "width": 720
+        },
+        "small": {
+          "height": 800,
+          "mimeType": "image/webp",
+          "size": 50880,
+          "url": "/content/cms/media/photo/ewc-26/3306b4974384446dbb57b53f064ceb54/e5c71ddfb17f2037595fe5cd07198ad5a7cffcf417eeb4bf1e755a0ac6fc877a/small.webp",
           "width": 533
         }
       }
@@ -2660,27 +2683,6 @@
       }
     },
     {
-      "id": "fb6ed85559e74b0393ad3771f9589d45",
-      "kind": "photo",
-      "projectId": "5c562dc6c60840268c041bb284b7bb5e",
-      "variants": {
-        "large": {
-          "height": 1080,
-          "mimeType": "image/webp",
-          "size": 97152,
-          "url": "/content/cms/media/photo/ewc-26/fb6ed85559e74b0393ad3771f9589d45/ffefa584bd2f30848cb872743424462bc18873cb5a2672fca964cc49e2c8603e/large.webp",
-          "width": 720
-        },
-        "small": {
-          "height": 800,
-          "mimeType": "image/webp",
-          "size": 50658,
-          "url": "/content/cms/media/photo/ewc-26/fb6ed85559e74b0393ad3771f9589d45/c978fd8010d9266076cfadfcac0f5d39622281d01095ca229f5c8cb61cb032df/small.webp",
-          "width": 533
-        }
-      }
-    },
-    {
       "id": "fb79fe9993dd4e4a802ccde2f96f1947",
       "kind": "photo",
       "projectId": "5c562dc6c60840268c041bb284b7bb5e",
@@ -2724,10 +2726,10 @@
     }
   ],
   "photos": [
+    "3306b4974384446dbb57b53f064ceb54",
     "3b30992281654cc487076c46143a3e61",
     "c0db94a064894a5d8aa4b7a4e4e5f784",
     "44670328dd81440caae046fa8c497686",
-    "fb6ed85559e74b0393ad3771f9589d45",
     "57138bab22c24e898836c7b730fc290e",
     "9d18069c76b84916b49404a79ae5020d",
     "04700f6b0cc940ebb6a6902f35ac4542",
@@ -2833,8 +2835,8 @@
       "id": "1951c72835c741df9e413eec412706b6",
       "showcase": [
         "139519c8bb2645dab8f561bd01ce9af8",
-        "fe618bb77b514d58a7376db98b3444a5",
         "46b34a505efc493b893cad01bcd47c76",
+        "fe618bb77b514d58a7376db98b3444a5",
         "b8efc9dae371430dad4cf2722eb3a50d",
         "c348b68d52f34c4886508e8a8582da5b",
         "45cb0dd89619460f8c92eacbaa8775ee",
@@ -2907,7 +2909,7 @@
       "url": "/photography/ewc-26"
     }
   ],
-  "revision": "858c4aba878d0153891523de73bef4e0de5b05cf7584a6153884bd4811328ab6",
+  "revision": "82380aa6a891e6813f717196457d501bd63fb8e3c171a86ff0a5c6c77fb89d0f",
   "version": 1,
   "videoShowcaseId": "3a99e22ecb5b430a93f5cdf50f1d10b1"
 }

@@ -73,7 +73,7 @@ async function load() {
     project = (isVideo ? content.videos : content.projects).find(item => item.id === id);
     if (!project) throw new Error("Ce projet est introuvable.");
     backNavigation.querySelector("a").href = `${isVideo ? '/video' : '/photography'}#${project.slug}`;
-    document.title = `${project.title} — ${isVideo ? "Motion & Editing" : "Photographie"}`;
+    document.title = `Jérémy Delobel | ${project.title}`;
     details.render(project);
     footer.hidden = false;
     hero?.load(project);

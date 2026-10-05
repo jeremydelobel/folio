@@ -317,7 +317,6 @@ async function switchProject(direction) {
     next.showcase.activate();
     previewIndex = null;
     reveal = 0;
-    document.title = `${next.data.title} — Photographie`;
     history.replaceState(null, '', `#${next.data.slug}`);
     warmNeighbors();
     announcement.textContent = next.data.title;
@@ -377,7 +376,6 @@ async function loadProjects() {
     stage.dataset.state = 'ready';
     stage.setAttribute('aria-busy', 'false');
     status.hidden = true;
-    document.title = `${current().data.title} — Photographie`;
     updateNavigation();
     current().showcase.activate();
     updatePlayback();

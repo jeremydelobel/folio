@@ -110,6 +110,7 @@ button { font: inherit; color: inherit; }
   letter-spacing: -0.025em;
   white-space: nowrap;
 }
+body:not([data-category="video"]) .project__title { text-transform: uppercase; }
 
 .gallery { display: grid; flex: none; gap: var(--row-gap) var(--photo-gap); width: 100%; }
 .rail {

@@ -389,7 +389,6 @@ async function switchProject(direction) {
     activeIndex = index;
     previewIndex = null;
     reveal = 0;
-    document.title = `${next.data.title} — Motion & Editing`;
     history.replaceState(null, '', `#${next.data.slug}`);
     announcement.textContent = next.data.title;
   } catch (error) {
@@ -455,7 +454,6 @@ async function loadProjects() {
     stage.setAttribute('aria-busy', 'false');
     status.hidden = true;
     playback.hidden = false;
-    document.title = `${current().data.title} — Motion & Editing`;
     updateNavigation();
     play(current());
     updatePlayback();

@@ -27,32 +27,6 @@
     },
     {
       "category": "video",
-      "client": "Mastu",
-      "clientUrl": "https://www.youtube.com/@Mastu",
-      "description": "Contributing to the visual direction of entertainment-driven videos through custom motion graphics and visual assets. My role was to strengthen the overall identity of each production, creating engaging graphic elements and animations designed to complement the editing, enhance key moments, and give each video a more distinctive visual presence.",
-      "endDate": "2025-03-22",
-      "id": "f5b51aba9dea485ea36f3b3d98be2c8f",
-      "images": [
-        "156fa00b8b1f4c7795a7bec0c63b32cd",
-        "74022a4f583149429542805c3e0e26a8",
-        "d85a884a2e744d289af4b91e8b167096",
-        "89e31d4d7287497587fb1f46653bd73f",
-        "51fb0670360b4f5f899f460ccfca7967",
-        "ead52cde64204459842d9075f5283be9"
-      ],
-      "skills": [
-        "VFX",
-        "Motion design"
-      ],
-      "slug": "mastu",
-      "startDate": "2024-11-17",
-      "title": "Mastu",
-      "totalViews": 14000000,
-      "url": "/video/mastu",
-      "videoId": "211e4ba0f5af4c4b85bfae8c558323e8"
-    },
-    {
-      "category": "video",
       "client": "SamEzTwitch",
       "clientUrl": "https://www.youtube.com/@sameztwitch",
       "description": "Creating entertaining, fast-paced videos designed to showcase advanced editing techniques while promoting the Editing 360 training program. I contributed to the production of numerous projects, bringing a strong focus on visual effects and motion design to create distinctive, highly polished edits that could both engage viewers and highlight the possibilities of professional video editing.",
@@ -351,27 +325,6 @@
       }
     },
     {
-      "id": "156fa00b8b1f4c7795a7bec0c63b32cd",
-      "kind": "image",
-      "projectId": null,
-      "variants": {
-        "large": {
-          "height": 900,
-          "mimeType": "image/webp",
-          "size": 74598,
-          "url": "/content/cms/media/video/mastu/156fa00b8b1f4c7795a7bec0c63b32cd/12c0272c4b976b0a2a056b67a31ac4eb05d0f7a097bce48fbe105ed763589258/large.webp",
-          "width": 1600
-        },
-        "small": {
-          "height": 450,
-          "mimeType": "image/webp",
-          "size": 25326,
-          "url": "/content/cms/media/video/mastu/156fa00b8b1f4c7795a7bec0c63b32cd/9ddc7b32514edbf93536c238d44fdc3a22479eb87f4776fdd2baa8aa8ed50f1c/small.webp",
-          "width": 800
-        }
-      }
-    },
-    {
       "id": "163c5ef149794bc29d93eb0f1d0a7b2e",
       "kind": "photo",
       "projectId": "1279eabc229d45c39bbd24231a1c52da",
@@ -425,22 +378,6 @@
           "mimeType": "video/mp4",
           "size": 7704965,
           "url": "/content/cms/media/video/mcskyz-hvf/1d182e74094147508827f2b2f5604c0f/0d9dd8e543d209197cc33ae4ed974c78b35ca65bbb6a4fd640e13773ec6ed23e/video.mp4",
-          "width": 1600
-        }
-      }
-    },
-    {
-      "id": "211e4ba0f5af4c4b85bfae8c558323e8",
-      "kind": "video",
-      "projectId": null,
-      "variants": {
-        "video": {
-          "duration": 42.48,
-          "fps": 25,
-          "height": 900,
-          "mimeType": "video/mp4",
-          "size": 13614428,
-          "url": "/content/cms/media/video/mastu/211e4ba0f5af4c4b85bfae8c558323e8/09587c0328be11c311bee94e260383d085811cc4e80b7158253b40bc555e7d7f/video.mp4",
           "width": 1600
         }
       }
@@ -673,22 +610,6 @@
           "size": 44426,
           "url": "/content/cms/media/photo/ewc-26/38e55021938b423e8cd12bb4eb70d42d/be31b57b86f7fe9d4c854eced63e9d0e5b6a1510fb9a5faa83ed698c84c3452d/small.webp",
           "width": 533
-        }
-      }
-    },
-    {
-      "id": "3a99e22ecb5b430a93f5cdf50f1d10b1",
-      "kind": "video",
-      "projectId": null,
-      "variants": {
-        "video": {
-          "duration": 61.76,
-          "fps": 25,
-          "height": 900,
-          "mimeType": "video/mp4",
-          "size": 19731751,
-          "url": "/content/cms/media/video/vitrine/3a99e22ecb5b430a93f5cdf50f1d10b1/adbdf4f1df31f09003b73d3bdbfc7a1433e502a632f9ef16b906b75b7c4b277c/video.mp4",
-          "width": 1600
         }
       }
     },
@@ -961,27 +882,6 @@
           "mimeType": "image/webp",
           "size": 43746,
           "url": "/content/cms/media/photo/ewc-26/4e27159136b64294967df76265a06a8e/e73fe373d364863653479b12d45bbfc6f0599987c744788ff53ac893ffa4d9c2/small.webp",
-          "width": 800
-        }
-      }
-    },
-    {
-      "id": "51fb0670360b4f5f899f460ccfca7967",
-      "kind": "image",
-      "projectId": null,
-      "variants": {
-        "large": {
-          "height": 900,
-          "mimeType": "image/webp",
-          "size": 90464,
-          "url": "/content/cms/media/video/mastu/51fb0670360b4f5f899f460ccfca7967/41e83bb4d8cf753158c02c3172ba3e1b3a5f5a2cb531e246936df446d5af33a7/large.webp",
-          "width": 1600
-        },
-        "small": {
-          "height": 450,
-          "mimeType": "image/webp",
-          "size": 31196,
-          "url": "/content/cms/media/video/mastu/51fb0670360b4f5f899f460ccfca7967/eab2a0a8d4346da9bddc94b926a5c0d7769da45dad689d85f572d428685ee527/small.webp",
           "width": 800
         }
       }
@@ -1302,27 +1202,6 @@
       }
     },
     {
-      "id": "74022a4f583149429542805c3e0e26a8",
-      "kind": "image",
-      "projectId": null,
-      "variants": {
-        "large": {
-          "height": 900,
-          "mimeType": "image/webp",
-          "size": 100226,
-          "url": "/content/cms/media/video/mastu/74022a4f583149429542805c3e0e26a8/0fdddbf90acfe0838653ba00c405dd1dd9b6d30c990124d6f54df8c163dc8b7f/large.webp",
-          "width": 1600
-        },
-        "small": {
-          "height": 450,
-          "mimeType": "image/webp",
-          "size": 25142,
-          "url": "/content/cms/media/video/mastu/74022a4f583149429542805c3e0e26a8/d09ab92a065ee18c067bd37f16caded48ddddb2378a81e31931433ca8945ae6f/small.webp",
-          "width": 800
-        }
-      }
-    },
-    {
       "id": "7adbf675591a4c78a9760d7477505d2a",
       "kind": "photo",
       "projectId": "1951c72835c741df9e413eec412706b6",
@@ -1424,27 +1303,6 @@
           "size": 50094,
           "url": "/content/cms/media/photo/rlcs-paris-major/88066dba9bd04648897dfbb0db56e198/37f0df9a15f4591daa3f251f64fae060a28bfac4a879f2db7ed12c731cd659b9/small.webp",
           "width": 533
-        }
-      }
-    },
-    {
-      "id": "89e31d4d7287497587fb1f46653bd73f",
-      "kind": "image",
-      "projectId": null,
-      "variants": {
-        "large": {
-          "height": 900,
-          "mimeType": "image/webp",
-          "size": 65614,
-          "url": "/content/cms/media/video/mastu/89e31d4d7287497587fb1f46653bd73f/1ab26164742eeba322b2adf8b015c492c11672879ba78213aa57c7fec396fd38/large.webp",
-          "width": 1600
-        },
-        "small": {
-          "height": 450,
-          "mimeType": "image/webp",
-          "size": 17828,
-          "url": "/content/cms/media/video/mastu/89e31d4d7287497587fb1f46653bd73f/0f86376ffa3e5a0b34b1abfff2e9584ee013480e079bf8309b0d71ee001e583e/small.webp",
-          "width": 800
         }
       }
     },
@@ -1587,6 +1445,22 @@
           "size": 49772,
           "url": "/content/cms/media/photo/ewc-26/9d18069c76b84916b49404a79ae5020d/cbc0544121ef17182517f9a6bf9277f59c2bf139ea311f54618c3882be2c50b4/small.webp",
           "width": 800
+        }
+      }
+    },
+    {
+      "id": "9f6692a48ea44cc79898ba256e11cd5c",
+      "kind": "video",
+      "projectId": null,
+      "variants": {
+        "video": {
+          "duration": 63.0,
+          "fps": 25,
+          "height": 1080,
+          "mimeType": "video/mp4",
+          "size": 27574512,
+          "url": "/content/cms/media/video/vitrine/9f6692a48ea44cc79898ba256e11cd5c/ceb153f97bb34df99d2bf930dab9683ef6b699924299a89b7257451d9ac8c3be/video.mp4",
+          "width": 1920
         }
       }
     },
@@ -2305,27 +2179,6 @@
       }
     },
     {
-      "id": "d85a884a2e744d289af4b91e8b167096",
-      "kind": "image",
-      "projectId": null,
-      "variants": {
-        "large": {
-          "height": 900,
-          "mimeType": "image/webp",
-          "size": 39558,
-          "url": "/content/cms/media/video/mastu/d85a884a2e744d289af4b91e8b167096/0872630e5cdd8467c5eefd069cf7d0c951c26cb60e6db2a0217cf7ac4a4dfb29/large.webp",
-          "width": 1600
-        },
-        "small": {
-          "height": 450,
-          "mimeType": "image/webp",
-          "size": 14520,
-          "url": "/content/cms/media/video/mastu/d85a884a2e744d289af4b91e8b167096/222975b895fe6fbc94a71e3c67e279e33c13621602acb98c5b39bb9693ba7948/small.webp",
-          "width": 800
-        }
-      }
-    },
-    {
       "id": "dd20130c87064611884b922d2b229ad8",
       "kind": "photo",
       "projectId": "1279eabc229d45c39bbd24231a1c52da",
@@ -2468,27 +2321,6 @@
           "mimeType": "image/webp",
           "size": 92670,
           "url": "/content/cms/media/photo/living-the-dream-2026/ea9e14b0f1ce4755aa4d038229fd7978/24e42a93d045307a2730a543e9d6b762fda814745fd836c67afbaaaf9e755e58/small.webp",
-          "width": 800
-        }
-      }
-    },
-    {
-      "id": "ead52cde64204459842d9075f5283be9",
-      "kind": "image",
-      "projectId": null,
-      "variants": {
-        "large": {
-          "height": 900,
-          "mimeType": "image/webp",
-          "size": 89474,
-          "url": "/content/cms/media/video/mastu/ead52cde64204459842d9075f5283be9/eb74db62a2ccbc6d825c679d4b6a7afcdda0881efa72620d7c2fb7b54fcc7f74/large.webp",
-          "width": 1600
-        },
-        "small": {
-          "height": 450,
-          "mimeType": "image/webp",
-          "size": 21024,
-          "url": "/content/cms/media/video/mastu/ead52cde64204459842d9075f5283be9/6d528167bab4f23f668da735a304d6a7abb2055ec2cb99cb70e8b4fb75e31a9a/small.webp",
           "width": 800
         }
       }
@@ -2909,7 +2741,7 @@
       "url": "/photography/ewc-26"
     }
   ],
-  "revision": "141f7672706568cd68defd0e6f1cb0fd3f5556c61b7558b9b0cadb416132698e",
+  "revision": "6beac2c9ecf6ba7b0b9c538c6319dcd1f136cee695ffd8be6e912b8332c87f79",
   "version": 1,
-  "videoShowcaseId": "3a99e22ecb5b430a93f5cdf50f1d10b1"
+  "videoShowcaseId": "9f6692a48ea44cc79898ba256e11cd5c"
 }

@@ -458,7 +458,8 @@ const openLanding = async ({ restored = false } = {}) => {
   try {
     const fonts = waitForAsset(Promise.all([
       document.fonts.load('400 12px "JetBrains Mono"'),
-      document.fonts.load('500 34.5px "Special Gothic"'),
+      document.fonts.load('600 34.5px "Special Gothic"'),
+      document.fonts.load('400 16px "forma-djr-micro"'),
     ]), signal).catch((error) => { if (signal.aborted) throw error; });
 
     await Promise.all([

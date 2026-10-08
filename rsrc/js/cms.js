@@ -8,7 +8,8 @@ export async function loadContent(signal) {
     throw new Error('Le contenu du portfolio est invalide.');
   }
   const media = new Map(manifest.media.map(item => [item.id, item]));
-  const photos = manifest.photos.slice().reverse().map(id => media.get(id));
+  // Preserve the CMS library order for navigation through enlarged photos.
+  const photos = manifest.photos.map(id => media.get(id));
   const projects = manifest.projects.slice().reverse().map(record => ({
     ...record,
     url: record.url,

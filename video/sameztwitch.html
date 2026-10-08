@@ -11,8 +11,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Special+Gothic:wght@400..700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/rsrc/gallery/styles.css?v=20260929-2" />
-    <script src="/rsrc/gallery/app.js?v=20260928-touch-drag" type="module"></script>
+    <link rel="stylesheet" href="/rsrc/gallery/styles.css?v=20261008-lightbox-bands" />
+    <script src="/rsrc/gallery/app.js?v=20261008-lightbox-bands" type="module"></script>
     <link rel="stylesheet" href="/rsrc/css/media-loading.css?v=20260928-v2" />
   <link rel="canonical" href="https://jeremydelobel.fr/video/sameztwitch" />
     <meta name="description" content="Creating entertaining, fast-paced videos designed to showcase advanced editing techniques while promoting the Editing 360 training program. I contributed to the production of numerous projects, bringing a strong focus on visual effects and motion design to create distinctive, highly polished edits that could both engage viewers and highlight the possibilities of professional video editing." />
@@ -77,11 +77,20 @@
     </footer>
     <dialog class="lightbox" aria-label="Photographie agrandie">
       <div class="lightbox__stage">
-        <div class="lightbox__media"><img class="lightbox__image" alt="" decoding="async" draggable="false" /></div>
+        <div class="lightbox__slide">
+          <div class="lightbox__media"><img class="lightbox__image" alt="" decoding="async" draggable="false" /></div>
+        </div>
       </div>
+      <button class="lightbox__nav lightbox__nav--previous" type="button" data-direction="-1" aria-label="Photographie précédente" hidden>
+        <span class="lightbox__arrow"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m12 5-5 5 5 5" /></svg></span>
+      </button>
+      <button class="lightbox__nav lightbox__nav--next" type="button" data-direction="1" aria-label="Photographie suivante" hidden>
+        <span class="lightbox__arrow"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m8 5 5 5-5 5" /></svg></span>
+      </button>
       <button class="lightbox__close" type="button" aria-label="Fermer la photographie" autofocus>
         <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
       </button>
+      <span class="lightbox__announcement sr-only" role="status"></span>
     </dialog>
     <noscript><p class="no-script">Active JavaScript pour afficher le projet.</p></noscript>
   </body>

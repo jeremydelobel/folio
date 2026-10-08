@@ -2,7 +2,7 @@ import { loadMediaImage, cancelImageLoad } from "/rsrc/js/media-loading.js";
 import { Gallery } from "./gallery.js?v=20260928-touch-drag";
 import { ProjectMetadata } from "./metadata.js";
 import { ProjectVideo } from "./video.js";
-import { loadContent } from "/rsrc/js/cms.js";
+import { loadContent } from "/rsrc/js/cms.js?v=20261008-lightbox";
 
 const isVideo = document.body.dataset.category === "video";
 const main = document.querySelector("main");
@@ -22,9 +22,17 @@ const loader = document.querySelector(".status__loader");
 const retry = status.querySelector(".status__retry");
 const dialog = document.querySelector(".lightbox");
 const stage = document.querySelector(".lightbox__stage");
+const slide = document.querySelector(".lightbox__slide");
 const enlarged = document.querySelector(".lightbox__image");
 const lightboxMedia = document.querySelector(".lightbox__media");
 const close = document.querySelector(".lightbox__close");
+const photoNavigation = [...document.querySelectorAll(".lightbox__nav")];
+const photoAnnouncement = document.querySelector(".lightbox__announcement");
+// The project selector uses an 820 ms cubic wipe; photos run at 1.5× speed.
+const PHOTO_WIPE_DURATION = 820 / 1.5;
+const photoCache = new Map();
+let photos = [], requestedPhotoIndex = 0, photoDirection = 1;
+let switchingPhoto = false, finishPhotoTransition;
 let gallery, project, activePhoto, origin, savedScroll;
 let request, lightboxRevision = 0;
 let closingAnimation, closingPhotoAnimation;
@@ -90,7 +98,7 @@ async function load() {
     }
     status.hidden = true;
     main.setAttribute("aria-busy", "false");
-    const photos = project.photos.filter(photo => photo.prepared);
+    photos = project.photos.filter(photo => photo.prepared);
     if (!photos.length) {
       if (!isVideo) showStatus(project.photos.length ? "Les images de ce projet sont indisponibles." : "Ce projet ne contient pas encore d’image.", true);
       return;
@@ -122,18 +130,69 @@ async function load() {
 
 function fitPhoto() {
   if (!dialog.open || !activePhoto) return;
-  const ratio = activePhoto.width / activePhoto.height;
-  const width = Math.min(stage.clientWidth, stage.clientHeight * ratio);
-  lightboxMedia.style.width = `${width}px`;
-  lightboxMedia.style.height = `${width / ratio}px`;
-  enlarged.style.width = `${width}px`;
-  enlarged.style.height = `${width / ratio}px`;
+  for (const media of stage.querySelectorAll(".lightbox__media")) {
+    const image = media.querySelector("img");
+    const ratio = Number(image.getAttribute("width")) / Number(image.getAttribute("height"));
+    const width = Math.min(stage.clientWidth, stage.clientHeight * ratio);
+    media.style.width = image.style.width = `${width}px`;
+    media.style.height = image.style.height = `${width / ratio}px`;
+  }
+  const photoBounds = lightboxMedia.getBoundingClientRect();
+  const dialogBounds = dialog.getBoundingClientRect();
+  dialog.style.setProperty("--lightbox-space-left", `${photoBounds.left - dialogBounds.left}px`);
+  dialog.style.setProperty("--lightbox-space-right", `${dialogBounds.right - photoBounds.right}px`);
+}
+
+function preparePhoto(photo, priority = "low") {
+  if (photoCache.has(photo.id)) return photoCache.get(photo.id).promise;
+  const image = new Image();
+  image.decoding = "async";
+  image.fetchPriority = priority;
+  const surface = document.createElement("div");
+  const load = source => new Promise((resolve, reject) => {
+    loadMediaImage(image, surface, source, {
+      onReady: () => resolve(image),
+      onError: () => {
+        cancelImageLoad(image);
+        reject(new Error("Cette photographie est indisponible. Réessaie."));
+      },
+    });
+  });
+  const entry = { image, promise: null };
+  photoCache.set(photo.id, entry);
+  entry.promise = load(photo.variants.large.url).catch(() => {
+    if (photoCache.get(photo.id) !== entry) throw new DOMException("Chargement annulé", "AbortError");
+    return load(photo.variants.small.url);
+  }).catch(error => {
+    if (photoCache.get(photo.id) === entry) photoCache.delete(photo.id);
+    throw error;
+  });
+  return entry.promise;
+}
+
+function warmPhotoNeighbors() {
+  const index = photos.indexOf(activePhoto);
+  const neighbors = new Set([-1, 1].map(direction => photos[(index + direction + photos.length) % photos.length]));
+  const keep = new Set([activePhoto.id, ...[...neighbors].map(photo => photo.id)]);
+  for (const [id, entry] of photoCache) {
+    if (keep.has(id)) continue;
+    cancelImageLoad(entry.image);
+    entry.image.removeAttribute("src");
+    photoCache.delete(id);
+  }
+  for (const photo of neighbors) {
+    if (photo !== activePhoto) void preparePhoto(photo).catch(() => {});
+  }
 }
 
 function openPhoto(photo, source, image) {
   if (dialog.open) return;
   const revision = ++lightboxRevision;
   activePhoto = photo;
+  requestedPhotoIndex = photos.indexOf(photo);
+  slide.classList.add("is-opening");
+  photoAnnouncement.textContent = "";
+  for (const button of photoNavigation) button.hidden = photos.length < 2;
   // Moving rows recycle their buttons while the lightbox is open. Restore
   // focus to a stable element, never to a button now showing a different photo.
   origin = source.classList.contains("rail") ? source : container;
@@ -145,23 +204,106 @@ function openPhoto(photo, source, image) {
   dialog.showModal();
   fitPhoto();
   close.focus({ preventScroll: true });
-  const large = new Image();
-  large.decoding = "async";
-  large.fetchPriority = "high";
-  large.onload = async () => {
-    try { await large.decode(); } catch { return; }
+  void preparePhoto(photo, "high").then(image => {
     if (dialog.open && revision === lightboxRevision) {
       cancelImageLoad(enlarged);
-      enlarged.src = photo.variants.large.url;
+      enlarged.src = image.src;
       lightboxMedia.dataset.mediaState = "ready";
     }
+  }).catch(() => {});
+  warmPhotoNeighbors();
+}
+
+function wipePhoto(outgoing, direction) {
+  slide.classList.remove("is-opening");
+  if (gallery.reduced) {
+    outgoing.remove();
+    return Promise.resolve();
+  }
+  slide.classList.add("is-switching");
+  outgoing.classList.add("is-switching");
+  const paint = reveal => {
+    const hidden = (1 - reveal) * 100;
+    // Complementary masks also clear the old image outside a new portrait.
+    slide.style.clipPath = direction === 1 ? `inset(0 0 0 ${hidden}%)` : `inset(0 ${hidden}% 0 0)`;
+    outgoing.style.clipPath = direction === 1 ? `inset(0 ${reveal * 100}% 0 0)` : `inset(0 0 0 ${reveal * 100}%)`;
   };
-  // Keep the already visible image if the larger derivative fails.
-  large.src = photo.variants.large.url;
+  paint(0);
+  const start = performance.now();
+  return new Promise(resolve => {
+    let frame;
+    const finish = () => {
+      cancelAnimationFrame(frame);
+      outgoing.remove();
+      slide.style.removeProperty("clip-path");
+      slide.classList.remove("is-switching");
+      finishPhotoTransition = null;
+      resolve();
+    };
+    finishPhotoTransition = finish;
+    const tick = now => {
+      const t = gallery.reduced ? 1 : Math.min((now - start) / PHOTO_WIPE_DURATION, 1);
+      paint(t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+      if (t < 1) frame = requestAnimationFrame(tick);
+      else finish();
+    };
+    frame = requestAnimationFrame(tick);
+  });
+}
+
+async function advancePhoto() {
+  if (switchingPhoto || closingAnimation || !dialog.open || photos[requestedPhotoIndex] === activePhoto) return;
+  switchingPhoto = true;
+  const photo = photos[requestedPhotoIndex];
+  const direction = photoDirection;
+  const revision = ++lightboxRevision;
+  const button = photoNavigation.find(button => Number(button.dataset.direction) === direction);
+  button.dataset.loading = "true";
+  photoAnnouncement.textContent = "";
+  try {
+    const image = await preparePhoto(photo, "high");
+    if (!dialog.open || revision !== lightboxRevision) return;
+    const outgoing = document.createElement("div");
+    outgoing.className = "lightbox__slide";
+    outgoing.setAttribute("aria-hidden", "true");
+    outgoing.append(lightboxMedia.cloneNode(true));
+    stage.prepend(outgoing);
+    cancelImageLoad(enlarged);
+    enlarged.src = image.src;
+    enlarged.alt = `${project.title} — photographie ${photo.order + 1}`;
+    enlarged.width = photo.width;
+    enlarged.height = photo.height;
+    lightboxMedia.dataset.mediaState = "ready";
+    activePhoto = photo;
+    fitPhoto();
+    delete button.dataset.loading;
+    await wipePhoto(outgoing, direction);
+    if (revision !== lightboxRevision) return;
+    photoAnnouncement.textContent = enlarged.alt;
+    warmPhotoNeighbors();
+  } catch (error) {
+    if (revision !== lightboxRevision) return;
+    if (photos[requestedPhotoIndex] === photo) requestedPhotoIndex = photos.indexOf(activePhoto);
+    photoAnnouncement.textContent = error.message;
+  } finally {
+    if (revision === lightboxRevision) {
+      delete button.dataset.loading;
+      switchingPhoto = false;
+      void advancePhoto();
+    }
+  }
+}
+
+function switchPhoto(direction) {
+  if (!dialog.open || closingAnimation || photos.length < 2) return;
+  requestedPhotoIndex = (requestedPhotoIndex + direction + photos.length) % photos.length;
+  photoDirection = direction;
+  void advancePhoto();
 }
 
 function closePhoto() {
   if (!dialog.open || closingAnimation) return;
+  ++lightboxRevision;
   if (gallery.reduced) {
     dialog.close();
     return;
@@ -179,6 +321,14 @@ function closePhoto() {
 
 function restorePage() {
   ++lightboxRevision;
+  finishPhotoTransition?.();
+  switchingPhoto = false;
+  for (const button of photoNavigation) delete button.dataset.loading;
+  for (const entry of photoCache.values()) {
+    cancelImageLoad(entry.image);
+    entry.image.removeAttribute("src");
+  }
+  photoCache.clear();
   closingAnimation?.cancel();
   closingPhotoAnimation?.cancel();
   closingAnimation = closingPhotoAnimation = null;
@@ -191,8 +341,11 @@ function restorePage() {
 }
 
 close.addEventListener("click", closePhoto);
+for (const button of photoNavigation) {
+  button.addEventListener("click", () => switchPhoto(Number(button.dataset.direction)));
+}
 dialog.addEventListener("click", event => {
-  if (event.target === dialog || event.target === stage) closePhoto();
+  if (event.target === dialog || event.target === stage || event.target.classList.contains("lightbox__slide")) closePhoto();
 });
 dialog.addEventListener("cancel", event => {
   event.preventDefault();
@@ -208,8 +361,14 @@ window.addEventListener("touchmove", event => {
 }, { passive: false });
 document.addEventListener("keydown", event => {
   if (!dialog.open) return;
-  const scrollKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "PageUp", "PageDown", "Home", "End"];
-  if (scrollKeys.includes(event.key) || (event.key === " " && event.target !== close)) {
+  if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
+    event.preventDefault();
+    switchPhoto(event.key === "ArrowRight" ? 1 : -1);
+    return;
+  }
+  const scrollKeys = ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End"];
+  if (scrollKeys.includes(event.key) || (event.key === " " && !event.target.closest("button"))) {
     event.preventDefault();
   }
 });

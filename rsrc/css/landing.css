@@ -1,7 +1,7 @@
 @font-face {
   font-family: "JetBrains Mono";
-  src: url("../font/JetBrainsMono-Regular.ttf") format("truetype");
-  font-weight: 400;
+  src: url("../font/JetBrainsMono-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 800;
   font-style: normal;
   font-display: block;
 }
@@ -27,6 +27,32 @@ body {
   background: #000000;
   color: #ffffff;
   font-family: "forma-djr-micro", Arial, sans-serif;
+}
+
+.landing-v2-contact {
+  position: fixed;
+  z-index: 7;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  color: #fff;
+  background: rgb(0 0 0 / 20%);
+  backdrop-filter: blur(24px);
+  font: 500 12px/18px "JetBrains Mono", monospace;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 140ms ease;
+}
+
+.landing-v2-contact:hover { background: rgb(0 0 0 / 30%); }
+.landing-v2-contact:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+
+@media (pointer: coarse) {
+  .landing-v2-contact { min-height: 44px; }
 }
 
 .landing-v2 {
@@ -294,6 +320,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .landing-v2-contact,
   .landing-v2-panel,
   .landing-v2-panel::after,
   .landing-v2-media-visual,

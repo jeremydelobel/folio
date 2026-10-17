@@ -3471,7 +3471,7 @@
         "0fa973ec236f44c686d225b3182eafc4"
       ],
       "skills": [
-        "LIVE PHOTOGRAPHY"
+        "CHARITY EVENT"
       ],
       "slug": "telethon-gaming-2025",
       "title": "Telethon Gaming 2025",
@@ -3495,7 +3495,7 @@
         "d6212d67600c42aa8ec2a76d1e48ff86"
       ],
       "skills": [
-        "LIVE PHOTOGTAPHY"
+        "CHARITY EVENT"
       ],
       "slug": "living-the-dream-2026",
       "title": "Living The Dream 2026",
@@ -3519,7 +3519,7 @@
         "083af9ecf8274a72bbe33cd251a14562"
       ],
       "skills": [
-        "LIVE PHOTOGRAPHY"
+        "ESPORT"
       ],
       "slug": "rlcs-paris-major",
       "title": "RLCS Paris Major",
@@ -3555,14 +3555,14 @@
         "1f54c362404c42ec865080bbbcdfce4f"
       ],
       "skills": [
-        "LIVE PHOTOGRAPHY"
+        "ESPORT"
       ],
       "slug": "ewc-26",
       "title": "EWC 26",
       "url": "/photography/ewc-26"
     }
   ],
-  "revision": "9df024f75eb99f28344642da2c20ac337cb3dec2513e8e072edfb6fc95a57ff3",
+  "revision": "9a8e831c6af8cc91bf0f64c1568c704ab255801b29cd14aa45495320d3bcdac7",
   "version": 1,
   "videoShowcaseId": "8690d749560241fb81228012e8f18f9c"
 }
